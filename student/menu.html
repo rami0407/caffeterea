@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="قائمة الطعام - بذور المعرفة">
+    <title>القائمة | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/student.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-right">
+            <a href="../index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title" data-i18n="menu">القائمة</h1>
+        </div>
+        <div class="header-left">
+            <!-- Wallet Balance -->
+            <a href="wallet.html" class="wallet-badge">
+                <span class="wallet-icon">💰</span>
+                <span class="wallet-amount" id="balanceDisplay">0</span>
+                <span class="wallet-label" data-i18n="coins">نقطة</span>
+            </a>
+            <!-- Cart -->
+            <button class="cart-btn" id="cartBtn">
+                <span class="cart-icon">🛒</span>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+            <!-- Language -->
+            <div class="lang-mini">
+                <button class="lang-mini-btn" data-lang="ar">ع</button>
+                <button class="lang-mini-btn" data-lang="he">ע</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Categories -->
+        <nav class="categories-nav">
+            <button class="category-btn active" data-category="all">
+                <span class="category-icon">🍽️</span>
+                <span data-i18n="allItems">الكل</span>
+            </button>
+            <button class="category-btn" data-category="sandwiches">
+                <span class="category-icon">🥪</span>
+                <span data-i18n="sandwiches">سندويشات</span>
+            </button>
+            <button class="category-btn" data-category="drinks">
+                <span class="category-icon">🥤</span>
+                <span data-i18n="drinks">مشروبات</span>
+            </button>
+            <button class="category-btn" data-category="snacks">
+                <span class="category-icon">🍪</span>
+                <span data-i18n="snacks">وجبات خفيفة</span>
+            </button>
+            <button class="category-btn" data-category="healthy">
+                <span class="category-icon">🥗</span>
+                <span data-i18n="healthy">صحي</span>
+            </button>
+        </nav>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded here -->
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p data-i18n="loading">جاري التحميل...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2 data-i18n="cart">سلة الطلبات</h2>
+            <button class="close-cart-btn" id="closeCartBtn">✕</button>
+        </div>
+
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be loaded here -->
+        </div>
+
+        <div class="cart-empty hidden" id="cartEmpty">
+            <span class="empty-icon">🛒</span>
+            <p data-i18n="emptyCart">السلة فارغة</p>
+        </div>
+
+        <div class="cart-footer" id="cartFooter">
+            <div class="cart-total">
+                <span data-i18n="total">المجموع:</span>
+                <span class="total-amount" id="cartTotal">0</span>
+                <span data-i18n="coins">نقطة</span>
+            </div>
+            <button class="btn btn-primary btn-full" id="checkoutBtn">
+                <span data-i18n="checkout">إتمام الطلب</span>
+                <span class="btn-icon">←</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Order Success Modal -->
+    <div class="modal-overlay hidden" id="successModal">
+        <div class="modal-content success-modal">
+            <div class="success-icon">✅</div>
+            <h2 data-i18n="orderSuccess">تم الطلب بنجاح!</h2>
+            <div class="order-number-display">
+                <span data-i18n="orderNumber">رقم طلبك:</span>
+                <span class="order-num" id="orderNumberDisplay">--</span>
+            </div>
+            <p class="success-message">سيتم تحضير طلبك فوراً. انتظر رقم طلبك على الشاشة!</p>
+            <button class="btn btn-primary" id="closeSuccessBtn">حسناً</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="menu.html" class="nav-item active">
+            <span class="nav-icon">🍽️</span>
+            <span data-i18n="menu">القائمة</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span data-i18n="orders">طلباتي</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span data-i18n="wallet">المحفظة</span>
+        </a>
+        <a href="../index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span data-i18n="home">الرئيسية</span>
+        </a>
+    </nav>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/student.js"></script>
+</body>
+
+</html>

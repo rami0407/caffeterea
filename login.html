@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تسجيل الدخول - بذور المعرفة">
+    <title>تسجيل الدخول | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="ar">العربية</button>
+        <button class="lang-btn" data-lang="he">עברית</button>
+    </div>
+
+    <!-- Back Button -->
+    <a href="index.html" class="back-btn">
+        <span class="back-arrow">→</span>
+        <span data-i18n="back">رجوع</span>
+    </a>
+
+    <!-- Main Container -->
+    <div class="auth-container">
+        <!-- Decorative Elements -->
+        <div class="floating-leaf leaf-1">🌿</div>
+        <div class="floating-leaf leaf-2">🍃</div>
+
+        <!-- Auth Card -->
+        <div class="auth-card">
+            <!-- Role Icon -->
+            <div class="role-icon" id="roleIcon">👨‍🎓</div>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login" data-i18n="login">تسجيل الدخول</button>
+                <button class="auth-tab" data-tab="register" data-i18n="register">إنشاء حساب</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <div class="input-group">
+                    <label class="input-label" data-i18n="email">البريد الإلكتروني</label>
+                    <input type="email" class="input-field" id="loginEmail" required data-i18n-placeholder="email">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" data-i18n="password">كلمة المرور</label>
+                    <input type="password" class="input-field" id="loginPassword" required
+                        data-i18n-placeholder="password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span data-i18n="loginBtn">دخول</span>
+                    <span class="btn-icon">←</span>
+                </button>
+
+                <a href="#" class="forgot-link" data-i18n="forgotPassword">نسيت كلمة المرور؟</a>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form hidden">
+                <div class="input-group">
+                    <label class="input-label" data-i18n="fullName">الاسم الكامل</label>
+                    <input type="text" class="input-field" id="regName" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" data-i18n="email">البريد الإلكتروني</label>
+                    <input type="email" class="input-field" id="regEmail" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" data-i18n="password">كلمة المرور</label>
+                    <input type="password" class="input-field" id="regPassword" required minlength="6">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" data-i18n="confirmPassword">تأكيد كلمة المرور</label>
+                    <input type="password" class="input-field" id="regConfirmPassword" required>
+                </div>
+
+                <!-- Class field (for students) -->
+                <div class="input-group student-only">
+                    <label class="input-label" data-i18n="className">الصف</label>
+                    <input type="text" class="input-field" id="regClass">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span data-i18n="registerBtn">إنشاء حساب</span>
+                    <span class="btn-icon">←</span>
+                </button>
+            </form>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

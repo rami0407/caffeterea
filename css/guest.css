@@ -1,0 +1,277 @@
+/* ========================================
+   Guest View Styles
+   ======================================== */
+
+/* Header */
+.guest-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-xl);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+}
+
+.logo-icon {
+    font-size: 1.75rem;
+}
+
+.logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.login-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--primary-green);
+    color: white;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-normal);
+}
+
+.login-link:hover {
+    background: var(--primary-green-dark);
+    transform: translateY(-2px);
+}
+
+/* Hero Section */
+.guest-hero {
+    margin-top: 70px;
+    padding: var(--space-2xl) var(--space-xl);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+    text-align: center;
+    color: white;
+}
+
+.guest-hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: var(--space-sm);
+}
+
+.guest-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Categories */
+.guest-categories {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.category-chip {
+    padding: var(--space-sm) var(--space-lg);
+    background: #f3f4f6;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+.category-chip:hover {
+    background: var(--primary-green-light);
+    color: white;
+}
+
+.category-chip.active {
+    background: var(--primary-green);
+    color: white;
+}
+
+/* Content */
+.guest-content {
+    padding: var(--space-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Products Grid */
+.guest-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Product Card */
+.guest-product-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    transition: var(--transition-normal);
+}
+
+.guest-product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.nutrition-dot {
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-full);
+}
+
+.nutrition-dot.green {
+    background: var(--nutrition-green);
+}
+
+.nutrition-dot.yellow {
+    background: var(--nutrition-yellow);
+}
+
+.nutrition-dot.red {
+    background: var(--nutrition-red);
+}
+
+.guest-product-card .product-image {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.guest-product-card .product-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.guest-product-card .product-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+/* Nutrition Legend */
+.nutrition-legend {
+    max-width: 800px;
+    margin: var(--space-2xl) auto;
+    padding: var(--space-xl);
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.nutrition-legend h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-lg);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.legend-item .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: var(--radius-full);
+}
+
+.legend-item.green .dot {
+    background: var(--nutrition-green);
+}
+
+.legend-item.yellow .dot {
+    background: var(--nutrition-yellow);
+}
+
+.legend-item.red .dot {
+    background: var(--nutrition-red);
+}
+
+/* CTA Section */
+.guest-cta {
+    max-width: 600px;
+    margin: var(--space-2xl) auto;
+    padding: var(--space-2xl);
+    background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+    border-radius: var(--radius-xl);
+    text-align: center;
+}
+
+.guest-cta h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--brown-dark);
+    margin-bottom: var(--space-sm);
+}
+
+.guest-cta p {
+    color: var(--brown-medium);
+    margin-bottom: var(--space-lg);
+}
+
+/* Footer */
+.guest-footer {
+    padding: var(--space-xl);
+    text-align: center;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .guest-hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .guest-products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+
+    .legend-items {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

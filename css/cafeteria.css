@@ -1,0 +1,325 @@
+/* ========================================
+   Cafeteria Portal Styles
+   ======================================== */
+
+body {
+    background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #f59e0b 100%);
+}
+
+.cafeteria-header {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.cafeteria-content {
+    padding: var(--space-lg);
+    padding-top: 160px;
+}
+
+/* Orders Count Badge */
+.orders-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+    border-radius: var(--radius-md);
+    color: white;
+}
+
+.count-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.count-label {
+    font-size: 0.6rem;
+    opacity: 0.9;
+}
+
+/* Status Tabs */
+.status-tabs {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: white;
+    box-shadow: var(--shadow-md);
+    z-index: 50;
+}
+
+.status-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-md);
+    border-bottom: 3px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.status-tab:hover {
+    background: #f9fafb;
+}
+
+.status-tab.active {
+    border-bottom-color: var(--primary-green);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.tab-icon {
+    font-size: 1.5rem;
+}
+
+.tab-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.status-tab.active .tab-label {
+    color: var(--primary-green);
+}
+
+.tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: #e5e7eb;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.status-tab.active .tab-count {
+    background: var(--primary-green);
+    color: white;
+}
+
+/* Orders Display */
+.orders-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Order Card (Cafeteria View) */
+.cafe-order-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-lg);
+    border-top: 4px solid var(--primary-green);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cafe-order-card.pending {
+    border-top-color: #fbbf24;
+}
+
+.cafe-order-card.preparing {
+    border-top-color: #60a5fa;
+}
+
+.cafe-order-card.ready {
+    border-top-color: var(--primary-green);
+    animation: pulse-ready 2s infinite;
+}
+
+@keyframes pulse-ready {
+
+    0%,
+    100% {
+        box-shadow: var(--shadow-lg);
+    }
+
+    50% {
+        box-shadow: var(--shadow-lg), 0 0 30px rgba(34, 197, 94, 0.4);
+    }
+}
+
+/* Order Header */
+.cafe-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.order-number-large {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-number-large .label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.order-number-large .number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--brown-dark);
+    line-height: 1;
+}
+
+.order-time-badge {
+    padding: var(--space-xs) var(--space-sm);
+    background: #f3f4f6;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Order Items List */
+.cafe-order-items {
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: #f9fafb;
+    border-radius: var(--radius-md);
+}
+
+.cafe-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.cafe-item:last-child {
+    border-bottom: none;
+}
+
+.item-qty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--primary-green);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: var(--space-sm);
+}
+
+[dir="ltr"] .item-qty {
+    margin-left: 0;
+    margin-right: var(--space-sm);
+}
+
+.item-name {
+    font-weight: 600;
+}
+
+/* Order Actions */
+.cafe-order-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition-normal);
+}
+
+.action-btn.preparing-btn {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    color: white;
+}
+
+.action-btn.ready-btn {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+    color: white;
+}
+
+.action-btn.complete-btn {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
+
+.action-btn:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.empty-state.hidden {
+    display: none;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: var(--space-md);
+}
+
+.empty-state small {
+    display: block;
+    margin-top: var(--space-sm);
+    color: var(--text-light);
+}
+
+/* New Order Animation */
+.cafe-order-card.new-order {
+    animation: newOrder 0.5s ease;
+}
+
+@keyframes newOrder {
+    0% {
+        transform: scale(1.1);
+        box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .orders-display {
+        grid-template-columns: 1fr;
+    }
+
+    .order-number-large .number {
+        font-size: 2rem;
+    }
+}

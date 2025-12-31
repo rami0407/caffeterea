@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="بذور المعرفة - منظومة المقصف الذكي والمستدام">
+    <title>بذور المعرفة | Smart Eco-Market</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="ar">العربية</button>
+        <button class="lang-btn" data-lang="he">עברית</button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="landing-container">
+        <!-- Decorative Elements -->
+        <div class="floating-leaf leaf-1">🌿</div>
+        <div class="floating-leaf leaf-2">🍃</div>
+        <div class="floating-leaf leaf-3">🌱</div>
+        <div class="floating-seed seed-1">🌾</div>
+        <div class="floating-seed seed-2">☘️</div>
+
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="logo-container">
+                <div class="logo-icon">🌱</div>
+                <h1 class="logo-text" data-i18n="appName">بذور المعرفة</h1>
+                <p class="logo-tagline" data-i18n="tagline">منظومة المقصف الذكي والمستدام</p>
+            </div>
+        </header>
+
+        <!-- User Type Selection -->
+        <main class="user-selection">
+            <h2 class="selection-title" data-i18n="selectRole">اختر نوع المستخدم</h2>
+
+            <div class="user-cards">
+                <!-- Student Card -->
+                <a href="login.html?role=student" class="user-card student-card">
+                    <div class="card-icon">👨‍🎓</div>
+                    <h3 class="card-title" data-i18n="student">طالب</h3>
+                    <p class="card-desc" data-i18n="studentDesc">اطلب وجبتك واستمتع!</p>
+                    <div class="card-arrow">←</div>
+                </a>
+
+                <!-- Educator Card -->
+                <a href="login.html?role=educator" class="user-card educator-card">
+                    <div class="card-icon">👨‍🏫</div>
+                    <h3 class="card-title" data-i18n="educator">مربي</h3>
+                    <p class="card-desc" data-i18n="educatorDesc">أدِر مكافآت طلابك</p>
+                    <div class="card-arrow">←</div>
+                </a>
+
+                <!-- Cafeteria Card -->
+                <a href="login.html?role=cafeteria" class="user-card cafeteria-card">
+                    <div class="card-icon">👨‍🍳</div>
+                    <h3 class="card-title" data-i18n="cafeteria">المقصف</h3>
+                    <p class="card-desc" data-i18n="cafeteriaDesc">إدارة الطلبات</p>
+                    <div class="card-arrow">←</div>
+                </a>
+
+                <!-- Admin Card -->
+                <a href="login.html?role=admin" class="user-card admin-card">
+                    <div class="card-icon">👨‍💼</div>
+                    <h3 class="card-title" data-i18n="admin">الإدارة</h3>
+                    <p class="card-desc" data-i18n="adminDesc">لوحة التحكم الكاملة</p>
+                    <div class="card-arrow">←</div>
+                </a>
+
+                <!-- Guest Card -->
+                <a href="guest.html" class="user-card guest-card">
+                    <div class="card-icon">👤</div>
+                    <h3 class="card-title" data-i18n="guest">ضيف</h3>
+                    <p class="card-desc" data-i18n="guestDesc">تصفح القائمة</p>
+                    <div class="card-arrow">←</div>
+                </a>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <p data-i18n="footer">🌍 من الكود إلى الأخضر | Smart Eco-Market</p>
+        </footer>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script>
+        // Initialize language
+        document.addEventListener('DOMContentLoaded', () => {
+            initI18n();
+
+            // Language switcher
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

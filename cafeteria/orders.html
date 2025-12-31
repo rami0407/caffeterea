@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="إدارة الطلبات - بذور المعرفة">
+    <title>الطلبات | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/cafeteria.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header cafeteria-header">
+        <div class="header-right">
+            <a href="../index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title" data-i18n="incomingOrders">الطلبات الواردة</h1>
+        </div>
+        <div class="header-left">
+            <div class="orders-count">
+                <span class="count-value" id="ordersCount">0</span>
+                <span class="count-label">طلب نشط</span>
+            </div>
+            <div class="lang-mini">
+                <button class="lang-mini-btn active" data-lang="ar">ع</button>
+                <button class="lang-mini-btn" data-lang="he">ע</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Status Tabs -->
+    <nav class="status-tabs">
+        <button class="status-tab active" data-status="pending">
+            <span class="tab-icon">⏳</span>
+            <span class="tab-label">جديد</span>
+            <span class="tab-count" id="pendingCount">0</span>
+        </button>
+        <button class="status-tab" data-status="preparing">
+            <span class="tab-icon">👨‍🍳</span>
+            <span class="tab-label">قيد التحضير</span>
+            <span class="tab-count" id="preparingCount">0</span>
+        </button>
+        <button class="status-tab" data-status="ready">
+            <span class="tab-icon">✅</span>
+            <span class="tab-label">جاهز</span>
+            <span class="tab-count" id="readyCount">0</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content cafeteria-content">
+        <!-- Orders Display -->
+        <div class="orders-display" id="ordersDisplay">
+            <!-- Orders will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+            <span class="empty-icon">📋</span>
+            <p>لا توجد طلبات حالياً</p>
+            <small>الطلبات الجديدة ستظهر هنا فوراً</small>
+        </div>
+    </main>
+
+    <!-- Sound for new orders -->
+    <audio id="notificationSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQAtZNLS/+lgQCqZxt28f0UXLYi/tYVVNxxKi7Wtm2MoEz2IvrSVcDQJK3e2ub+GRgYoea+6t5RYCh5ysb3CreZvNCVrmLPJ6sp1DhZcobXM"
+            type="audio/wav">
+    </audio>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/cafeteria.js"></script>
+</body>
+
+</html>

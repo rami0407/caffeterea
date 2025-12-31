@@ -1,0 +1,329 @@
+/* ========================================
+   Educator Portal Styles
+   ======================================== */
+
+.educator-content {
+    padding: var(--space-lg);
+    padding-top: 90px;
+    padding-bottom: var(--space-xl);
+}
+
+/* Stats Overview */
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.stat-box {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.stat-box .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-green);
+}
+
+.stat-box .stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+/* Search Box */
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-icon {
+    font-size: 1.25rem;
+    opacity: 0.5;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+}
+
+/* Students Section */
+.students-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.students-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+/* Student Card */
+.student-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: #f9fafb;
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+    cursor: pointer;
+}
+
+.student-card:hover {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f9fafb 100%);
+    transform: translateX(-4px);
+}
+
+[dir="ltr"] .student-card:hover {
+    transform: translateX(4px);
+}
+
+.student-avatar {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-green-light) 0%, var(--primary-green) 100%);
+    border-radius: var(--radius-full);
+    font-size: 1.5rem;
+}
+
+.student-info {
+    flex: 1;
+}
+
+.student-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.student-class {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.student-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(251, 191, 36, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.balance-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+}
+
+.balance-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+}
+
+.add-reward-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-green);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 1.25rem;
+    transition: var(--transition-normal);
+}
+
+.add-reward-btn:hover {
+    background: var(--primary-green-dark);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Logout Button */
+.logout-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 1.25rem;
+    transition: var(--transition-fast);
+}
+
+.logout-btn:hover {
+    background: var(--nutrition-red);
+}
+
+/* Reward Modal */
+.reward-modal {
+    max-width: 450px;
+}
+
+.modal-close {
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+[dir="ltr"] .modal-close {
+    left: auto;
+    right: var(--space-md);
+}
+
+.modal-close:hover {
+    background: var(--nutrition-red);
+    color: white;
+}
+
+.reward-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.reward-student-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: var(--space-sm);
+}
+
+.reward-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin-bottom: var(--space-xs);
+}
+
+.current-balance {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.current-balance span {
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+/* Points Input */
+.points-input {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.points-btn {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    border-radius: var(--radius-md);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    transition: var(--transition-fast);
+}
+
+.points-btn:hover {
+    background: var(--primary-green);
+    color: white;
+}
+
+.points-field {
+    flex: 1;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    padding: var(--space-md);
+}
+
+/* Reason Chips */
+.reason-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.reason-chip {
+    padding: var(--space-sm) var(--space-md);
+    background: #f3f4f6;
+    border-radius: var(--radius-lg);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+.reason-chip:hover,
+.reason-chip.active {
+    background: var(--primary-green);
+    color: white;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: var(--space-lg);
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+}
+
+#rewardForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}

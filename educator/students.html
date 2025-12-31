@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="إدارة الطلاب - بذور المعرفة">
+    <title>طلابي | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/educator.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-right">
+            <a href="../index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title" data-i18n="myStudents">طلابي</h1>
+        </div>
+        <div class="header-left">
+            <div class="lang-mini">
+                <button class="lang-mini-btn active" data-lang="ar">ع</button>
+                <button class="lang-mini-btn" data-lang="he">ע</button>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <span>🚪</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content educator-content">
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-box">
+                <span class="stat-value" id="totalStudents">0</span>
+                <span class="stat-label">طالب</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="totalGiven">0</span>
+                <span class="stat-label">نقاط وزعتها</span>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن طالب..."
+                data-i18n-placeholder="search">
+        </div>
+
+        <!-- Students List -->
+        <section class="students-section">
+            <div class="students-list" id="studentsList">
+                <!-- Students will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Reward Modal -->
+    <div class="modal-overlay hidden" id="rewardModal">
+        <div class="modal-content reward-modal">
+            <button class="modal-close" onclick="closeRewardModal()">✕</button>
+
+            <div class="reward-header">
+                <span class="reward-student-icon" id="modalStudentIcon">👨‍🎓</span>
+                <h3 id="modalStudentName">اسم الطالب</h3>
+                <p class="current-balance">الرصيد الحالي: <span id="modalCurrentBalance">0</span> نقطة</p>
+            </div>
+
+            <form id="rewardForm">
+                <div class="input-group">
+                    <label class="input-label" data-i18n="rewardAmount">عدد النقاط</label>
+                    <div class="points-input">
+                        <button type="button" class="points-btn" onclick="adjustPoints(-5)">-5</button>
+                        <input type="number" class="input-field points-field" id="rewardAmount" value="5" min="1"
+                            max="100">
+                        <button type="button" class="points-btn" onclick="adjustPoints(5)">+5</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" data-i18n="rewardReason">سبب المكافأة</label>
+                    <div class="reason-chips">
+                        <button type="button" class="reason-chip" data-reason="سلوك ممتاز">⭐ سلوك ممتاز</button>
+                        <button type="button" class="reason-chip" data-reason="مساعدة زميل">🤝 مساعدة زميل</button>
+                        <button type="button" class="reason-chip" data-reason="تفوق دراسي">📚 تفوق دراسي</button>
+                        <button type="button" class="reason-chip" data-reason="نظافة">🧹 نظافة</button>
+                        <button type="button" class="reason-chip" data-reason="مشاركة فعالة">✋ مشاركة فعالة</button>
+                        <button type="button" class="reason-chip" data-reason="إبداع">💡 إبداع</button>
+                    </div>
+                    <input type="text" class="input-field" id="rewardReason" placeholder="أو اكتب سبباً آخر...">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>🎁</span>
+                    <span data-i18n="confirmReward">تأكيد المكافأة</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/educator.js"></script>
+</body>
+
+</html>

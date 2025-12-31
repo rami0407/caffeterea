@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="المحفظة - بذور المعرفة">
+    <title>المحفظة | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/wallet.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-right">
+            <a href="../index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title" data-i18n="wallet">المحفظة</h1>
+        </div>
+        <div class="header-left">
+            <div class="lang-mini">
+                <button class="lang-mini-btn active" data-lang="ar">ع</button>
+                <button class="lang-mini-btn" data-lang="he">ע</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content wallet-content">
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-bg"></div>
+            <div class="balance-content">
+                <span class="balance-label" data-i18n="balance">رصيدك الحالي</span>
+                <div class="balance-amount">
+                    <span class="balance-value" id="balanceValue">0</span>
+                    <span class="balance-unit" data-i18n="coins">نقطة</span>
+                </div>
+                <div class="balance-icon">💰</div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🎁</span>
+                <span class="stat-value" id="totalRewards">0</span>
+                <span class="stat-label">مكافآت مستلمة</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🛒</span>
+                <span class="stat-value" id="totalSpent">0</span>
+                <span class="stat-label">مشتريات</span>
+            </div>
+        </div>
+
+        <!-- Transactions List -->
+        <section class="transactions-section">
+            <h2 class="section-title" data-i18n="recentTransactions">آخر المعاملات</h2>
+
+            <div class="transactions-list" id="transactionsList">
+                <!-- Transactions will be loaded here -->
+            </div>
+
+            <div class="empty-state hidden" id="emptyState">
+                <span class="empty-icon">📋</span>
+                <p>لا توجد معاملات بعد</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="menu.html" class="nav-item">
+            <span class="nav-icon">🍽️</span>
+            <span data-i18n="menu">القائمة</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span data-i18n="orders">طلباتي</span>
+        </a>
+        <a href="wallet.html" class="nav-item active">
+            <span class="nav-icon">💰</span>
+            <span data-i18n="wallet">المحفظة</span>
+        </a>
+        <a href="../index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span data-i18n="home">الرئيسية</span>
+        </a>
+    </nav>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script>
+        // Sample transactions for demo
+        const sampleTransactions = [
+            { type: 'reward', amount: 10, reason: 'مساعدة في الصف', createdAt: new Date() },
+            { type: 'purchase', amount: -5, reason: 'سندويش جبنة', createdAt: new Date(Date.now() - 3600000) },
+            { type: 'reward', amount: 15, reason: 'فوز بمسابقة رياضيات', createdAt: new Date(Date.now() - 86400000) },
+            { type: 'purchase', amount: -6, reason: 'عصير برتقال', createdAt: new Date(Date.now() - 90000000) },
+            { type: 'reward', amount: 20, reason: 'سلوك ممتاز', createdAt: new Date(Date.now() - 172800000) }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            initI18n();
+
+            // Language switcher
+            document.querySelectorAll('.lang-mini-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lang-mini-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+
+            // Load data
+            loadWalletData();
+        });
+
+        async function loadWalletData() {
+            onAuthStateChange(async ({ user, userData }) => {
+                if (user && userData) {
+                    document.getElementById('balanceValue').textContent = userData.balance || 0;
+                    const transactions = await getStudentTransactions(user.uid);
+                    renderTransactions(transactions.length > 0 ? transactions : sampleTransactions);
+                } else {
+                    // Demo mode
+                    document.getElementById('balanceValue').textContent = 50;
+                    renderTransactions(sampleTransactions);
+                }
+            });
+        }
+
+        function renderTransactions(transactions) {
+            const container = document.getElementById('transactionsList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (transactions.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            let totalRewards = 0;
+            let totalSpent = 0;
+
+            container.innerHTML = transactions.map(tx => {
+                const isReward = tx.type === 'reward';
+                const amount = Math.abs(tx.amount);
+
+                if (isReward) totalRewards += amount;
+                else totalSpent += amount;
+
+                const date = tx.createdAt.toDate ? tx.createdAt.toDate() : new Date(tx.createdAt);
+                const timeStr = formatDate(tx.createdAt);
+
+                return `
+                    <div class="transaction-item ${isReward ? 'reward' : 'purchase'}">
+                        <div class="tx-icon">${isReward ? '🎁' : '🛒'}</div>
+                        <div class="tx-details">
+                            <span class="tx-reason">${tx.reason}</span>
+                            <span class="tx-time">${timeStr}</span>
+                        </div>
+                        <div class="tx-amount ${isReward ? 'positive' : 'negative'}">
+                            ${isReward ? '+' : '-'}${amount}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('totalRewards').textContent = totalRewards;
+            document.getElementById('totalSpent').textContent = totalSpent;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="طلباتي - بذور المعرفة">
+    <title>طلباتي | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/orders.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-right">
+            <a href="../index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title" data-i18n="orders">طلباتي</h1>
+        </div>
+        <div class="header-left">
+            <div class="lang-mini">
+                <button class="lang-mini-btn active" data-lang="ar">ع</button>
+                <button class="lang-mini-btn" data-lang="he">ע</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content orders-content">
+        <!-- Active Orders -->
+        <section class="orders-section">
+            <h2 class="section-title">🔴 طلبات نشطة</h2>
+            <div class="orders-list" id="activeOrders">
+                <!-- Active orders will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Order History -->
+        <section class="orders-section">
+            <h2 class="section-title" data-i18n="orderHistory">📋 سجل الطلبات</h2>
+            <div class="orders-list" id="orderHistory">
+                <!-- Order history will be loaded here -->
+            </div>
+
+            <div class="empty-state hidden" id="emptyState">
+                <span class="empty-icon">📋</span>
+                <p data-i18n="noOrders">لا توجد طلبات بعد</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="menu.html" class="nav-item">
+            <span class="nav-icon">🍽️</span>
+            <span data-i18n="menu">القائمة</span>
+        </a>
+        <a href="orders.html" class="nav-item active">
+            <span class="nav-icon">📋</span>
+            <span data-i18n="orders">طلباتي</span>
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <span class="nav-icon">💰</span>
+            <span data-i18n="wallet">المحفظة</span>
+        </a>
+        <a href="../index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span data-i18n="home">الرئيسية</span>
+        </a>
+    </nav>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script>
+        // Sample orders for demo
+        const sampleOrders = [
+            {
+                orderNumber: 15,
+                items: [
+                    { name: 'سندويش جبنة', quantity: 1, price: 5 },
+                    { name: 'عصير برتقال', quantity: 1, price: 6 }
+                ],
+                total: 11,
+                status: 'preparing',
+                createdAt: new Date()
+            },
+            {
+                orderNumber: 12,
+                items: [
+                    { name: 'سلطة خضار', quantity: 1, price: 6 }
+                ],
+                total: 6,
+                status: 'completed',
+                createdAt: new Date(Date.now() - 86400000)
+            },
+            {
+                orderNumber: 8,
+                items: [
+                    { name: 'بسكويت شوفان', quantity: 2, price: 3 },
+                    { name: 'ماء معدني', quantity: 1, price: 2 }
+                ],
+                total: 8,
+                status: 'completed',
+                createdAt: new Date(Date.now() - 172800000)
+            }
+        ];
+
+        const statusConfig = {
+            pending: { icon: '⏳', label: 'قيد الانتظار', class: 'pending' },
+            preparing: { icon: '👨‍🍳', label: 'قيد التحضير', class: 'preparing' },
+            ready: { icon: '✅', label: 'جاهز للاستلام', class: 'ready' },
+            completed: { icon: '✓', label: 'تم التسليم', class: 'completed' }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            initI18n();
+
+            // Language switcher
+            document.querySelectorAll('.lang-mini-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lang-mini-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+
+            // Load orders
+            loadOrders();
+        });
+
+        async function loadOrders() {
+            onAuthStateChange(async ({ user, userData }) => {
+                let orders;
+                if (user) {
+                    orders = await getStudentOrders(user.uid);
+                    if (orders.length === 0) orders = sampleOrders;
+                } else {
+                    orders = sampleOrders;
+                }
+
+                renderOrders(orders);
+            });
+        }
+
+        function renderOrders(orders) {
+            const activeContainer = document.getElementById('activeOrders');
+            const historyContainer = document.getElementById('orderHistory');
+            const emptyState = document.getElementById('emptyState');
+
+            const activeOrders = orders.filter(o => ['pending', 'preparing', 'ready'].includes(o.status));
+            const completedOrders = orders.filter(o => o.status === 'completed');
+
+            // Render active orders
+            if (activeOrders.length > 0) {
+                activeContainer.innerHTML = activeOrders.map(order => renderOrderCard(order, true)).join('');
+            } else {
+                activeContainer.innerHTML = '<p class="no-active">لا توجد طلبات نشطة حالياً</p>';
+            }
+
+            // Render history
+            if (completedOrders.length > 0) {
+                historyContainer.innerHTML = completedOrders.map(order => renderOrderCard(order, false)).join('');
+                emptyState.classList.add('hidden');
+            } else if (activeOrders.length === 0) {
+                historyContainer.innerHTML = '';
+                emptyState.classList.remove('hidden');
+            }
+        }
+
+        function renderOrderCard(order, isActive) {
+            const config = statusConfig[order.status];
+            const date = order.createdAt.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+
+            return `
+                <div class="order-card ${isActive ? 'active' : ''} ${config.class}">
+                    <div class="order-header">
+                        <div class="order-number">
+                            <span class="order-label">طلب #</span>
+                            <span class="order-num">${order.orderNumber}</span>
+                        </div>
+                        <div class="order-status ${config.class}">
+                            <span>${config.icon}</span>
+                            <span>${config.label}</span>
+                        </div>
+                    </div>
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.quantity}x ${item.name}</span>
+                                <span>${item.price * item.quantity} نقطة</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="order-footer">
+                        <span class="order-time">${formatDate(order.createdAt)}</span>
+                        <span class="order-total">المجموع: ${order.total} نقطة</span>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

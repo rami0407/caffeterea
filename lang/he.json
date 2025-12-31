@@ -1,0 +1,16 @@
+{
+    "appName": "זרעי הידע",
+    "tagline": "מערכת הקפיטריה החכמה והירוקה",
+    "footer": "🌍 מקוד לירוק | Smart Eco-Market",
+    "selectRole": "בחר סוג משתמש",
+    "student": "תלמיד",
+    "studentDesc": "הזמן את הארוחה שלך!",
+    "educator": "מחנך",
+    "educatorDesc": "נהל את התגמולים לתלמידים",
+    "cafeteria": "קפיטריה",
+    "cafeteriaDesc": "ניהול הזמנות",
+    "admin": "ניהול",
+    "adminDesc": "לוח בקרה מלא",
+    "guest": "אורח",
+    "guestDesc": "צפה בתפריט"
+}
