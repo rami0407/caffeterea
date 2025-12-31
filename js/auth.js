@@ -40,10 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         roleIcon.textContent = roleIcons[role] || '👨‍🎓';
     }
 
-    // Show student-only fields if student
-    if (role === 'student') {
-        document.body.classList.add('show-student-fields');
-    }
+    // Configure UI based on role
+    configureRoleUI(role);
 
     // Language switcher
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -73,10 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Login form
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('loginForm').addEventListener('submit', (e) => handleLogin(e, role));
 
     // Register form
-    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    document.getElementById('registerForm').addEventListener('submit', (e) => handleRegister(e, role));
 
     // Check if already logged in
     onAuthStateChange(({ user, userData }) => {
@@ -87,18 +85,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Configure UI for specific role
+function configureRoleUI(role) {
+    // Show student-only fields if student
+    if (role === 'student') {
+        document.body.classList.add('show-student-fields');
+
+        // Update labels to "Phone Number" instead of "Email"
+        updateInputType('loginEmail', 'lblLoginEmail', 'phone');
+        updateInputType('regEmail', 'lblRegEmail', 'phone');
+    }
+}
+
+// Update input type and label
+function updateInputType(inputId, labelId, type) {
+    const input = document.getElementById(inputId);
+    const label = document.getElementById(labelId);
+
+    if (type === 'phone') {
+        input.type = 'tel';
+        input.pattern = '[0-9]{10}';
+        input.inputMode = 'numeric';
+        input.setAttribute('data-i18n-placeholder', 'phone');
+        label.setAttribute('data-i18n', 'phone');
+
+        // Trigger translation update if i18n is ready
+        if (typeof updateContent === 'function') updateContent();
+    }
+}
+
 // Handle login
-async function handleLogin(e) {
+async function handleLogin(e, role) {
     e.preventDefault();
 
-    const email = document.getElementById('loginEmail').value.trim();
+    let identifier = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
-    // Validate
-    if (!email) {
-        showError(t('emailRequired'));
+    // Validation
+    if (!identifier) {
+        showError(role === 'student' ? t('phoneRequired') : t('emailRequired'));
         return;
     }
+
+    // Process identifier based on role
+    if (role === 'student') {
+        if (!isValidPhone(identifier)) {
+            showError(t('invalidPhone'));
+            return;
+        }
+        // Convert phone to email logic
+        identifier = `${identifier}@student.smart-eco.market`;
+    }
+
     if (!password) {
         showError(t('passwordRequired'));
         return;
@@ -111,7 +149,7 @@ async function handleLogin(e) {
     submitBtn.disabled = true;
 
     try {
-        const result = await signIn(email, password);
+        const result = await signIn(identifier, password);
 
         if (result.success) {
             showToast(t('success'), 'success');
@@ -128,7 +166,7 @@ async function handleLogin(e) {
             } else if (result.error.includes('wrong-password')) {
                 errorMsg = t('wrongPassword');
             } else if (result.error.includes('invalid-email')) {
-                errorMsg = t('invalidEmail');
+                errorMsg = role === 'student' ? t('invalidPhone') : t('invalidEmail');
             }
             showError(errorMsg);
         }
@@ -141,25 +179,36 @@ async function handleLogin(e) {
 }
 
 // Handle register
-async function handleRegister(e) {
+async function handleRegister(e, role) {
     e.preventDefault();
 
     const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
+    let identifier = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
     const className = document.getElementById('regClass')?.value.trim() || '';
-    const role = getRoleFromURL();
 
     // Validate
     if (!name) {
         showError('الاسم مطلوب');
         return;
     }
-    if (!email) {
-        showError(t('emailRequired'));
+
+    // Identifier Validation
+    if (!identifier) {
+        showError(role === 'student' ? t('phoneRequired') : t('emailRequired'));
         return;
     }
+
+    if (role === 'student') {
+        if (!isValidPhone(identifier)) {
+            showError(t('invalidPhone'));
+            return;
+        }
+        // Convert phone to email logic
+        identifier = `${identifier}@student.smart-eco.market`;
+    }
+
     if (!password) {
         showError(t('passwordRequired'));
         return;
@@ -180,10 +229,12 @@ async function handleRegister(e) {
     submitBtn.disabled = true;
 
     try {
-        const result = await signUp(email, password, {
+        const result = await signUp(identifier, password, {
             name,
             role,
-            class: className
+            class: className,
+            // Store original phone if needed
+            phone: role === 'student' ? identifier.split('@')[0] : null
         });
 
         if (result.success) {
@@ -197,11 +248,11 @@ async function handleRegister(e) {
             // Handle specific errors
             let errorMsg = t('error');
             if (result.error.includes('email-already-in-use')) {
-                errorMsg = t('emailInUse');
+                errorMsg = role === 'student' ? t('phoneInUse') : t('emailInUse');
             } else if (result.error.includes('weak-password')) {
                 errorMsg = t('weakPassword');
             } else if (result.error.includes('invalid-email')) {
-                errorMsg = t('invalidEmail');
+                errorMsg = role === 'student' ? t('invalidPhone') : t('invalidEmail');
             }
             showError(errorMsg);
         }
@@ -211,6 +262,12 @@ async function handleRegister(e) {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     }
+}
+
+// Validate Phone Number (10 digits)
+function isValidPhone(phone) {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
 }
 
 // Show error message
