@@ -211,7 +211,11 @@ async function handleRegister(e, role) {
     let identifier = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
-    const className = document.getElementById('regClass')?.value.trim() || '';
+
+    // Get Class & Section
+    const grade = document.getElementById('regGrade')?.value || '';
+    const section = document.getElementById('regSection')?.value || '';
+    const className = role === 'student' ? `${grade} - شعبة ${section}` : '';
 
     // Validate
     if (!name) {

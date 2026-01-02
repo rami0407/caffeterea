@@ -88,10 +88,24 @@
                     <input type="password" class="input-field" id="regConfirmPassword" required>
                 </div>
 
-                <!-- Class field (for students) -->
+                <!-- Class & Section (for students) -->
                 <div class="input-group student-only">
-                    <label class="input-label" data-i18n="className">الصف</label>
-                    <input type="text" class="input-field" id="regClass">
+                    <label class="input-label" data-i18n="className">الصف والشعبة</label>
+                    <div style="display:flex; gap:10px;">
+                        <select class="input-field" id="regGrade" style="flex:1;">
+                            <option value="الأول">الصف الأول</option>
+                            <option value="الثاني">الصف الثاني</option>
+                            <option value="الثالث">الصف الثالث</option>
+                            <option value="الرابع">الصف الرابع</option>
+                            <option value="الخامس">الصف الخامس</option>
+                            <option value="السادس">الصف السادس</option>
+                        </select>
+                        <select class="input-field" id="regSection" style="flex:1;">
+                            <option value="1">شعبة 1</option>
+                            <option value="2">شعبة 2</option>
+                            <option value="3">شعبة 3</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-full">
