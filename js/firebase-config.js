@@ -115,6 +115,17 @@ async function signIn(email, password) {
     }
 }
 
+// Reset Password
+async function resetPassword(email) {
+    try {
+        await auth.sendPasswordResetEmail(email);
+        return { success: true };
+    } catch (error) {
+        console.error('Error sending reset email:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 // Sign out
 async function signOut() {
     try {

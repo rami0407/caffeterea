@@ -251,8 +251,9 @@
     <script src="../js/firebase-config.js?v=2"></script>
 
     <script>
-        // Use a safer initialization approach
         let db;
+        let currentUser;
+        let userData;
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -260,10 +261,26 @@
                 if (!firebaseData) {
                     throw new Error('فشل في تهيئة النظام (Firebase)');
                 }
-                db = firebaseData.db; // Update local reference if needed
+                db = firebaseData.db; 
 
-                // Load products
-                await loadProducts();
+                // Wait for Auth State
+                onAuthStateChange(async (authData) => {
+                    currentUser = authData.user;
+                    userData = authData.userData;
+
+                    if (!currentUser) {
+                        window.location.href = '../login.html'; // Redirect if not logged in
+                        return;
+                    }
+
+                    if (!userData || (userData.role !== 'admin' && userData.role !== 'cafeteria')) {
+                        document.body.innerHTML = '<h1 style="text-align:center; margin-top:50px;">⛔ غير مصرح لك بالوصول لهذه الصفحة</h1>';
+                        return;
+                    }
+
+                    // Logged in and authorized, load products
+                    await loadProducts();
+                });
 
             } catch (error) {
                 console.error("Critical Error:", error);
@@ -293,6 +310,10 @@
                         trafficLight: document.getElementById('prodTraffic').value,
                         available: true
                     };
+                    
+                    if (isNaN(productData.price)) {
+                        throw new Error('السعر يجب أن يكون رقماً صحيحاً');
+                    }
 
                     const result = await addProduct(productData);
                     if (result && result.success) {
@@ -300,11 +321,11 @@
                         e.target.reset();
                         await loadProducts();
                     } else {
-                        throw new Error(result.error || 'فشل في الإضافة');
+                        throw new Error(result.error || 'فشل في الإضافة لسبب غير معروف');
                     }
                 } catch (error) {
-                    console.error(error);
-                    showToast('حدث خطأ: ' + error.message, 'error');
+                    console.error("Add Product Error:", error);
+                    showToast('خطأ: ' + error.message, 'error');
                 } finally {
                     btn.textContent = originalText;
                     btn.disabled = false;
@@ -325,12 +346,12 @@
 
                 grid.innerHTML = products.map(p => `
                     <div class="product-card">
-                        <div class="product-icon">${p.icon}</div>
+                        <div class="product-icon">${p.icon || '📦'}</div>
                         <div class="product-info">
                             <span class="product-name">${p.nameAr}</span>
                             <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
                                 <span>${p.price} نقاط</span>
-                                <span>${p.nameHe}</span>
+                                <span>${p.nameHe || ''}</span>
                             </div>
                         </div>
                         <div class="product-actions">
@@ -364,7 +385,6 @@
             t.className = `toast show ${type === 'error' ? 'error' : ''}`;
             setTimeout(() => t.className = 'toast', 3000);
         }
-    </script>
-</body>
+    </script></body>
 
 </html>

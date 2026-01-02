@@ -63,7 +63,7 @@
                     <span class="btn-icon">←</span>
                 </button>
 
-                <a href="#" class="forgot-link" data-i18n="forgotPassword">نسيت كلمة المرور؟</a>
+                <a href="#" class="forgot-link" id="forgotPasswordLink" data-i18n="forgotPassword">نسيت كلمة المرور؟</a>
             </form>
 
             <!-- Register Form -->
@@ -125,6 +125,25 @@
 
             <!-- Error Message -->
             <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="resetPasswordModal" class="modal-overlay hidden"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; justify-content:center; align-items:center;">
+        <div class="modal-content"
+            style="background:white; padding:2rem; border-radius:15px; width:90%; max-width:400px; text-align:center;">
+            <h3 data-i18n="resetPasswordTitle">استعادة كلمة المرور</h3>
+            <p data-i18n="resetPasswordDesc" style="margin:10px 0; color:#666;">أدخل بريدك الإلكتروني لاستلام رابط إعادة
+                التعيين</p>
+
+            <input type="email" id="resetEmailInput" class="input-field" placeholder="example@email.com"
+                style="margin:15px 0;">
+
+            <div style="display:flex; gap:10px;">
+                <button onclick="handleResetSubmit()" class="btn btn-primary" style="flex:1;">إرسال</button>
+                <button onclick="closeResetModal()" class="btn" style="flex:1; background:#f3f4f6;">إلغاء</button>
+            </div>
         </div>
     </div>
 

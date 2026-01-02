@@ -231,33 +231,82 @@
     <script src="../js/firebase-config.js"></script>
 
     <script>
-        const { app, auth, db } = initializeFirebase();
+        let db;
+        let currentUser;
+        let userData;
         let allUsers = [];
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadUsers();
+            try {
+                const firebaseData = initializeFirebase();
+                if (!firebaseData) {
+                    throw new Error('فشل في تهيئة النظام (Firebase)');
+                }
+                db = firebaseData.db;
 
-            // Search Filter
-            document.getElementById('userSearch').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                const filtered = allUsers.filter(u =>
-                    (u.name && u.name.toLowerCase().includes(term)) ||
-                    (u.email && u.email.toLowerCase().includes(term)) ||
-                    (u.phone && u.phone.includes(term))
-                );
-                renderUsers(filtered);
-            });
+                // Wait for Auth
+                onAuthStateChange(async (authData) => {
+                    currentUser = authData.user;
+                    userData = authData.userData;
+
+                    if (!currentUser) {
+                        window.location.href = '../login.html';
+                        return;
+                    }
+
+                    if (!userData || userData.role !== 'admin') {
+                        document.body.innerHTML = '<h1 style="text-align:center; margin-top:50px;">⛔ غير مصرح لك بالوصول لهذه الصفحة</h1>';
+                        return;
+                    }
+
+                    // Logged in as admin, load users
+                    await loadUsers();
+                });
+
+                // Search Filter
+                document.getElementById('userSearch').addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const filtered = allUsers.filter(u =>
+                        (u.name && u.name.toLowerCase().includes(term)) ||
+                        (u.email && u.email.toLowerCase().includes(term)) ||
+                        (u.phone && u.phone.includes(term))
+                    );
+                    renderUsers(filtered);
+                });
+
+            } catch (error) {
+                console.error("Critical Error:", error);
+                document.getElementById('usersList').innerHTML = `
+                    <tr><td colspan="6" style="text-align:center; color:red;">
+                        ⚠️ حدث خطأ أثناء التحميل: ${error.message}
+                    </td></tr>
+                `;
+            }
         });
 
         async function loadUsers() {
-            allUsers = await getAllUsers();
-            renderUsers(allUsers);
+            try {
+                document.getElementById('usersList').innerHTML = '<tr><td colspan="6" style="text-align:center;">جاري تحميل البيانات... ⏳</td></tr>';
+                allUsers = await getAllUsers();
+
+                // Debug log
+                console.log('Users loaded:', allUsers.length);
+
+                renderUsers(allUsers);
+            } catch (error) {
+                console.error("Load Users Error:", error);
+                document.getElementById('usersList').innerHTML = `
+                    <tr><td colspan="6" style="text-align:center; color:red;">
+                        فشل تحميل المستخدمين: ${error.message}
+                    </td></tr>
+                `;
+            }
         }
 
         function renderUsers(users) {
             const tbody = document.getElementById('usersList');
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا يوجد مستخدمين</td></tr>';
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا يوجد مستخدمين مسجلين 📭</td></tr>';
                 return;
             }
 
@@ -269,13 +318,12 @@
                     <td><span class="balance-badge">${u.balance || 0} 💎</span></td>
                     <td>${u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString('ar-EG') : '-'}</td>
                     <td>
-                ${u.role === 'student' ?
-                    `<button class="btn-action btn-reward" onclick="openReward('${u.id}', '${u.name}')">➕ إضافة رصيد</button>
-                 <button class="btn-action btn-delete" onclick="deleteUser('${u.id}', '${u.name}')" style="background:#fee2e2; color:#b91c1c; margin-right:5px;">🗑️ حذف</button>` :
+                        ${u.role === 'student' ?
+                    `<button class="btn-action btn-reward" onclick="openReward('${u.id}', '${u.name}')">➕ إضافة رصيد</button>` :
                     '-'}
-                </td>
-            </tr>
-        `).join('');
+                    </td>
+                </tr>
+            `).join('');
         }
 
         function getRoleName(role) {
@@ -326,7 +374,7 @@
             try {
                 // Using addReward from firebase-config.js
                 // Assuming admin uses their own ID as educatorId for this record
-                const adminId = auth.currentUser.uid;
+                const adminId = currentUser.uid;
                 await addReward(adminId, id, amount, 'Admin Added Reward');
 
                 showToast('تم إضافة الرصيد بنجاح! 🎉', 'success');
@@ -334,7 +382,7 @@
                 loadUsers(); // Refresh list to show new balance
             } catch (error) {
                 console.error(error);
-                showToast('حدث خطأ', 'error');
+                showToast('حدث خطأ: ' + error.message, 'error');
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'تأكيد ✅';

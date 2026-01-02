@@ -83,10 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // If mismatch (e.g. Admin on Student login), sign out to allow switching
             if (userData.role !== role) {
                 console.log(`Role mismatch: ${userData.role} vs ${role}. Signing out...`);
-                signOut().then(() => {
-                    // Refresh to clear state
-                    window.location.reload();
-                });
+                await signOut();
+                window.location.reload();
                 return;
             }
 
@@ -102,7 +100,62 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = roleRedirects[userData.role] || 'index.html';
         }
     });
+
+    // Forgot Password Handler
+    const forgotLink = document.getElementById('forgotPasswordLink');
+    if (forgotLink) {
+        forgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (role === 'student') {
+                showError(t('accountPending') || 'يرجى مراجعة مربي الصف لاستعادة كلمة المرور', true);
+            } else {
+                openResetModal();
+            }
+        });
+    }
 });
+
+// Reset Modal Functions
+function openResetModal() {
+    const modal = document.getElementById('resetPasswordModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeResetModal() {
+    const modal = document.getElementById('resetPasswordModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+    }
+}
+
+async function handleResetSubmit() {
+    const email = document.getElementById('resetEmailInput').value.trim();
+    if (!email) {
+        alert('يرجى إدخال البريد الإلكتروني');
+        return;
+    }
+
+    const btn = document.querySelector('#resetPasswordModal button.btn-primary');
+    const originalText = btn.textContent;
+    btn.textContent = 'جاري الإرسال...';
+    btn.disabled = true;
+
+    const result = await resetPassword(email);
+
+    if (result.success) {
+        alert('تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني.');
+        closeResetModal();
+    } else {
+        alert('حدث خطأ: ' + result.error);
+    }
+
+    btn.textContent = originalText;
+    btn.disabled = false;
+}
 
 // Configure UI for specific role
 function configureRoleUI(role) {
