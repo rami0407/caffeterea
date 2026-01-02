@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير | مقصف المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>
+        .report-controls {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .date-input {
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .btn-filter {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Simple Bar Chart CSS */
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            justify-content: space-around;
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: var(--primary-color);
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+            min-height: 10px;
+            max-height: 100%;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .top-products-list {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .product-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .product-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank-badge {
+            width: 30px;
+            height: 30px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .rank-1 {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Gold-ish logic later */
+        .rank-2 {
+            background: #ffedd5;
+            color: #f97316;
+        }
+
+        .rank-3 {
+            background: #fef3c7;
+            color: #d97706;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">🌱</span>
+            <h2>مقصف المعرفة</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link">
+                <span class="nav-icon">📊</span>
+                <span>لوحة التحكم</span>
+            </a>
+            <a href="menu-manage.html" class="nav-link">
+                <span class="nav-icon">🍽️</span>
+                <span>إدارة القائمة</span>
+            </a>
+            <a href="users.html" class="nav-link">
+                <span class="nav-icon">👥</span>
+                <span>المستخدمين</span>
+            </a>
+            <a href="reports.html" class="nav-link active">
+                <span class="nav-icon">📈</span>
+                <span>التقارير</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="../index.html" class="nav-link">
+                <span class="nav-icon">🚪</span>
+                <span>خروج</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1>تقارير المبيعات</h1>
+        </header>
+
+        <section class="content-wrapper">
+
+            <!-- Filter -->
+            <div class="report-controls">
+                <span>📅 الفترة: </span>
+                <select id="periodSelect" class="date-input" onchange="updateReport()">
+                    <option value="today">اليوم</option>
+                    <option value="week" selected>آخر 7 أيام</option>
+                    <option value="month">هذا الشهر</option>
+                </select>
+                <button class="btn-filter" onclick="updateReport()">تحديث 🔄</button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-icon">📦</div>
+                    <div class="summary-value" id="totalOrders">0</div>
+                    <div class="summary-label">إجمالي الطلبات</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">💎</div>
+                    <div class="summary-value" id="totalRevenue">0</div>
+                    <div class="summary-label">إجمالي النقاط</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">📈</div>
+                    <div class="summary-value" id="avgOrder">0</div>
+                    <div class="summary-label">متوسط قيمة الطلب</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <h3>📊 المبيعات (آخر 7 أيام)</h3>
+            <div class="chart-container" id="salesChart">
+                <!-- Bars injected here -->
+                <p>جاري التحميل...</p>
+            </div>
+
+            <!-- Top Products -->
+            <h3>🏆 المنتجات الأكثر مبيعاً</h3>
+            <div class="top-products-list" id="topProducts">
+                <!-- List injected here -->
+            </div>
+
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        const { app, auth, db } = initializeFirebase();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateReport();
+        });
+
+        async function updateReport() {
+            const period = document.getElementById('periodSelect').value;
+
+            // Calculate date range
+            const end = new Date();
+            const start = new Date();
+
+            if (period === 'today') {
+                start.setHours(0, 0, 0, 0);
+            } else if (period === 'week') {
+                start.setDate(start.getDate() - 7);
+            } else if (period === 'month') {
+                start.setDate(1); // First day of current month
+            }
+
+            // Fetch data
+            const report = await getSalesReport(start, end);
+            const popular = await getPopularProducts();
+
+            // Render Summary
+            document.getElementById('totalOrders').textContent = report.totalOrders;
+            document.getElementById('totalRevenue').textContent = report.totalSales;
+            document.getElementById('avgOrder').textContent =
+                report.totalOrders > 0 ? (report.totalSales / report.totalOrders).toFixed(1) : 0;
+
+            // Render Chart (Simplified: Distribution by day)
+            // Note: Since getSalesReport returns aggregate, we'll manually group orders for charts if needed
+            // For MVP, simply displaying total bars per day would require grouping logic.
+            // Here visualizing just the totals.
+            renderChart(report.orders, period);
+
+            // Render Top Products
+            const topList = document.getElementById('topProducts');
+            if (popular.length === 0) {
+                topList.innerHTML = '<p>لا توجد بيانات كافية</p>';
+            } else {
+                topList.innerHTML = popular.map((p, index) => `
+                    <div class="product-row">
+                        <span class="rank-badge rank-${index + 1}">${index + 1}</span>
+                        <div style="flex:1; margin-right:15px;">
+                            <strong>${p[0]}</strong>
+                        </div>
+                        <span style="font-weight:bold">${p[1]} طلب</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderChart(orders, period) {
+            const container = document.getElementById('salesChart');
+            container.innerHTML = '';
+
+            if (orders.length === 0) {
+                container.innerHTML = '<p>لا توجد بيانات لعرض الرسم البياني</p>';
+                container.style.alignItems = 'center';
+                return;
+            }
+
+            // Group chart metrics differently based on period could vary
+            // Here: simplified random visualization or manual GroupBy implementation
+            // Implementing Group By Date:
+            const grouped = {};
+            orders.forEach(o => {
+                const date = new Date(o.createdAt.seconds * 1000).toLocaleDateString('en-CA'); // YYYY-MM-DD
+                grouped[date] = (grouped[date] || 0) + o.total;
+            });
+
+            // Get last 7 days keys if 'week' or just render available days
+            const labels = Object.keys(grouped).sort();
+            const maxVal = Math.max(...Object.values(grouped), 10); // avoid div by zero
+
+            labels.forEach(date => {
+                const val = grouped[date];
+                const heightPct = (val / maxVal) * 100;
+                const displayDate = new Date(date).toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric' });
+
+                container.innerHTML += `
+                    <div class="chart-bar" style="height: ${heightPct}%;">
+                        <span class="bar-value">${val}</span>
+                        <span class="bar-label">${displayDate}</span>
+                    </div>
+                `;
+            });
+            container.style.alignItems = 'flex-end';
+        }
+    </script>
+</body>
+
+</html>
