@@ -234,3 +234,92 @@ window.addEventListener('beforeunload', () => {
         unsubscribe();
     }
 });
+
+// ==========================================
+// NEW: Security & Product Management Logic
+// ==========================================
+
+// Check passcode
+function checkCafePasscode() {
+    const input = document.getElementById('cafePasscode');
+    const error = document.getElementById('passError');
+    const modal = document.getElementById('securityModal');
+
+    if (input.value === 'cafe123') {
+        // Success
+        modal.style.display = 'none';
+        sessionStorage.setItem('cafeteria_unlocked', 'true');
+        playNotificationSound(); // Tiny feedback
+
+        // Refresh orders 
+        loadOrders();
+    } else {
+        // Fail
+        error.style.display = 'block';
+        input.value = '';
+        input.focus();
+    }
+}
+
+// Check if already unlocked (on load)
+function checkAlreadyUnlocked() {
+    if (sessionStorage.getItem('cafeteria_unlocked') === 'true') {
+        document.getElementById('securityModal').style.display = 'none';
+    }
+}
+
+// Switch between Orders & Products View
+function switchMode(mode) {
+    // Update buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active'); // Assumes triggered by click event
+
+    // Show sections
+    if (mode === 'orders') {
+        document.getElementById('ordersView').style.display = 'block';
+        document.getElementById('productsView').style.display = 'none';
+    } else {
+        document.getElementById('ordersView').style.display = 'none';
+        document.getElementById('productsView').style.display = 'block';
+    }
+}
+
+// Handle Add Product Form
+async function handleAddProduct(e) {
+    e.preventDefault();
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري الإضافة...';
+
+    const productData = {
+        name_ar: document.getElementById('prodNameAr').value.trim(),
+        name_he: document.getElementById('prodNameHe').value.trim(),
+        price: parseInt(document.getElementById('prodPrice').value),
+        category: document.getElementById('prodCategory').value,
+        icon: document.getElementById('prodIcon').value.trim() || '📦',
+        trafficLight: document.getElementById('prodTraffic').value,
+        available: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection('products').add(productData);
+
+        showToast('تم إضافة المنتج الجديد بنجاح! 🎉', 'success');
+        e.target.reset(); // Clear form
+
+        // Switch back to orders view or stay? Let's stay to add more.
+    } catch (error) {
+        console.error('Error adding product:', error);
+        showToast('حدث خطأ أثناء الإضافة', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '✨ إضافة للمائمة';
+    }
+}
+
+// Call check on load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAlreadyUnlocked();
+});

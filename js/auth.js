@@ -95,6 +95,17 @@ function configureRoleUI(role) {
         updateInputType('loginEmail', 'lblLoginEmail', 'phone');
         updateInputType('regEmail', 'lblRegEmail', 'phone');
     }
+
+    // ADMIN UI: Hide registration tab
+    if (role === 'admin') {
+        // Hide the tabs container or just the register tab
+        const tabs = document.querySelector('.auth-tabs');
+        if (tabs) tabs.style.display = 'none'; // Lock to "Login" only
+
+        // Ensure title reflects role
+        const title = document.querySelector('.auth-tab[data-tab="login"]');
+        if (title) title.textContent = 'دخول الإدارة';
+    }
 }
 
 // Update input type and label
@@ -137,10 +148,18 @@ async function handleLogin(e, role) {
         identifier = `${identifier}@student.smart-eco.market`;
     }
 
-    // ADMIN SECURITY: Restrict admin login to specific email
-    if (role === 'admin' && identifier !== 'admin@school.com') {
-        showError('عذراً، هذا البريد غير مصرح له بالدخول كمسؤول.');
-        return;
+    // ADMIN SECURITY: Enforce specific credentials
+    if (role === 'admin') {
+        if (identifier !== 'rami_admin@knowledge-canteen.com') {
+            showError('عذراً، هذا البريد غير مصرح له بالدخول كمسؤول.');
+            return;
+        }
+
+        // Enforce specific password check on frontend (as requested)
+        if (password !== 'rami2244') {
+            showError('كلمة المرور غير صحيحة للإدارة.'); // Custom error before even trying Firebase
+            return;
+        }
     }
 
     if (!password) {

@@ -13,25 +13,34 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <style>
-        .admin-links {
+        .top-nav {
             position: absolute;
             top: 20px;
-            left: 20px;
+            right: 20px;
+            /* Moved to Right */
+            left: auto;
             display: flex;
             gap: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
         }
 
-        .admin-link {
-            font-size: 0.9rem;
-            color: var(--text-light);
+        .nav-link {
+            font-size: 0.85rem;
+            color: var(--text-color);
             text-decoration: none;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.3s;
         }
 
-        .admin-link:hover {
-            opacity: 1;
-            text-decoration: underline;
+        .nav-link:hover {
+            background: var(--primary-color);
+            color: white;
         }
     </style>
 </head>
@@ -43,12 +52,12 @@
         <button class="lang-btn" data-lang="he">עברית</button>
     </div>
 
-    <!-- Admin Links (Top Left) -->
-    <div class="admin-links">
-        <a href="login.html?role=admin" class="admin-link" data-i18n="admin">الإدارة</a>
-        <!-- Cafeteria link - distinct from admin if needed, but usually admin covers similar access. Keeping accessible just in case -->
-        <!-- <a href="login.html?role=cafeteria" class="admin-link" data-i18n="cafeteria">المقصف</a> -->
-    </div>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="login.html?role=admin" class="nav-link">🔒 الإدارة</a>
+        <a href="cafeteria/orders.html" class="nav-link">👨‍🍳 المقصف</a>
+        <a href="guest.html" class="nav-link">🍽️ القائمة</a>
+    </nav>
 
     <!-- Main Container -->
     <div class="landing-container">
