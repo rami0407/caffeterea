@@ -245,17 +245,36 @@
     <script src="../js/firebase-config.js"></script>
 
     <script>
-        // Initialize
-        const { app, auth, db } = initializeFirebase();
+        // Use a safer initialization approach
+        let db;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            loadProducts();
+            try {
+                const firebaseData = initializeFirebase();
+                if (!firebaseData) {
+                    throw new Error('فشل في تهيئة النظام (Firebase)');
+                }
+                db = firebaseData.db; // Update local reference if needed
 
-            // Handle Add
+                // Load products
+                await loadProducts();
+
+            } catch (error) {
+                console.error("Critical Error:", error);
+                document.getElementById('productsGrid').innerHTML = `
+                    <div style="text-align:center; color:red; padding:20px;">
+                        <p>⚠️ حدث خطأ أثناء التحميل</p>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+            }
+
+            // Handle Add Product
             document.getElementById('addProductForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = e.target.querySelector('button');
-                btn.textContent = 'جاري الحفظ...';
+                const originalText = btn.textContent;
+                btn.textContent = 'جاري الحفظ... ⏳';
                 btn.disabled = true;
 
                 try {
@@ -269,15 +288,19 @@
                         available: true
                     };
 
-                    await addProduct(productData);
-                    showToast('تمت إضافة المنتج بنجاح!', 'success');
-                    e.target.reset();
-                    loadProducts();
+                    const result = await addProduct(productData);
+                    if (result && result.success) {
+                        showToast('تمت إضافة المنتج بنجاح! 🎉', 'success');
+                        e.target.reset();
+                        await loadProducts();
+                    } else {
+                        throw new Error(result.error || 'فشل في الإضافة');
+                    }
                 } catch (error) {
-                    showToast('حدث خطأ!', 'error');
                     console.error(error);
+                    showToast('حدث خطأ: ' + error.message, 'error');
                 } finally {
-                    btn.textContent = 'حفظ المنتج';
+                    btn.textContent = originalText;
                     btn.disabled = false;
                 }
             });
@@ -285,33 +308,41 @@
 
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            const products = await getProducts(); // This gets only available=true, might need adjustment for admin
+            try {
+                grid.innerHTML = '<p>جاري تحميل المنتجات... ⏳</p>';
+                const products = await getProducts();
 
-            // For admin, we might want ALL products (including unavailable), 
-            // but strict getProducts() filters them. For MVP we use getProducts().
+                if (!products || products.length === 0) {
+                    grid.innerHTML = '<p>لا توجد منتجات حالياً 📭</p>';
+                    return;
+                }
 
-            grid.innerHTML = products.map(p => `
-                <div class="product-card">
-                    <div class="product-icon">${p.icon}</div>
-                    <div class="product-info">
-                        <span class="product-name">${p.nameAr}</span>
-                        <span class="product-price">${p.price} نقطة</span>
+                grid.innerHTML = products.map(p => `
+                    <div class="product-card">
+                        <div class="product-icon">${p.icon}</div>
+                        <div class="product-info">
+                            <span class="product-name">${p.nameAr}</span>
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
+                                <span>${p.price} نقاط</span>
+                                <span>${p.nameHe}</span>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-icon btn-delete" onclick="handleDeleteProduct('${p.id}')" title="حذف">
+                                🗑️
+                            </button>
+                        </div>
                     </div>
-                    <div class="product-actions">
-                        <button class="btn-icon btn-delete" onclick="deleteProduct('${p.id}')" title="حذف">
-                            🗑️
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (error) {
+                console.error("Load Products Error:", error);
+                grid.innerHTML = '<p style="color:red">فشل تحميل المنتجات</p>';
+            }
         }
 
-        async function deleteProduct(id) {
+        async function handleDeleteProduct(id) {
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
-                // Actually we just disable it or delete it. Since we don't have soft delete in getProducts yet,
-                // check if we should hard delete or soft delete. 
-                // Using hard delete for now as per dashboard requirements.
                 await db.collection('products').doc(id).delete();
                 showToast('تم الحذف', 'success');
                 loadProducts();
