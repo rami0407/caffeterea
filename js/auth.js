@@ -342,19 +342,29 @@ async function handleRegister(e, role) {
         const result = await signUp(identifier, password, {
             name,
             role,
+            approved: role === 'student' ? false : true, // Students pending by default
             educatorName: role === 'student' ? educatorName : '',
-            approved: role !== 'student', // Students need approval, others auto-approved
             // Store original phone if needed
             phone: role === 'student' ? identifier.split('@')[0] : null
         });
 
         if (result.success) {
-            showToast(t('success'), 'success');
-
-            // Redirect based on role
-            setTimeout(() => {
-                window.location.href = roleRedirects[role] || 'index.html';
-            }, 500);
+            // If Student, don't let them in!
+            if (role === 'student') {
+                await signOut(); // Sign out the auto-logged-in user
+                showToast('تم إنشاء الحساب بنجاح! بانتظار موافقة المربي.', 'success');
+                // clear form
+                e.target.reset();
+                // Show clear instruction
+                alert('تم إنشاء الحساب بنجاح!\n\nحسابك الآن قيد المراجعة من قبل المربي.\nلن تتمكن من الدخول حتى تتم الموافقة عليه.');
+                // Flip back to login tab
+                document.querySelector('[data-tab="login"]').click();
+            } else {
+                showToast('تم إنشاء الحساب بنجاح! جاري الدخول...', 'success');
+                setTimeout(() => {
+                    window.location.href = roleRedirects[role] || 'index.html';
+                }, 1500);
+            }
         } else {
             // Handle specific errors
             let errorMsg = t('error');
