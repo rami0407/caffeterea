@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/feedback.css">
 </head>
 
 <body>
@@ -120,6 +121,42 @@
             <p class="success-message" data-i18n="ecoTriggerMessage">سيتم تحضير طلبك فوراً. انتظر رقم طلبك على الشاشة!
             </p>
             <button class="btn btn-primary" id="closeSuccessBtn">حسناً</button>
+        </div>
+    </div>
+
+    <!-- Waiting Message Modal -->
+    <div class="modal-overlay hidden" id="waitingModal">
+        <div class="modal-content waiting-modal">
+            <div class="waiting-icon">⏳</div>
+            <h2>نحن نعمل على طلبك</h2>
+            <p class="waiting-message">تحلى بالصبر واذكر الله في وقت الانتظار 🤲</p>
+            <div class="waiting-tips">
+                <p class="tip-text">💚 شكراً لاختيارك وجبة صحية</p>
+            </div>
+            <button class="btn btn-primary" id="closeWaitingBtn">شكراً 💚</button>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal-overlay hidden" id="feedbackModal">
+        <div class="modal-content feedback-modal">
+            <button class="close-feedback-btn" id="closeFeedbackBtn">✕</button>
+            <h2>كيف كانت تجربتك؟</h2>
+            <p class="feedback-subtitle">نحن نهتم برأيك 💚</p>
+
+            <div class="emoji-rating">
+                <button class="emoji-btn" data-rating="excellent">😊</button>
+                <button class="emoji-btn" data-rating="good">🙂</button>
+                <button class="emoji-btn" data-rating="neutral">😐</button>
+                <button class="emoji-btn" data-rating="poor">😞</button>
+            </div>
+
+            <div class="feedback-input-group">
+                <textarea id="feedbackText" class="feedback-textarea" placeholder="تكلم معنا ولا تتكلم علينا 💬"
+                    rows="4"></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-full" id="submitFeedbackBtn">إرسال التقييم</button>
         </div>
     </div>
 

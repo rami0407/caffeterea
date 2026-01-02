@@ -54,5 +54,13 @@ service cloud.firestore {
     
     // Counters (Internal):
     allow read, write: if isSignedIn();
+
+    // Feedback Collection:
+    // - Anyone can submit feedback (students and guests)
+    // - Only admins can read feedback
+    match /feedback/{feedbackId} {
+      allow create: if true; // Allow anyone to submit feedback
+      allow read: if hasRole('admin');
+    }
   }
 }

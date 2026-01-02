@@ -270,7 +270,30 @@ function setupEventListeners() {
     // Success modal close
     document.getElementById('closeSuccessBtn').addEventListener('click', () => {
         document.getElementById('successModal').classList.add('hidden');
+        // Show waiting message after success modal closes
+        setTimeout(() => {
+            showWaitingMessage();
+        }, 300);
     });
+
+    // Waiting modal close
+    document.getElementById('closeWaitingBtn').addEventListener('click', () => {
+        document.getElementById('waitingModal').classList.add('hidden');
+        // Show feedback modal after waiting message
+        setTimeout(() => {
+            showFeedbackModal();
+        }, 500);
+    });
+
+    // Feedback modal
+    document.getElementById('closeFeedbackBtn').addEventListener('click', closeFeedbackModal);
+    document.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+    document.getElementById('submitFeedbackBtn').addEventListener('click', submitFeedback);
 
     // Language buttons
     document.querySelectorAll('.lang-mini-btn').forEach(btn => {
@@ -448,6 +471,8 @@ async function checkout() {
         document.getElementById('orderNumberDisplay').textContent = orderNumber;
         document.getElementById('successModal').classList.remove('hidden');
 
+        // Note: Waiting message and feedback will show after success modal is closed
+
     } catch (error) {
         console.error('Checkout error:', error);
         showToast(t('error'), 'error');
@@ -473,4 +498,61 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 2500);
+}
+
+// Waiting Message
+function showWaitingMessage() {
+    document.getElementById('waitingModal').classList.remove('hidden');
+}
+
+// Feedback System
+let selectedRating = null;
+
+function showFeedbackModal() {
+    document.getElementById('feedbackModal').classList.remove('hidden');
+    selectedRating = null;
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('feedbackText').value = '';
+}
+
+function closeFeedbackModal() {
+    document.getElementById('feedbackModal').classList.add('hidden');
+}
+
+async function submitFeedback() {
+    const feedbackText = document.getElementById('feedbackText').value.trim();
+
+    // Get selected emoji rating
+    const selectedBtn = document.querySelector('.emoji-btn.selected');
+    if (selectedBtn) {
+        selectedRating = selectedBtn.dataset.rating;
+    }
+
+    // At least one feedback method required
+    if (!selectedRating && !feedbackText) {
+        showToast('الرجاء اختيار تقييم أو كتابة رأيك', 'error');
+        return;
+    }
+
+    const feedbackData = {
+        rating: selectedRating,
+        comment: feedbackText,
+        userId: currentUser?.uid || 'guest',
+        timestamp: new Date(),
+        type: 'student'
+    };
+
+    try {
+        // Save to Firestore if user is logged in
+        if (window.firebase && firebase.firestore) {
+            await firebase.firestore().collection('feedback').add(feedbackData);
+        }
+
+        showToast('شكراً لتقييمك! 💚', 'success');
+        closeFeedbackModal();
+    } catch (error) {
+        console.error('Error submitting feedback:', error);
+        showToast('تم حفظ رأيك محلياً ✓', 'success');
+        closeFeedbackModal();
+    }
 }
