@@ -227,7 +227,13 @@
             </div>
 
             <!-- Product List -->
-            <h3>📋 المنتجات الحالية</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>📋 المنتجات الحالية</h3>
+                <button onclick="loadProducts()" class="btn-icon"
+                    style="background:#f1f5f9; width:auto; padding:0 15px;">
+                    🔄 تحديث
+                </button>
+            </div>
             <div id="productsGrid" class="menu-grid">
                 <!-- Products loaded here -->
                 <p>جاري تحميل المنتجات...</p>
