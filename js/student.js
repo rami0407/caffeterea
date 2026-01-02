@@ -18,7 +18,8 @@ const sampleProducts = [
         price: 5,
         category: 'sandwiches',
         icon: '🧀',
-        trafficLight: 'yellow',
+        calories: 250,
+        sugar: 1,
         available: true
     },
     {
@@ -28,7 +29,8 @@ const sampleProducts = [
         price: 4,
         category: 'sandwiches',
         icon: '🥙',
-        trafficLight: 'green',
+        calories: 180,
+        sugar: 1,
         available: true
     },
     {
@@ -38,7 +40,8 @@ const sampleProducts = [
         price: 4,
         category: 'sandwiches',
         icon: '🥙',
-        trafficLight: 'green',
+        calories: 220,
+        sugar: 0,
         available: true
     },
     {
@@ -48,7 +51,8 @@ const sampleProducts = [
         price: 6,
         category: 'drinks',
         icon: '🍊',
-        trafficLight: 'green',
+        calories: 120,
+        sugar: 20,
         available: true
     },
     {
@@ -58,7 +62,8 @@ const sampleProducts = [
         price: 2,
         category: 'drinks',
         icon: '💧',
-        trafficLight: 'green',
+        calories: 0,
+        sugar: 0,
         available: true
     },
     {
@@ -68,7 +73,8 @@ const sampleProducts = [
         price: 5,
         category: 'drinks',
         icon: '🍎',
-        trafficLight: 'yellow',
+        calories: 110,
+        sugar: 23,
         available: true
     },
     {
@@ -78,7 +84,8 @@ const sampleProducts = [
         price: 3,
         category: 'snacks',
         icon: '🍪',
-        trafficLight: 'yellow',
+        calories: 150,
+        sugar: 8,
         available: true
     },
     {
@@ -88,7 +95,8 @@ const sampleProducts = [
         price: 4,
         category: 'snacks',
         icon: '🧁',
-        trafficLight: 'yellow',
+        calories: 280,
+        sugar: 25,
         available: true
     },
     {
@@ -98,7 +106,8 @@ const sampleProducts = [
         price: 6,
         category: 'healthy',
         icon: '🥗',
-        trafficLight: 'green',
+        calories: 80,
+        sugar: 2,
         available: true
     },
     {
@@ -108,7 +117,8 @@ const sampleProducts = [
         price: 5,
         category: 'healthy',
         icon: '🍇',
-        trafficLight: 'green',
+        calories: 60,
+        sugar: 12,
         available: true
     },
     {
@@ -118,7 +128,8 @@ const sampleProducts = [
         price: 3,
         category: 'healthy',
         icon: '🥛',
-        trafficLight: 'green',
+        calories: 100,
+        sugar: 9,
         available: true
     },
     {
@@ -128,10 +139,18 @@ const sampleProducts = [
         price: 4,
         category: 'snacks',
         icon: '🍫',
-        trafficLight: 'red',
+        calories: 500,
+        sugar: 50,
         available: true
     }
 ];
+
+// Calculate Traffic Light Color
+function calculateTrafficLight(calories, sugar) {
+    if (sugar > 20 || calories > 400) return 'red';
+    if (sugar > 10 || calories > 200) return 'yellow';
+    return 'green';
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -172,21 +191,23 @@ async function loadProducts() {
     try {
         products = await getProducts();
         if (products.length === 0) {
-            // Use sample products if none in database
-            loadSampleProducts();
-        } else {
-            renderProducts();
+            // Seed database if empty
+            if (typeof seedProducts === 'function') {
+                await seedProducts();
+                products = await getProducts();
+            }
         }
+        renderProducts();
     } catch (error) {
         console.error('Error loading products:', error);
-        loadSampleProducts();
+        // Minimal fallback to avoid breaking UI completely if offline
+        document.getElementById('productsGrid').innerHTML = '<p class="error-text">حدث خطأ في تحميل المنتجات</p>';
     }
 }
 
-// Load sample products (for demo)
+// Load sample products (removed)
 function loadSampleProducts() {
-    products = sampleProducts;
-    renderProducts();
+    console.warn('Sample products removed. Using Firebase data only.');
 }
 
 // Render products
@@ -208,10 +229,12 @@ function renderProducts() {
         return;
     }
 
-    grid.innerHTML = filteredProducts.map(product => `
+    grid.innerHTML = filteredProducts.map(product => {
+        const trafficColor = calculateTrafficLight(product.calories || 0, product.sugar || 0);
+        return `
         <div class="product-card" data-id="${product.id}">
-            <div class="nutrition-badge ${product.trafficLight}">
-                ${product.trafficLight === 'green' ? '●' : product.trafficLight === 'yellow' ? '●' : '●'}
+            <div class="nutrition-badge ${trafficColor}">
+                ${trafficColor === 'green' ? '●' : trafficColor === 'yellow' ? '●' : '●'}
             </div>
             <div class="product-image">${product.icon || '🍽️'}</div>
             <h3 class="product-name">${lang === 'he' ? product.name_he : product.name_ar}</h3>
@@ -220,7 +243,8 @@ function renderProducts() {
                 ${t('addToCart')} +
             </button>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Setup event listeners

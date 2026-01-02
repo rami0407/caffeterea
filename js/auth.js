@@ -137,6 +137,12 @@ async function handleLogin(e, role) {
         identifier = `${identifier}@student.smart-eco.market`;
     }
 
+    // ADMIN SECURITY: Restrict admin login to specific email
+    if (role === 'admin' && identifier !== 'admin@school.com') {
+        showError('عذراً، هذا البريد غير مصرح له بالدخول كمسؤول.');
+        return;
+    }
+
     if (!password) {
         showError(t('passwordRequired'));
         return;
@@ -194,9 +200,15 @@ async function handleRegister(e, role) {
         return;
     }
 
-    // Identifier Validation
+    // Generic Identifier Validation
     if (!identifier) {
         showError(role === 'student' ? t('phoneRequired') : t('emailRequired'));
+        return;
+    }
+
+    // SECURITY: Prevent public registration for restricted roles
+    if (role === 'cafeteria' || role === 'admin') {
+        showError('عذراً، تسجيل حساب المقصف والإدارة يتم عن طريق النظام فقط.');
         return;
     }
 

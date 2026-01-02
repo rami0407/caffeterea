@@ -47,11 +47,18 @@
             </div>
         </div>
 
-        <!-- Search -->
-        <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن طالب..."
-                data-i18n-placeholder="search">
+        <!-- Search & Actions -->
+        <div class="actions-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن طالب..."
+                    data-i18n-placeholder="search">
+            </div>
+
+            <button class="btn btn-primary bulk-btn" onclick="openBulkRewardModal()">
+                <span>🎁</span>
+                <span data-i18n="distributeToAll">توزيع للجميع</span>
+            </button>
         </div>
 
         <!-- Students List -->
@@ -100,6 +107,47 @@
                 <button type="submit" class="btn btn-primary btn-full">
                     <span>🎁</span>
                     <span data-i18n="confirmReward">تأكيد المكافأة</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Reward Modal -->
+    <div class="modal-overlay hidden" id="bulkRewardModal">
+        <div class="modal-content reward-modal">
+            <button class="modal-close" onclick="closeBulkRewardModal()">✕</button>
+
+            <div class="reward-header">
+                <span class="reward-student-icon">👨‍🏫</span>
+                <h3>توزيع مكافأة جماعية</h3>
+                <p class="current-balance" id="bulkStudentCount">عدد الطلاب: 0</p>
+            </div>
+
+            <form id="bulkRewardForm">
+                <div class="input-group">
+                    <label class="input-label" data-i18n="rewardAmount">عدد النقاط لكل طالب</label>
+                    <div class="points-input">
+                        <button type="button" class="points-btn" onclick="adjustBulkPoints(-5)">-5</button>
+                        <input type="number" class="input-field points-field" id="bulkRewardAmount" value="5" min="1"
+                            max="100">
+                        <button type="button" class="points-btn" onclick="adjustBulkPoints(5)">+5</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" data-i18n="rewardReason">سبب المكافأة</label>
+                    <div class="reason-chips" id="bulkReasonChips">
+                        <button type="button" class="reason-chip" data-reason="نشاط جماعي">🤝 نشاط جماعي</button>
+                        <button type="button" class="reason-chip" data-reason="انضباط الصف">⭐ انضباط الصف</button>
+                        <button type="button" class="reason-chip" data-reason="فوز بمباراة">🏆 فوز بمباراة</button>
+                        <button type="button" class="reason-chip" data-reason="حملة نظافة">🧹 حملة نظافة</button>
+                    </div>
+                    <input type="text" class="input-field" id="bulkRewardReason" placeholder="أو اكتب سبباً آخر...">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    <span>🎁</span>
+                    <span>توزيع للجميع</span>
                 </button>
             </form>
         </div>

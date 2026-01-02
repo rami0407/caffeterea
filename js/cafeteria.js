@@ -9,47 +9,8 @@ let currentStatus = 'pending';
 let unsubscribe = null;
 
 // Sample orders for demo
-const sampleOrders = [
-    {
-        id: '1',
-        orderNumber: 15,
-        items: [
-            { name: 'سندويش جبنة', quantity: 2 },
-            { name: 'عصير برتقال', quantity: 1 }
-        ],
-        status: 'pending',
-        createdAt: new Date()
-    },
-    {
-        id: '2',
-        orderNumber: 14,
-        items: [
-            { name: 'سلطة خضار', quantity: 1 },
-            { name: 'ماء معدني', quantity: 2 }
-        ],
-        status: 'pending',
-        createdAt: new Date(Date.now() - 120000)
-    },
-    {
-        id: '3',
-        orderNumber: 13,
-        items: [
-            { name: 'بسكويت شوفان', quantity: 3 }
-        ],
-        status: 'preparing',
-        createdAt: new Date(Date.now() - 300000)
-    },
-    {
-        id: '4',
-        orderNumber: 12,
-        items: [
-            { name: 'سندويش حمص', quantity: 1 },
-            { name: 'عصير تفاح', quantity: 1 }
-        ],
-        status: 'ready',
-        createdAt: new Date(Date.now() - 600000)
-    }
-];
+// Sample orders removed - using Firebase
+const sampleOrders = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -102,11 +63,12 @@ function loadOrders() {
             });
         }
     } catch (error) {
-        console.log('Using demo mode');
+        console.log('Realtime updates not available');
     }
 
-    // Use sample orders for demo
-    orders = sampleOrders;
+    // Initial load (if not using realtime or as backup)
+    // orders = await getPendingOrders(); // If we had a one-time fetch function
+    // For now, we rely on subscription. If that fails, we show empty.
     updateCounts();
     renderOrders();
 }

@@ -141,15 +141,24 @@
 
         async function loadOrders() {
             onAuthStateChange(async ({ user, userData }) => {
-                let orders;
                 if (user) {
-                    orders = await getStudentOrders(user.uid);
-                    if (orders.length === 0) orders = sampleOrders;
-                } else {
-                    orders = sampleOrders;
-                }
+                    const activeContainer = document.getElementById('activeOrders');
+                    const historyContainer = document.getElementById('orderHistory');
 
-                renderOrders(orders);
+                    // Show loading state
+                    activeContainer.innerHTML = '<div class="spinner"></div>';
+
+                    try {
+                        const orders = await getStudentOrders(user.uid);
+                        renderOrders(orders);
+                    } catch (error) {
+                        console.error("Error loading orders:", error);
+                        activeContainer.innerHTML = '<p class="error-text">حدث خطأ في تحميل الطلبات</p>';
+                    }
+                } else {
+                    // Redirect if not logged in
+                    window.location.href = '../login.html';
+                }
             });
         }
 
@@ -159,7 +168,7 @@
             const emptyState = document.getElementById('emptyState');
 
             const activeOrders = orders.filter(o => ['pending', 'preparing', 'ready'].includes(o.status));
-            const completedOrders = orders.filter(o => o.status === 'completed');
+            const completedOrders = orders.filter(o => o.status === 'completed' || o.status === 'cancelled');
 
             // Render active orders
             if (activeOrders.length > 0) {
@@ -172,9 +181,14 @@
             if (completedOrders.length > 0) {
                 historyContainer.innerHTML = completedOrders.map(order => renderOrderCard(order, false)).join('');
                 emptyState.classList.add('hidden');
-            } else if (activeOrders.length === 0) {
+            } else {
                 historyContainer.innerHTML = '';
-                emptyState.classList.remove('hidden');
+                // Only show empty state if NO orders at all (neither active nor history) seems weird, 
+                // but usually empty state is "No orders history". 
+                // If active is empty, we show "No active".
+                if (activeOrders.length === 0) {
+                    emptyState.classList.remove('hidden');
+                }
             }
         }
 

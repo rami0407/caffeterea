@@ -103,13 +103,7 @@
     <script src="../js/i18n.js"></script>
     <script>
         // Sample transactions for demo
-        const sampleTransactions = [
-            { type: 'reward', amount: 10, reason: 'مساعدة في الصف', createdAt: new Date() },
-            { type: 'purchase', amount: -5, reason: 'سندويش جبنة', createdAt: new Date(Date.now() - 3600000) },
-            { type: 'reward', amount: 15, reason: 'فوز بمسابقة رياضيات', createdAt: new Date(Date.now() - 86400000) },
-            { type: 'purchase', amount: -6, reason: 'عصير برتقال', createdAt: new Date(Date.now() - 90000000) },
-            { type: 'reward', amount: 20, reason: 'سلوك ممتاز', createdAt: new Date(Date.now() - 172800000) }
-        ];
+
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeFirebase();
@@ -132,12 +126,17 @@
             onAuthStateChange(async ({ user, userData }) => {
                 if (user && userData) {
                     document.getElementById('balanceValue').textContent = userData.balance || 0;
-                    const transactions = await getStudentTransactions(user.uid);
-                    renderTransactions(transactions.length > 0 ? transactions : sampleTransactions);
+
+                    try {
+                        const transactions = await getStudentTransactions(user.uid);
+                        renderTransactions(transactions);
+                    } catch (error) {
+                        console.error("Error loading transactions:", error);
+                        document.getElementById('transactionsList').innerHTML = '<p class="error-text">حدث خطأ في تحميل المعاملات</p>';
+                    }
                 } else {
-                    // Demo mode
-                    document.getElementById('balanceValue').textContent = 50;
-                    renderTransactions(sampleTransactions);
+                    // Redirect if not logged in
+                    window.location.href = '../login.html';
                 }
             });
         }

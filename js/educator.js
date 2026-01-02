@@ -9,16 +9,8 @@ let students = [];
 let selectedStudent = null;
 
 // Sample students for demo
-const sampleStudents = [
-    { id: '1', name: 'أحمد محمد', class: 'الصف الخامس أ', balance: 45 },
-    { id: '2', name: 'سارة علي', class: 'الصف الخامس أ', balance: 32 },
-    { id: '3', name: 'محمود خالد', class: 'الصف الخامس أ', balance: 58 },
-    { id: '4', name: 'فاطمة حسن', class: 'الصف الخامس أ', balance: 21 },
-    { id: '5', name: 'يوسف أحمد', class: 'الصف الخامس أ', balance: 67 },
-    { id: '6', name: 'نور الدين', class: 'الصف الخامس أ', balance: 15 },
-    { id: '7', name: 'ليلى عمر', class: 'الصف الخامس أ', balance: 40 },
-    { id: '8', name: 'كريم سعيد', class: 'الصف الخامس أ', balance: 28 }
-];
+// Sample data removed
+const sampleStudents = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,11 +28,7 @@ function checkAuthAndLoad() {
             currentEducator = userData;
             await loadStudents();
         } else {
-            // Demo mode
-            currentEducator = { uid: 'demo', name: 'المربي' };
-            students = sampleStudents;
-            renderStudents();
-            updateStats();
+            window.location.href = '../login.html';
         }
     });
 }
@@ -49,16 +37,11 @@ function checkAuthAndLoad() {
 async function loadStudents() {
     try {
         students = await getEducatorStudents(currentEducator.uid);
-        if (students.length === 0) {
-            students = sampleStudents;
-        }
         renderStudents();
         updateStats();
     } catch (error) {
         console.error('Error loading students:', error);
-        students = sampleStudents;
-        renderStudents();
-        updateStats();
+        document.getElementById('studentsList').innerHTML = '<p class="error-text">حدث خطأ في تحميل بيانات الطلاب</p>';
     }
 }
 
@@ -146,6 +129,9 @@ function setupEventListeners() {
             closeRewardModal();
         }
     });
+
+    // Initialize Bulk Listeners
+    setupBulkListeners();
 }
 
 // Open reward modal
@@ -246,4 +232,127 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
+}
+
+// ========================================
+// Bulk Reward Logic
+// ========================================
+
+function openBulkRewardModal() {
+    if (students.length === 0) {
+        showToast('لا يوجد طلاب لتوزيع النقاط عليهم', 'error');
+        return;
+    }
+    document.getElementById('bulkStudentCount').textContent = `عدد الطلاب: ${students.length}`;
+    document.getElementById('bulkRewardAmount').value = 5;
+    document.getElementById('bulkRewardReason').value = '';
+    document.querySelectorAll('#bulkReasonChips .reason-chip').forEach(c => c.classList.remove('active'));
+
+    document.getElementById('bulkRewardModal').classList.remove('hidden');
+}
+
+function closeBulkRewardModal() {
+    document.getElementById('bulkRewardModal').classList.add('hidden');
+}
+
+function adjustBulkPoints(delta) {
+    const input = document.getElementById('bulkRewardAmount');
+    let value = parseInt(input.value) || 0;
+    value = Math.max(1, Math.min(100, value + delta));
+    input.value = value;
+}
+
+// Setup Bulk Listeners (Called in setupEventListeners)
+function setupBulkListeners() {
+    // Bulk Chips
+    document.querySelectorAll('#bulkReasonChips .reason-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.querySelectorAll('#bulkReasonChips .reason-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            document.getElementById('bulkRewardReason').value = chip.dataset.reason;
+        });
+    });
+
+    // Bulk Form
+    document.getElementById('bulkRewardForm').addEventListener('submit', handleBulkRewardSubmit);
+
+    // Close Modal
+    document.getElementById('bulkRewardModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('bulkRewardModal')) {
+            closeBulkRewardModal();
+        }
+    });
+
+    // Add CSS for Actions Bar (Injected here for simplicity, ideally in CSS file)
+    const style = document.createElement('style');
+    style.textContent = `
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .actions-bar .search-box {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .bulk-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Handle Bulk Submit
+async function handleBulkRewardSubmit(e) {
+    e.preventDefault();
+
+    const amount = parseInt(document.getElementById('bulkRewardAmount').value) || 0;
+    const reason = document.getElementById('bulkRewardReason').value.trim();
+
+    if (amount <= 0 || !reason) {
+        showToast('يرجى تعبئة جميع البيانات', 'error');
+        return;
+    }
+
+    const confirmMsg = `هل أنت متأكد من توزيع ${amount} نقطة لـ ${students.length} طالب؟`;
+    if (!confirm(confirmMsg)) return;
+
+    // Show Loading
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner">⏳ جاري التوزيع...</span>';
+    submitBtn.disabled = true;
+
+    try {
+        let successCount = 0;
+
+        // Process in batches ( sequentially for MVP simplicity )
+        for (const student of students) {
+            try {
+                if (currentEducator.uid !== 'demo') {
+                    await addReward(currentEducator.uid, student.id, amount, reason);
+                }
+                student.balance += amount; // Update local state
+                successCount++;
+            } catch (err) {
+                console.error(`Failed for ${student.name}`, err);
+            }
+        }
+
+        closeBulkRewardModal();
+        renderStudents();
+        updateStats();
+        showToast(`تم توزيع النقاط بنجاح على ${successCount} طالب!`, 'success');
+
+    } catch (error) {
+        console.error('Bulk error:', error);
+        showToast('حدث خطأ أثناء التوزيع', 'error');
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
 }

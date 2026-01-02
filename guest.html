@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تصفح القائمة - بذور المعرفة">
-    <title>القائمة | بذور المعرفة</title>
+    <meta name="description" content="تصفح القائمة - مقصف المعرفة">
+    <title>القائمة | مقصف المعرفة</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -13,6 +13,77 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/guest.css">
+    <style>
+        /* Password Protection Styles */
+        body.locked {
+            overflow: hidden;
+        }
+
+        body.locked>*:not(#passwordModal) {
+            filter: blur(8px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #passwordModal {
+            display: none;
+            /* Flex when active */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-box h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 1rem 0;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .auth-error {
+            color: #ef4444;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,7 +91,7 @@
     <header class="guest-header">
         <a href="index.html" class="logo-link">
             <span class="logo-icon">🌱</span>
-            <span class="logo-text">بذور المعرفة</span>
+            <span class="logo-text">مقصف المعرفة</span>
         </a>
         <div class="header-actions">
             <a href="login.html?role=student" class="login-link">
@@ -84,12 +155,64 @@
 
     <!-- Footer -->
     <footer class="guest-footer">
-        <p>🌍 من الكود إلى الأخضر | بذور المعرفة © 2024</p>
+        <p>🌍 من الكود إلى الأخضر | مقصف المعرفة © 2024</p>
     </footer>
 
+    <!-- Cart Fab -->
+    <div class="cart-fab" onclick="openCart()">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-badge" id="cartCount" style="display: none;">0</span>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-modal-content">
+            <div class="cart-header">
+                <h3>سلة الطلبات</h3>
+                <button class="close-btn" onclick="closeCart()">×</button>
+            </div>
+
+            <div id="cartItems" class="cart-items">
+                <!-- Items will be here -->
+            </div>
+
+            <div class="cart-footer">
+                <div class="total-row">
+                    <span>المجموع:</span>
+                    <span id="cartTotal">0</span>
+                    <span>نقطة</span>
+                </div>
+
+                <div class="guest-input-group">
+                    <label>الاسم (مطلوب لاستلام الطلب)</label>
+                    <input type="text" id="guestNameInput" placeholder="اكتب اسمك هنا..." class="guest-name-input">
+                </div>
+
+                <button id="btnCheckout" class="btn btn-primary btn-full" onclick="submitGuestOrder()">تأكيد
+                    الطلب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Protection Modal -->
+    <div id="passwordModal">
+        <div class="auth-box">
+            <h2>🔒 صفحة محمية</h2>
+            <p>الرجاء إدخال كلمة المرور للدخول إلى المقصف</p>
+            <input type="password" id="pagePassword" placeholder="كلمة المرور">
+            <button onclick="checkPagePassword()">دخول</button>
+            <p id="passwordError" class="auth-error">كلمة المرور غير صحيحة</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/i18n.js"></script>
+    <script src="js/guest.js"></script>
     <script>
-        // Sample products
+        // Sample products (Keep data here for now or move to DB later)
         const products = [
             { id: '1', name: 'سندويش جبنة صفراء', price: 5, category: 'sandwiches', icon: '🧀', trafficLight: 'yellow' },
             { id: '2', name: 'سندويش لبنة وزعتر', price: 4, category: 'sandwiches', icon: '🥙', trafficLight: 'green' },
@@ -108,8 +231,11 @@
         let currentCategory = 'all';
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Check Access
+            checkAccess();
+
             initI18n();
-            renderProducts();
+            renderProducts(); // From guest.js
 
             // Category buttons
             document.querySelectorAll('.category-chip').forEach(btn => {
@@ -117,7 +243,7 @@
                     document.querySelectorAll('.category-chip').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentCategory = btn.dataset.category;
-                    renderProducts();
+                    renderProducts(); // Re-render
                 });
             });
 
@@ -131,20 +257,28 @@
             });
         });
 
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            const filtered = currentCategory === 'all'
-                ? products
-                : products.filter(p => p.category === currentCategory);
+        // Guest Page Security
+        function checkAccess() {
+            const isAuthorized = sessionStorage.getItem('guest_access');
+            if (isAuthorized !== 'true') {
+                document.body.classList.add('locked');
+                document.getElementById('passwordModal').style.display = 'flex';
+            }
+        }
 
-            grid.innerHTML = filtered.map(product => `
-                <div class="guest-product-card">
-                    <div class="nutrition-dot ${product.trafficLight}"></div>
-                    <div class="product-image">${product.icon}</div>
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">${product.price} نقطة</div>
-                </div>
-            `).join('');
+        function checkPagePassword() {
+            const input = document.getElementById('pagePassword');
+            const error = document.getElementById('passwordError');
+
+            if (input.value === '123456') {
+                sessionStorage.setItem('guest_access', 'true');
+                document.body.classList.remove('locked');
+                document.getElementById('passwordModal').style.display = 'none';
+            } else {
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+            }
         }
     </script>
 </body>

@@ -285,7 +285,7 @@ async function getEducatorStudents(educatorId) {
     try {
         const snapshot = await db.collection('users')
             .where('role', '==', 'student')
-            .where('educatorId', '==', educatorId)
+            // .where('educatorId', '==', educatorId) // Temporarily disabled for MVP testing
             .get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {

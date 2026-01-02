@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function hasRole(role) {
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    // Users:
+    // - Users can read their own profile
+    // - Admin can read/write all
+    match /users/{userId} {
+      allow read: if isOwner(userId) || hasRole('admin') || hasRole('educator') || hasRole('cafeteria');
+      allow write: if hasRole('admin') || (isOwner(userId) && request.resource.data.role == resource.data.role); // Prevent role self-promotion
+    }
+
+    // Products:
+    // - Public read (or authenticated read)
+    // - Admin write/update
+    match /products/{productId} {
+      allow read, write: if true; // Temporarily allow public write for seeding
+    }
+
+    // Orders:
+    // - Student can create and read their own orders
+    // - Cafeteria can read all orders and update status
+    // - Admin can read all
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow read: if isOwner(resource.data.studentId) || hasRole('cafeteria') || hasRole('admin') || hasRole('educator');
+      allow update: if hasRole('cafeteria') || hasRole('admin');
+    }
+
+    // Transactions (Rewards/Purchases):
+    // - Users read their own
+    // - Educator creates 'reward' type
+    // - System (backend) or Admin manages others (in clientside app, we rely on trusted roles for now)
+    match /transactions/{txId} {
+      allow read: if isOwner(resource.data.studentId) || hasRole('admin') || hasRole('educator');
+      allow create: if hasRole('educator') || hasRole('admin') || (isSignedIn() && request.resource.data.studentId == request.auth.uid); // For purchases (simplified)
+    }
+    
+    // Counters (Internal):
+    allow read, write: if isSignedIn();
+  }
+}

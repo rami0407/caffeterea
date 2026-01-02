@@ -112,12 +112,13 @@
     <div class="modal-overlay hidden" id="successModal">
         <div class="modal-content success-modal">
             <div class="success-icon">✅</div>
-            <h2 data-i18n="orderSuccess">تم الطلب بنجاح!</h2>
+            <h2 data-i18n="ecoTriggerTitle">تم الطلب بنجاح!</h2>
             <div class="order-number-display">
                 <span data-i18n="orderNumber">رقم طلبك:</span>
                 <span class="order-num" id="orderNumberDisplay">--</span>
             </div>
-            <p class="success-message">سيتم تحضير طلبك فوراً. انتظر رقم طلبك على الشاشة!</p>
+            <p class="success-message" data-i18n="ecoTriggerMessage">سيتم تحضير طلبك فوراً. انتظر رقم طلبك على الشاشة!
+            </p>
             <button class="btn btn-primary" id="closeSuccessBtn">حسناً</button>
         </div>
     </div>
@@ -151,6 +152,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/i18n.js"></script>
+    <script src="../js/seed-data.js"></script>
     <script src="../js/student.js"></script>
 </body>
 
