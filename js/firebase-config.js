@@ -78,7 +78,34 @@ async function signIn(email, password) {
 
         // Get user data from Firestore
         const userDoc = await db.collection('users').doc(user.uid).get();
-        const userData = userDoc.data();
+        let userData = userDoc.data();
+
+        // If user document doesn't exist, create it (especially for admin)
+        if (!userData) {
+            console.warn('⚠️ User document missing, creating it now...');
+
+            // Determine role based on email
+            let role = 'student'; // default
+            if (email === 'rami_admin@knowledge-canteen.com') {
+                role = 'admin';
+            } else if (email.includes('@educator.')) {
+                role = 'educator';
+            } else if (email.includes('@cafeteria.')) {
+                role = 'cafeteria';
+            }
+
+            userData = {
+                uid: user.uid,
+                email: email,
+                name: role === 'admin' ? 'Admin Rami' : 'User',
+                role: role,
+                balance: 0,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            await db.collection('users').doc(user.uid).set(userData);
+            console.log('✅ User document created:', role);
+        }
 
         console.log('✅ User signed in:', userData.role);
         return { success: true, user, userData };
