@@ -165,8 +165,14 @@ async function getAllUsers() {
         const snapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-        console.error('❌ Error getting users:', error);
-        return [];
+        console.error('❌ Error getting users (trying without sort):', error);
+        try {
+            const snapshot = await db.collection('users').get();
+            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (e) {
+            console.error('❌ Error getting users (fallback failed):', e);
+            return [];
+        }
     }
 }
 
