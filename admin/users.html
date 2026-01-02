@@ -351,19 +351,6 @@
             }
         }
 
-        // Reward Logic (Renamed label to avoid confusion)
-        if (!confirm(`هل أنت متأكد من حذف الطالب "${name}"؟\nسيؤدي هذا إلى منع الطالب من الدخول، ولكن قد يبقى حسابه في نظام المصادقة.`)) return;
-
-        try {
-            await db.collection('users').doc(id).delete();
-            showToast(`تم حذف الطالب ${name} بنجاح`, 'success');
-            loadUsers(); // Refresh
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            showToast('حدث خطأ أثناء الحذف', 'error');
-        }
-        }
-
         // Reward Logic
         function openReward(id, name) {
             document.getElementById('rewardTargetId').value = id;
