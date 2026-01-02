@@ -242,7 +242,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+    <script src="../js/firebase-config.js?v=2"></script>
 
     <script>
         // Use a safer initialization approach
@@ -310,7 +310,7 @@
             const grid = document.getElementById('productsGrid');
             try {
                 grid.innerHTML = '<p>جاري تحميل المنتجات... ⏳</p>';
-                const products = await getProducts();
+                const products = await getAllProducts();
 
                 if (!products || products.length === 0) {
                     grid.innerHTML = '<p>لا توجد منتجات حالياً 📭</p>';
@@ -336,7 +336,7 @@
                 `).join('');
             } catch (error) {
                 console.error("Load Products Error:", error);
-                grid.innerHTML = '<p style="color:red">فشل تحميل المنتجات</p>';
+                grid.innerHTML = `<p style="color:red">فشل تحميل المنتجات: ${error.message}</p>`;
             }
         }
 

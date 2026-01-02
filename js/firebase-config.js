@@ -163,7 +163,7 @@ async function getAllUsers() {
 // Database Functions - Products
 // ========================================
 
-// Get all products
+// Get all products (Public - Available only)
 async function getProducts() {
     try {
         const snapshot = await db.collection('products').where('available', '==', true).get();
@@ -171,6 +171,23 @@ async function getProducts() {
     } catch (error) {
         console.error('❌ Error getting products:', error);
         return [];
+    }
+}
+
+// Get ALL products (Admin - All)
+async function getAllProducts() {
+    try {
+        const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('❌ Error getting all products:', error);
+        // Fallback to basic get if order fails (index issue)
+        try {
+            const snapshot = await db.collection('products').get();
+            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (e) {
+            return [];
+        }
     }
 }
 
