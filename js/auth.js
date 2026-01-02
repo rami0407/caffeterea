@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('registerForm').addEventListener('submit', (e) => handleRegister(e, role));
 
     // Check if already logged in
-    onAuthStateChange(({ user, userData }) => {
+    onAuthStateChange(async ({ user, userData }) => {
         if (user && userData) {
             // Check if logged-in role matches the requested role (from URL)
             // If mismatch (e.g. Admin on Student login), sign out to allow switching
@@ -87,6 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Refresh to clear state
                     window.location.reload();
                 });
+                return;
+            }
+
+            // Security: Check if student is approved
+            if (userData.role === 'student' && userData.approved === false) {
+                console.log('User not approved. Signing out...');
+                await signOut();
+                showError('الحساب بانتظار موافقة المربي. يرجى مراجعة مربي الصف.', true);
                 return;
             }
 
@@ -223,14 +231,17 @@ async function handleRegister(e, role) {
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
 
-    // Get Class & Section
-    const grade = document.getElementById('regGrade')?.value || '';
-    const section = document.getElementById('regSection')?.value || '';
-    const className = role === 'student' ? `${grade} - شعبة ${section}` : '';
+    // Get Educator
+    const educatorName = document.getElementById('regEducator')?.value || '';
 
     // Validate
     if (!name) {
         showError('الاسم مطلوب');
+        return;
+    }
+
+    if (role === 'student' && !educatorName) {
+        showError('يرجى اختيار المربي');
         return;
     }
 
@@ -278,7 +289,8 @@ async function handleRegister(e, role) {
         const result = await signUp(identifier, password, {
             name,
             role,
-            class: className,
+            educatorName: role === 'student' ? educatorName : '',
+            approved: role !== 'student', // Students need approval, others auto-approved
             // Store original phone if needed
             phone: role === 'student' ? identifier.split('@')[0] : null
         });

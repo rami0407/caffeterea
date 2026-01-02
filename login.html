@@ -88,22 +88,31 @@
                     <input type="password" class="input-field" id="regConfirmPassword" required>
                 </div>
 
-                <!-- Class & Section (for students) -->
-                <div class="input-group student-only">
-                    <label class="input-label" data-i18n="className">الصف والشعبة</label>
-                    <div style="display:flex; gap:10px;">
-                        <select class="input-field" id="regGrade" style="flex:1;">
-                            <option value="الأول">الصف الأول</option>
-                            <option value="الثاني">الصف الثاني</option>
-                            <option value="الثالث">الصف الثالث</option>
-                            <option value="الرابع">الصف الرابع</option>
-                            <option value="الخامس">الصف الخامس</option>
-                            <option value="السادس">الصف السادس</option>
-                        </select>
-                        <select class="input-field" id="regSection" style="flex:1;">
-                            <option value="1">شعبة 1</option>
-                            <option value="2">شعبة 2</option>
-                            <option value="3">شعبة 3</option>
+                <!-- Student Specific Fields -->
+                <div id="studentFields" class="hidden">
+                    <div class="input-group">
+                        <label class="input-label" data-i18n="selectEducator">اختر المربي</label>
+                        <select class="input-field" id="regEducator" required>
+                            <option value="" disabled selected data-i18n="selectEducatorPlaceholder">اختر اسم المربي...
+                            </option>
+                            <option value="زهرة">زهرة</option>
+                            <option value="سعاد">سعاد</option>
+                            <option value="ايمان">ايمان</option>
+                            <option value="سهير">سهير</option>
+                            <option value="ناريمان">ناريمان</option>
+                            <option value="نعمت">نعمت</option>
+                            <option value="سمير">سمير</option>
+                            <option value="راضية">راضية</option>
+                            <option value="جيهان">جيهان</option>
+                            <option value="محمد">محمد</option>
+                            <option value="رقية">رقية</option>
+                            <option value="ملاك">ملاك</option>
+                            <option value="فايزة">فايزة</option>
+                            <option value="عليا">عليا</option>
+                            <option value="نهى">نهى</option>
+                            <option value="سماهر">سماهر</option>
+                            <option value="فاتن">فاتن</option>
+                            <option value="اوصاف">اوصاف</option>
                         </select>
                     </div>
                 </div>

@@ -36,21 +36,49 @@ function checkAuthAndLoad() {
 // Load students from Firebase
 async function loadStudents() {
     try {
-        students = await getEducatorStudents(currentEducator.uid);
-        renderStudents();
-        updateStats();
+        // Query active and pending students for THIS educator
+        const allStudents = await getEducatorStudents(currentEducator.name); // Using Name for matching
+
+        students = allStudents.filter(s => s.approved === true);
+        pendingStudents = allStudents.filter(s => s.approved === false || s.approved === undefined);
+
+        renderStudentTabs();
     } catch (error) {
         console.error('Error loading students:', error);
         document.getElementById('studentsList').innerHTML = '<p class="error-text">حدث خطأ في تحميل بيانات الطلاب</p>';
     }
 }
 
-// Render students list
-function renderStudents(filteredList = null) {
-    const container = document.getElementById('studentsList');
-    const displayList = filteredList || students;
+let activeTab = 'active';
+let pendingStudents = [];
 
-    if (displayList.length === 0) {
+function renderStudentTabs() {
+    if (activeTab === 'active') {
+        renderStudents(students, 'studentsList');
+        document.getElementById('pendingList').classList.add('hidden');
+        document.getElementById('studentsList').classList.remove('hidden');
+    } else {
+        renderPendingStudents();
+        document.getElementById('studentsList').classList.add('hidden');
+        document.getElementById('pendingList').classList.remove('hidden');
+    }
+    updateStats();
+}
+
+function switchTab(tab) {
+    activeTab = tab;
+    // Update UI tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    renderStudentTabs();
+}
+
+// Render active students list
+function renderStudents(list, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (list.length === 0) {
         container.innerHTML = `
             <div class="empty-state" style="text-align: center; padding: 2rem; color: #6b7280;">
                 <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">👨‍🎓</span>
@@ -60,12 +88,12 @@ function renderStudents(filteredList = null) {
         return;
     }
 
-    container.innerHTML = displayList.map(student => `
+    container.innerHTML = list.map(student => `
         <div class="student-card" onclick="openRewardModal('${student.id}')">
             <div class="student-avatar">👨‍🎓</div>
             <div class="student-info">
                 <div class="student-name">${student.name}</div>
-                <div class="student-class">${student.class}</div>
+                <div class="student-class">${student.class || ''}</div>
             </div>
             <div class="student-balance">
                 <span class="balance-amount">${student.balance}</span>
@@ -78,11 +106,60 @@ function renderStudents(filteredList = null) {
     `).join('');
 }
 
+// Render pending students
+function renderPendingStudents() {
+    const container = document.getElementById('pendingList');
+    if (!container) return;
+
+    if (pendingStudents.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="text-align: center; padding: 2rem; color: #6b7280;">
+                <p>لا يوجد طلبات جديدة</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = pendingStudents.map(student => `
+        <div class="student-card pending-card">
+            <div class="student-avatar">⏳</div>
+            <div class="student-info">
+                <div class="student-name">${student.name}</div>
+                <div class="student-class">${student.phone || 'رقم الهاتف: ' + student.email}</div>
+            </div>
+            <button class="btn btn-success" onclick="approveStudent('${student.id}')" style="background:#10b981; color:white; padding: 5px 15px; border-radius:15px; border:none; cursor:pointer;">
+                قبول ✅
+            </button>
+        </div>
+    `).join('');
+}
+
+async function approveStudent(studentId) {
+    if (!confirm('هل تريد قبول هذا الطالب؟')) return;
+
+    try {
+        await db.collection('users').doc(studentId).update({
+            approved: true
+        });
+        showToast('تم قبول الطالب بنجاح! 🎉');
+        loadStudents(); // Reload
+    } catch (error) {
+        console.error('Error approving student:', error);
+        showToast('حدث خطأ أثناء القبول', 'error');
+    }
+}
+
 // Update stats
 function updateStats() {
     document.getElementById('totalStudents').textContent = students.length;
 
-    // Calculate total points distributed (in real app, this would come from transactions)
+    // Update Pending Badge if exists
+    const pendingBadge = document.getElementById('pendingCountBadge');
+    if (pendingBadge) {
+        pendingBadge.textContent = pendingStudents.length;
+        pendingBadge.style.display = pendingStudents.length > 0 ? 'inline-block' : 'none';
+    }
+
     const totalGiven = students.reduce((sum, s) => sum + s.balance, 0);
     document.getElementById('totalGiven').textContent = totalGiven;
 }

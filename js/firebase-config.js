@@ -57,8 +57,8 @@ async function signUp(email, password, userData) {
             name: userData.name,
             role: userData.role,
             balance: 0,
-            class: userData.class || '',
-            educatorId: userData.educatorId || '',
+            approved: userData.approved,
+            educatorName: userData.educatorName || '',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
@@ -336,11 +336,11 @@ async function addReward(educatorId, studentId, amount, reason) {
 }
 
 // Get students for educator
-async function getEducatorStudents(educatorId) {
+async function getEducatorStudents(educatorName) {
     try {
         const snapshot = await db.collection('users')
             .where('role', '==', 'student')
-            // .where('educatorId', '==', educatorId) // Temporarily disabled for MVP testing
+            .where('educatorName', '==', educatorName)
             .get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {

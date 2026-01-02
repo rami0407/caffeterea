@@ -157,7 +157,11 @@ const translations = {
         phone: "رقم الهاتف",
         phoneRequired: "رقم الهاتف مطلوب",
         invalidPhone: "رقم الهاتف غير صحيح (يجب أن يكون 10 أرقام)",
-        phoneInUse: "رقم الهاتف مسجل مسبقاً"
+        phoneInUse: "رقم الهاتف مسجل مسبقاً",
+        selectEducator: "اختر المربي",
+        selectEducatorPlaceholder: "اختر اسم المربي...",
+        accountPending: "الحساب بانتظار موافقة المربي",
+        waitForApproval: "يرجى الانتظار حتى يقوم المربي بتفعيل حسابك"
     },
 
     he: {
@@ -311,7 +315,11 @@ const translations = {
         phone: "מספר טלפון",
         phoneRequired: "נדרש מספר טלפון",
         invalidPhone: "מספר טלפון לא תקין (חייב להיות 10 ספרות)",
-        phoneInUse: "מספר הטלפון קיים במערכת"
+        phoneInUse: "מספר הטלפון קיים במערכת",
+        selectEducator: "בחר מחנך",
+        selectEducatorPlaceholder: "בחר שם המחנך...",
+        accountPending: "החשבון ממתין לאישור המחנך",
+        waitForApproval: "אנא המתן עד שהמחנך יפעיל את חשבונך"
     }
 };
 
