@@ -30,8 +30,12 @@ service cloud.firestore {
     // Products:
     // - Public read (or authenticated read)
     // - Admin write/update
+    // Products:
+    // - Public read (or authenticated read)
+    // - Admin and Cafeteria write/update
     match /products/{productId} {
-      allow read, write: if true; // Temporarily allow public write for seeding
+      allow read: if true;
+      allow write: if hasRole('admin') || hasRole('cafeteria');
     }
 
     // Orders:
