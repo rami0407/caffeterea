@@ -269,12 +269,13 @@
                     <td><span class="balance-badge">${u.balance || 0} 💎</span></td>
                     <td>${u.createdAt ? new Date(u.createdAt.seconds * 1000).toLocaleDateString('ar-EG') : '-'}</td>
                     <td>
-                        ${u.role === 'student' ?
-                    `<button class="btn-action btn-reward" onclick="openReward('${u.id}', '${u.name}')">➕ إضافة رصيد</button>` :
+                ${u.role === 'student' ?
+                    `<button class="btn-action btn-reward" onclick="openReward('${u.id}', '${u.name}')">➕ إضافة رصيد</button>
+                 <button class="btn-action btn-delete" onclick="deleteUser('${u.id}', '${u.name}')" style="background:#fee2e2; color:#b91c1c; margin-right:5px;">🗑️ حذف</button>` :
                     '-'}
-                    </td>
-                </tr>
-            `).join('');
+                </td>
+            </tr>
+        `).join('');
         }
 
         function getRoleName(role) {
@@ -285,6 +286,20 @@
                 'educator': 'مربي'
             };
             return roles[role] || role;
+        }
+
+        // Delete Logic
+        async function deleteUser(id, name) {
+            if (!confirm(`هل أنت متأكد من حذف الطالب "${name}"؟\nسيؤدي هذا إلى منع الطالب من الدخول، ولكن قد يبقى حسابه في نظام المصادقة.`)) return;
+
+            try {
+                await db.collection('users').doc(id).delete();
+                showToast(`تم حذف الطالب ${name} بنجاح`, 'success');
+                loadUsers(); // Refresh
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showToast('حدث خطأ أثناء الحذف', 'error');
+            }
         }
 
         // Reward Logic
