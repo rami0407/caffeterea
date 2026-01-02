@@ -263,9 +263,9 @@ function checkCafePasscode() {
 
 // Check if already unlocked (on load)
 function checkAlreadyUnlocked() {
-    if (sessionStorage.getItem('cafeteria_unlocked') === 'true') {
-        document.getElementById('securityModal').style.display = 'none';
-    }
+    // Always unlock
+    const modal = document.getElementById('securityModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Switch between Orders & Products View
