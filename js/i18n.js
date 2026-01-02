@@ -151,7 +151,13 @@ const translations = {
         weakPassword: "كلمة المرور ضعيفة",
         emailInUse: "البريد مستخدم مسبقاً",
         wrongPassword: "كلمة المرور خاطئة",
-        userNotFound: "المستخدم غير موجود"
+        userNotFound: "المستخدم غير موجود",
+
+        // Phone Auth
+        phone: "رقم الهاتف",
+        phoneRequired: "رقم الهاتف مطلوب",
+        invalidPhone: "رقم الهاتف غير صحيح (يجب أن يكون 10 أرقام)",
+        phoneInUse: "رقم الهاتف مسجل مسبقاً"
     },
 
     he: {
@@ -299,7 +305,13 @@ const translations = {
         weakPassword: "סיסמה חלשה",
         emailInUse: "האימייל כבר בשימוש",
         wrongPassword: "סיסמה שגויה",
-        userNotFound: "משתמש לא נמצא"
+        userNotFound: "משתמש לא נמצא",
+
+        // Phone Auth
+        phone: "מספר טלפון",
+        phoneRequired: "נדרש מספר טלפון",
+        invalidPhone: "מספר טלפון לא תקין (חייב להיות 10 ספרות)",
+        phoneInUse: "מספר הטלפון קיים במערכת"
     }
 };
 

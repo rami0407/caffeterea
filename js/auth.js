@@ -79,6 +79,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if already logged in
     onAuthStateChange(({ user, userData }) => {
         if (user && userData) {
+            // Check if logged-in role matches the requested role (from URL)
+            // If mismatch (e.g. Admin on Student login), sign out to allow switching
+            if (userData.role !== role) {
+                console.log(`Role mismatch: ${userData.role} vs ${role}. Signing out...`);
+                signOut().then(() => {
+                    // Refresh to clear state
+                    window.location.reload();
+                });
+                return;
+            }
+
             // Redirect to appropriate page
             window.location.href = roleRedirects[userData.role] || 'index.html';
         }
@@ -121,7 +132,7 @@ function updateInputType(inputId, labelId, type) {
         label.setAttribute('data-i18n', 'phone');
 
         // Trigger translation update if i18n is ready
-        if (typeof updateContent === 'function') updateContent();
+        if (typeof applyLanguage === 'function') applyLanguage();
     }
 }
 
