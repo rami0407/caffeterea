@@ -248,7 +248,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-config.js?v=2"></script>
+    <script src="../js/firebase-config.js?v=3"></script>
 
     <script>
         let db;
@@ -261,7 +261,7 @@
                 if (!firebaseData) {
                     throw new Error('فشل في تهيئة النظام (Firebase)');
                 }
-                db = firebaseData.db; 
+                db = firebaseData.db;
 
                 // Wait for Auth State
                 onAuthStateChange(async (authData) => {
@@ -310,7 +310,7 @@
                         trafficLight: document.getElementById('prodTraffic').value,
                         available: true
                     };
-                    
+
                     if (isNaN(productData.price)) {
                         throw new Error('السعر يجب أن يكون رقماً صحيحاً');
                     }
@@ -325,6 +325,7 @@
                     }
                 } catch (error) {
                     console.error("Add Product Error:", error);
+                    alert('خطأ في إضافة المنتج: ' + error.message + '\nError Code: ' + (error.code || 'N/A')); // Direct alert for visibility
                     showToast('خطأ: ' + error.message, 'error');
                 } finally {
                     btn.textContent = originalText;
@@ -385,6 +386,7 @@
             t.className = `toast show ${type === 'error' ? 'error' : ''}`;
             setTimeout(() => t.className = 'toast', 3000);
         }
-    </script></body>
+    </script>
+</body>
 
 </html>
