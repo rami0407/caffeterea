@@ -26,6 +26,10 @@ function checkAuthAndLoad() {
     onAuthStateChange(async ({ user, userData }) => {
         if (user && userData && userData.role === 'educator') {
             currentEducator = userData;
+            // Update Header Name
+            const welcomeEl = document.getElementById('educatorWelcomeName');
+            if (welcomeEl) welcomeEl.textContent = `مرحباً، ${userData.name}`;
+
             await loadStudents();
         } else {
             window.location.href = '../login.html';

@@ -214,10 +214,32 @@
             // Auth Check & Data Load
             onAuthStateChange(async ({ user, userData }) => {
                 if (user && userData) {
-                    // Update Name
+                    // Security Block: Check Approval
+                    if (userData.role === 'student' && userData.approved === false) {
+                        alert('حسابك بانتظار موافقة المربي. لا يمكنك الدخول حالياً.');
+                        await signOut();
+                        window.location.href = '../login.html';
+                        return;
+                    }
+
+                    // Update Name in Big Header
                     document.getElementById('studentName').textContent = userData.name || user.email.split('@')[0];
 
-                    // Update Balance (handled in student.js usually, but we can double check)
+                    // Update Name in Title Bar (New Request)
+                    const headerTitle = document.querySelector('.header-title');
+                    if (headerTitle) {
+                        // Keep title but append name small
+                        // Or replace? User said "keep their name in the corner at the title bar"
+                        // Let's create a specific element if not exists or append.
+                        const nameSpan = document.createElement('span');
+                        nameSpan.style.fontSize = '0.8rem';
+                        nameSpan.style.display = 'block';
+                        nameSpan.style.opacity = '0.8';
+                        nameSpan.textContent = `مرحباً، ${userData.name}`;
+                        headerTitle.appendChild(nameSpan);
+                    }
+
+                    // Update Balance
                     if (document.getElementById('balanceDisplay')) {
                         document.getElementById('balanceDisplay').textContent = userData.balance || 0;
                     }
