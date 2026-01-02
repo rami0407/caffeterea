@@ -175,7 +175,12 @@ async function submitGuestOrder() {
 
     } catch (error) {
         console.error('Order Error:', error);
-        showToast('حدث خطأ أثناء الطلب', true);
+        // Clean error message for display
+        let errorMsg = 'حدث خطأ أثناء الطلب: ' + error.message;
+        if (error.code === 'permission-denied') {
+            errorMsg = 'عذراً، ليس لديك صلاحية لإرسال الطلب (Permission Denied).';
+        }
+        showToast(errorMsg, true);
     } finally {
         const btn = document.getElementById('btnCheckout');
         if (btn) {
