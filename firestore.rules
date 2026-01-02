@@ -19,11 +19,12 @@ service cloud.firestore {
     // Users:
     // - Users can read their own profile
     // - Admin can read/write all
-    // - SPECIAL: Allow specific admin email to write their own profile (Bootstrapping)
+    // - TEMPORARY: Allow authenticated users to create their own profile (for bootstrapping)
     match /users/{userId} {
       allow read: if isOwner(userId) || hasRole('admin') || hasRole('educator') || hasRole('cafeteria');
-      // Admin update only, or users editing their own (limited)
-      allow write: if hasRole('admin') || (isOwner(userId) && request.resource.data.role == resource.data.role);
+      // TEMP: Allow authenticated users to create their profile
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if hasRole('admin') || (isOwner(userId) && request.resource.data.role == resource.data.role);
     }
 
     // Products:
