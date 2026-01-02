@@ -148,6 +148,17 @@ function onAuthStateChange(callback) {
     });
 }
 
+// Get all users (Admin only)
+async function getAllUsers() {
+    try {
+        const snapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('❌ Error getting users:', error);
+        return [];
+    }
+}
+
 // ========================================
 // Database Functions - Products
 // ========================================
