@@ -81,8 +81,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
-    <script src="../js/i18n.js"></script>
+    <script src="../js/firebase-config.js?v=2.7"></script>
+    <script src="../js/i18n.js?v=2.7"></script>
     <script>
         // Sample orders for demo
         const sampleOrders = [
@@ -141,27 +141,53 @@
             loadOrders();
         });
 
+        let unsubscribe = null;
+        let previousReadyCount = 0;
+
         async function loadOrders() {
             onAuthStateChange(async ({ user, userData }) => {
                 if (user) {
                     const activeContainer = document.getElementById('activeOrders');
-                    const historyContainer = document.getElementById('orderHistory');
 
-                    // Show loading state
+                    // Show loading state initially
                     activeContainer.innerHTML = '<div class="spinner"></div>';
 
-                    try {
-                        const orders = await getStudentOrders(user.uid);
+                    if (unsubscribe) unsubscribe();
+
+                    unsubscribe = subscribeToStudentOrders(user.uid, (orders) => {
                         renderOrders(orders);
-                    } catch (error) {
-                        console.error("Error loading orders:", error);
-                        activeContainer.innerHTML = '<p class="error-text">حدث خطأ في تحميل الطلبات</p>';
-                    }
+
+                        // Check for new ready orders
+                        const readyCount = orders.filter(o => o.status === 'ready').length;
+                        if (readyCount > previousReadyCount) {
+                            showToast('🎉 طلبك جاهز للاستلام!', 'success');
+                            // Optional: Play sound if available
+                        }
+                        previousReadyCount = readyCount;
+                    });
+
                 } else {
                     // Redirect if not logged in
                     window.location.href = '../login.html';
                 }
             });
+        }
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (unsubscribe) unsubscribe();
+        });
+
+        function showToast(message, type = 'success') {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = message;
+            toast.className = `toast toast-${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function renderOrders(orders) {

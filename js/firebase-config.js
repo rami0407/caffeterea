@@ -321,7 +321,7 @@ async function createOrder(studentId, items, total) {
     }
 }
 
-// Get orders for student
+// Get orders for student (One-time fetch)
 async function getStudentOrders(studentId) {
     try {
         const snapshot = await db.collection('orders')
@@ -334,6 +334,20 @@ async function getStudentOrders(studentId) {
         console.error('❌ Error getting orders:', error);
         return [];
     }
+}
+
+// Subscribe to student orders (Real-time)
+function subscribeToStudentOrders(studentId, callback) {
+    return db.collection('orders')
+        .where('studentId', '==', studentId)
+        .orderBy('createdAt', 'desc')
+        .limit(20)
+        .onSnapshot(snapshot => {
+            const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            callback(orders);
+        }, error => {
+            console.error("Error subscribing to student orders:", error);
+        });
 }
 
 // Get pending orders (for cafeteria)
