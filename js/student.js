@@ -359,7 +359,6 @@ document.querySelectorAll('.lang-mini-btn').forEach(btn => {
         renderCart();
     });
 });
-}
 
 // Cart functions
 function loadCart() {
