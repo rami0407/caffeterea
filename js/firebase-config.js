@@ -29,6 +29,11 @@ function initializeFirebase() {
         auth = firebase.auth();
         db = firebase.firestore();
 
+        // Expose to window for other scripts
+        window.app = app;
+        window.auth = auth;
+        window.db = db;
+
         // Set RTL language for auth UI
         auth.languageCode = 'ar';
 
@@ -192,18 +197,28 @@ async function getProducts() {
 }
 
 // Get ALL products (Admin - All)
+// Get ALL products (Admin - All)
 async function getAllProducts() {
     try {
+        // Try server-side sorting first
         const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-        console.error('❌ Error getting all products:', error);
-        // Fallback to basic get if order fails (index issue)
+        console.warn('⚠️ getAllProducts: Server-side sort failed (missing index?), falling back to client-side sort.', error);
+        // Fallback: Get all and sort in memory
         try {
             const snapshot = await db.collection('products').get();
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // Manual Sort (Newest first)
+            return products.sort((a, b) => {
+                const timeA = a.createdAt ? a.createdAt.toMillis() : 0;
+                const timeB = b.createdAt ? b.createdAt.toMillis() : 0;
+                return timeB - timeA;
+            });
         } catch (e) {
-            return [];
+            console.error('❌ getAllProducts: Fatal error', e);
+            throw e; // Let the caller handle the error
         }
     }
 }

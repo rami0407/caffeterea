@@ -248,7 +248,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="../js/firebase-config.js?v=3"></script>
+    <script src="../js/firebase-config.js?v=4"></script>
 
     <script>
         let db;
@@ -364,7 +364,14 @@
                 `).join('');
             } catch (error) {
                 console.error("Load Products Error:", error);
-                grid.innerHTML = `<p style="color:red">فشل تحميل المنتجات: ${error.message}</p>`;
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 20px; background: #fee2e2; border-radius: 10px; border: 1px solid #ef4444;">
+                        <span style="font-size: 2rem;">⚠️</span>
+                        <p style="color: #b91c1c; font-weight: bold; margin: 10px 0;">حدث خطأ أثناء تحميل المنتجات</p>
+                        <code style="display: block; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 4px; font-size: 0.8rem;">${error.message}</code>
+                        <button onclick="loadProducts()" style="margin-top: 10px; padding: 5px 15px; cursor: pointer;">محاولة مرة أخرى</button>
+                    </div>
+                `;
             }
         }
 

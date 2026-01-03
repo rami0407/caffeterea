@@ -152,6 +152,7 @@ async function submitGuestOrder() {
 
     const orderData = {
         userId: 'guest',
+        studentId: null, // Explicitly null to ensure rule compliance
         guestName: guestName,
         items: cart,
         totalPoints: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
@@ -159,6 +160,17 @@ async function submitGuestOrder() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         date: new Date().toISOString().split('T')[0]
     };
+
+    // Check if DB is initialized (fallback to window.db)
+    if (!db && window.db) {
+        db = window.db;
+    }
+
+    if (!db) {
+        showToast('خطأ: فشل الاتصال بقاعدة البيانات. حاول تحديث الصفحة.', true);
+        console.error('Database not initialized');
+        return;
+    }
 
     try {
         const btn = document.getElementById('btnCheckout');
@@ -174,13 +186,21 @@ async function submitGuestOrder() {
         document.getElementById('guestNameInput').value = '';
 
     } catch (error) {
-        console.error('Order Error:', error);
-        // Clean error message for display
-        let errorMsg = 'حدث خطأ أثناء الطلب: ' + error.message;
-        if (error.code === 'permission-denied') {
-            errorMsg = 'عذراً، ليس لديك صلاحية لإرسال الطلب (Permission Denied).';
+        console.error('Order Error FULL OBJECT:', error);
+
+        // Show raw error for debugging
+        const errorCode = error.code || 'unknown';
+        const errorMsg = error.message || JSON.stringify(error);
+
+        let displayMsg = `خطأ (${errorCode}): ${errorMsg}`;
+
+        if (errorCode === 'permission-denied') {
+            displayMsg = 'عذراً، ليس لديك صلاحية لإرسال الطلب (Permission Denied). تأكد من إعدادات الأمان.';
+        } else if (errorCode === 'unavailable') {
+            displayMsg = 'عذراً، الخدمة غير متوفرة حالياً (Offline). تأكد من اتصالك بالإنترنت.';
         }
-        showToast(errorMsg, true);
+
+        showToast(displayMsg, true);
     } finally {
         const btn = document.getElementById('btnCheckout');
         if (btn) {
@@ -188,21 +208,21 @@ async function submitGuestOrder() {
             btn.disabled = false;
         }
     }
-}
 
-// Utility: Toast
-function showToast(msg, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = `toast ${isError ? 'error' : 'success'}`;
-    toast.textContent = msg;
-    document.body.appendChild(toast);
+    // Utility: Toast
+    function showToast(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : 'success'}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
 
-    // Add CSS for toast if not exists
-    setTimeout(() => {
-        toast.classList.add('show');
+        // Add CSS for toast if not exists
         setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }, 100);
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }, 100);
+    }
 }
