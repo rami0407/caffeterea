@@ -170,8 +170,8 @@ function renderProducts() {
         : products.filter(p => p.category === currentCategory);
 
     grid.innerHTML = filtered.map(product => {
-        // Handle bilingual names (fallback to name property if name_ar missing, or vice versa)
-        const name = product.name_ar || product.name || 'منتج';
+        // Better name fallback: try Arabic, then Hebrew, then generic
+        const name = product.name_ar || product.name_he || product.name || 'منتج';
 
         return `
         <div class="guest-product-card">

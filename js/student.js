@@ -253,13 +253,18 @@ function renderProducts() {
 
     grid.innerHTML = filteredProducts.map(product => {
         const trafficColor = calculateTrafficLight(product.calories || 0, product.sugar || 0);
+        // Better fallback: check both language versions
+        const productName = lang === 'he'
+            ? (product.name_he || product.name_ar || product.name || 'منتج')
+            : (product.name_ar || product.name_he || product.name || 'منتج');
+
         return `
         <div class="product-card" data-id="${product.id}">
             <div class="nutrition-badge ${trafficColor}">
                 ${trafficColor === 'green' ? '●' : trafficColor === 'yellow' ? '●' : '●'}
             </div>
             <div class="product-image">${product.icon || '🍽️'}</div>
-            <h3 class="product-name">${lang === 'he' ? product.name_he : product.name_ar}</h3>
+            <h3 class="product-name">${productName}</h3>
             <div class="product-price">${product.price}</div>
             <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
                 ${t('addToCart')} +
