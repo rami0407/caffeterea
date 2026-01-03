@@ -296,27 +296,42 @@ async function handleAddProduct(e) {
         name_ar: document.getElementById('prodNameAr').value.trim(),
         name_he: document.getElementById('prodNameHe').value.trim(),
         price: parseInt(document.getElementById('prodPrice').value),
-        category: document.getElementById('prodCategory').value,
-        icon: document.getElementById('prodIcon').value.trim() || '📦',
-        trafficLight: document.getElementById('prodTraffic').value,
-        available: true,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    try {
-        await db.collection('products').add(productData);
-
-        showToast('تم إضافة المنتج الجديد بنجاح! 🎉', 'success');
-        e.target.reset(); // Clear form
-
-        // Switch back to orders view or stay? Let's stay to add more.
-    } catch (error) {
-        console.error('Error adding product:', error);
-        showToast('حدث خطأ أثناء الإضافة', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = '✨ إضافة للمائمة';
+        let category = document.getElementById('prodCategory').value;
+        if(category === 'other') {
+            const customInput = document.getElementById('customCategoryInput').value.trim();
+    if (customInput) {
+        category = customInput; // Store the custom string directly
+    } else {
+        // Fallback just in case validation failed
+        category = 'other';
     }
+}
+
+const productData = {
+    name_ar: document.getElementById('prodNameAr').value.trim(),
+    name_he: document.getElementById('prodNameHe').value.trim(),
+    price: parseInt(document.getElementById('prodPrice').value),
+    category: category,
+    icon: document.getElementById('prodIcon').value.trim() || '📦',
+    trafficLight: document.getElementById('prodTraffic').value,
+    available: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+};
+
+try {
+    await db.collection('products').add(productData);
+
+    showToast('تم إضافة المنتج الجديد بنجاح! 🎉', 'success');
+    e.target.reset(); // Clear form
+
+    // Switch back to orders view or stay? Let's stay to add more.
+} catch (error) {
+    console.error('Error adding product:', error);
+    showToast('حدث خطأ أثناء الإضافة', 'error');
+} finally {
+    btn.disabled = false;
+    btn.textContent = '✨ إضافة للمائمة';
+}
 }
 
 // Call check on load

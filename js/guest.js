@@ -41,11 +41,42 @@ async function loadProducts() {
             console.error('getProducts function not found');
         }
 
+        renderCategories(); // Dynamic categories
         renderProducts();
     } catch (error) {
         console.error('Error loading products:', error);
         if (grid) grid.innerHTML = '<p class="error-msg">حدث خطأ في تحميل المنتجات. الرجاء المحاولة لاحقاً.</p>';
     }
+}
+
+// Setup dynamic categories
+function renderCategories() {
+    const nav = document.querySelector('.guest-categories');
+    if (!nav) return;
+
+    // Get unique categories from products
+    const categories = new Set(['all']); // Always start with 'all'
+    products.forEach(p => {
+        if (p.category) categories.add(p.category);
+    });
+
+    // Known translations for standard categories
+    const catLabels = {
+        'all': '🍽️ الكل',
+        'sandwiches': '🥪 سندويشات',
+        'drinks': '🥤 مشروبات',
+        'snacks': '🍪 وجبات خفيفة',
+        'healthy': '🥗 صحي'
+    };
+
+    nav.innerHTML = Array.from(categories).map(cat => {
+        const label = catLabels[cat] || `📦 ${cat}`; // Fallback for custom categories
+        const isActive = currentCategory === cat ? 'active' : '';
+        return `<button class="category-chip ${isActive}" data-category="${cat}">${label}</button>`;
+    }).join('');
+
+    // Re-attach listeners
+    setupCategoryListeners();
 }
 
 function setupCategoryListeners() {

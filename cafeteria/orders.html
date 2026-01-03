@@ -95,12 +95,15 @@
                         </div>
                         <div class="form-group">
                             <label>الفئة</label>
-                            <select id="prodCategory" required>
+                            <select id="prodCategory" required onchange="toggleCustomCategory(this.value)">
                                 <option value="sandwiches">سندويشات 🥪</option>
                                 <option value="drinks">مشروبات 🥤</option>
                                 <option value="snacks">وجبات خفيفة 🍪</option>
                                 <option value="healthy">صحي 🥗</option>
+                                <option value="other">أخرى... ✏️</option>
                             </select>
+                            <input type="text" id="customCategoryInput" style="display:none; margin-top:5px;"
+                                placeholder="اكتب اسم الفئة الجديدة...">
                         </div>
                     </div>
 
@@ -245,6 +248,19 @@
             margin-top: 10px;
         }
     </style>
+    <script>
+        function toggleCustomCategory(value) {
+            const input = document.getElementById('customCategoryInput');
+            if (value === 'other') {
+                input.style.display = 'block';
+                input.required = true;
+                input.focus();
+            } else {
+                input.style.display = 'none';
+                input.required = false;
+            }
+        }
+    </script>
 </body>
 
 </html>

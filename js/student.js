@@ -201,6 +201,7 @@ async function loadProducts() {
                 products = await getProducts();
             }
         }
+        renderCategories(); // Render dynamic categories
         renderProducts();
     } catch (error) {
         console.error('Error loading products:', error);
@@ -251,19 +252,56 @@ function renderProducts() {
     }).join('');
 }
 
-// Setup event listeners
-function setupEventListeners() {
-    // Category buttons
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCategory = btn.dataset.category;
-            renderProducts();
-        });
+// Setup dynamic categories
+function renderCategories() {
+    const nav = document.querySelector('.categories-nav');
+    if (!nav) return;
+
+    // Get unique categories from products
+    const categories = new Set(['all']); // Always start with 'all'
+    products.forEach(p => {
+        if (p.category) categories.add(p.category);
     });
 
+    // Known translations for standard categories
+    const catLabels = {
+        'all': '🍽️ الكل',
+        'sandwiches': '🥪 سندويشات',
+        'drinks': '🥤 مشروبات',
+        'snacks': '🍪 وجبات خفيفة',
+        'healthy': '🥗 صحي'
+    };
+
+    nav.innerHTML = Array.from(categories).map(cat => {
+        // Simple translation fallback for now, ideally use i18n
+        let label = catLabels[cat] || `📦 ${cat}`;
+
+        // Try i18n key lookup if it exists
+        if (typeof t === 'function' && catLabels[cat]) {
+            // If we had keys for them, but for now we stick to the map above or custom input
+        }
+
+        const isActive = currentCategory === cat ? 'active' : '';
+        return `
+            <button class="category-btn ${isActive}" data-category="${cat}">
+                <span class="category-icon">${cat === 'all' ? '🍽️' : '📦'}</span>
+                <span>${label}</span>
+            </button>
+        `;
+    }).join('');
+
+    // Re-attach listeners
+    setupCategoryListeners();
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Category buttons logic is handled after render
+    setupCategoryListeners();
+
     // Cart button
+    // ... rest of listeners
+
     document.getElementById('cartBtn').addEventListener('click', openCart);
     document.getElementById('closeCartBtn').addEventListener('click', closeCart);
     document.getElementById('cartOverlay').addEventListener('click', closeCart);
@@ -298,17 +336,29 @@ function setupEventListeners() {
         });
     });
     document.getElementById('submitFeedbackBtn').addEventListener('click', submitFeedback);
+}
 
-    // Language buttons
-    document.querySelectorAll('.lang-mini-btn').forEach(btn => {
+function setupCategoryListeners() {
+    document.querySelectorAll('.category-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.lang-mini-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            setLanguage(btn.dataset.lang);
+            currentCategory = btn.dataset.category;
             renderProducts();
-            renderCart();
         });
     });
+}
+
+// Language buttons
+document.querySelectorAll('.lang-mini-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-mini-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        setLanguage(btn.dataset.lang);
+        renderProducts();
+        renderCart();
+    });
+});
 }
 
 // Cart functions
