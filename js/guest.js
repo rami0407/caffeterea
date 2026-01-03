@@ -235,16 +235,23 @@ async function submitGuestOrder() {
         return;
     }
 
+    // Generate order number (simple random for guests)
+    const orderNumber = Math.floor(1000 + Math.random() * 9000);
+
     const orderData = {
         userId: 'guest',
         studentId: null, // Explicitly null to ensure rule compliance
         guestName: guestName,
+        orderNumber: orderNumber, // Added orderNumber
         items: cart,
+        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
         totalPoints: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
         status: 'pending',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         date: new Date().toISOString().split('T')[0]
     };
+
+    console.log('📦 Guest Order Data:', orderData); // Debug log
 
     // Check if DB is initialized (fallback to window.db or re-init)
     if (!db) {
@@ -269,7 +276,8 @@ async function submitGuestOrder() {
         btn.textContent = 'جاري الطلب...';
         btn.disabled = true;
 
-        await db.collection('orders').add(orderData);
+        const docRef = await db.collection('orders').add(orderData);
+        console.log('✅ Guest Order Created! ID:', docRef.id, 'OrderNum:', orderNumber);
 
         showToast('تم إرسال الطلب بنجاح! ✅');
         clearCart();
@@ -299,21 +307,21 @@ async function submitGuestOrder() {
             btn.disabled = false;
         }
     }
+}
 
-    // Utility: Toast
-    function showToast(msg, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = `toast ${isError ? 'error' : 'success'}`;
-        toast.textContent = msg;
-        document.body.appendChild(toast);
+// Utility: Toast
+function showToast(msg, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${isError ? 'error' : 'success'}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
 
-        // Add CSS for toast if not exists
+    // Add CSS for toast if not exists
+    setTimeout(() => {
+        toast.classList.add('show');
         setTimeout(() => {
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }, 100);
-    }
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }, 100);
 }

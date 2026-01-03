@@ -50,6 +50,8 @@ function loadOrders() {
     try {
         if (typeof subscribeToPendingOrders === 'function') {
             unsubscribe = subscribeToPendingOrders((newOrders) => {
+                console.log('🔔 Orders received from Firebase:', newOrders.length, newOrders);
+
                 const oldCount = orders.filter(o => o.status === 'pending').length;
                 orders = newOrders;
 
@@ -92,6 +94,13 @@ function renderOrders() {
 
     const filteredOrders = orders.filter(o => o.status === currentStatus);
 
+    console.log('📋 Rendering orders:', {
+        total: orders.length,
+        filtered: filteredOrders.length,
+        status: currentStatus,
+        orders: filteredOrders
+    });
+
     if (filteredOrders.length === 0) {
         container.innerHTML = '';
         emptyState.classList.remove('hidden');
@@ -102,6 +111,8 @@ function renderOrders() {
 
     container.innerHTML = filteredOrders.map(order => {
         const timeAgo = getTimeAgo(order.createdAt);
+        const isGuest = order.userId === 'guest' || order.guestName;
+        const customerName = isGuest ? `ضيف: ${order.guestName}` : '';
 
         let actionButtons = '';
         if (order.status === 'pending') {
@@ -132,10 +143,11 @@ function renderOrders() {
                 <div class="cafe-order-header">
                     <div class="order-number-large">
                         <span class="label">طلب رقم</span>
-                        <span class="number">${order.orderNumber}</span>
+                        <span class="number">${order.orderNumber || '---'}</span>
                     </div>
                     <span class="order-time-badge">${timeAgo}</span>
                 </div>
+                ${isGuest ? `<div style="background: #ffe4e6; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; color: #be123c; font-weight: 600; text-align: center;">👤 ${customerName}</div>` : ''}
                 
                 <div class="cafe-order-items">
                     ${order.items.map(item => `
@@ -292,46 +304,43 @@ async function handleAddProduct(e) {
     btn.disabled = true;
     btn.textContent = '⏳ جاري الإضافة...';
 
+    // Determine category
+    let category = document.getElementById('prodCategory').value;
+    if (category === 'other') {
+        const customInput = document.getElementById('customCategoryInput').value.trim();
+        if (customInput) {
+            category = customInput; // Store the custom string directly
+        } else {
+            // Fallback just in case validation failed
+            category = 'other';
+        }
+    }
+
     const productData = {
         name_ar: document.getElementById('prodNameAr').value.trim(),
         name_he: document.getElementById('prodNameHe').value.trim(),
         price: parseInt(document.getElementById('prodPrice').value),
-        let category = document.getElementById('prodCategory').value;
-        if(category === 'other') {
-            const customInput = document.getElementById('customCategoryInput').value.trim();
-    if (customInput) {
-        category = customInput; // Store the custom string directly
-    } else {
-        // Fallback just in case validation failed
-        category = 'other';
+        category: category,
+        icon: document.getElementById('prodIcon').value.trim() || '📦',
+        trafficLight: document.getElementById('prodTraffic').value,
+        available: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection('products').add(productData);
+
+        showToast('تم إضافة المنتج الجديد بنجاح! 🎉', 'success');
+        e.target.reset(); // Clear form
+
+        // Switch back to orders view or stay? Let's stay to add more.
+    } catch (error) {
+        console.error('Error adding product:', error);
+        showToast('حدث خطأ أثناء الإضافة', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '✨ إضافة للمائمة';
     }
-}
-
-const productData = {
-    name_ar: document.getElementById('prodNameAr').value.trim(),
-    name_he: document.getElementById('prodNameHe').value.trim(),
-    price: parseInt(document.getElementById('prodPrice').value),
-    category: category,
-    icon: document.getElementById('prodIcon').value.trim() || '📦',
-    trafficLight: document.getElementById('prodTraffic').value,
-    available: true,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-};
-
-try {
-    await db.collection('products').add(productData);
-
-    showToast('تم إضافة المنتج الجديد بنجاح! 🎉', 'success');
-    e.target.reset(); // Clear form
-
-    // Switch back to orders view or stay? Let's stay to add more.
-} catch (error) {
-    console.error('Error adding product:', error);
-    showToast('حدث خطأ أثناء الإضافة', 'error');
-} finally {
-    btn.disabled = false;
-    btn.textContent = '✨ إضافة للمائمة';
-}
 }
 
 // Call check on load
