@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="مسابقة أجمل شعار - مقصف المعرفة">
-    <title>مسابقة أجمل شعار | مقصف المعرفة</title>
+    <meta name="description" content="ساحة المعرفة - مقصف المعرفة">
+    <title>ساحة المعرفة | مقصف المعرفة</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -14,141 +14,368 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/guest.css">
     <style>
+        /* Premium Hero Section */
+        .competition-hero {
+            position: relative;
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white;
+            border-radius: 0 0 40px 40px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .competition-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="%23ffffff" fill-opacity="0.1" d="M0,0 Q300,100 600,50 T1200,50 L1200,0 Z"/></svg>') repeat-x bottom;
+            opacity: 0.3;
+        }
+
+        .competition-hero h1 {
+            position: relative;
+            z-index: 1;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.6s ease;
+        }
+
+        .competition-hero p {
+            position: relative;
+            z-index: 1;
+            font-size: 1.2rem;
+            opacity: 0.95;
+            animation: slideDown 0.6s ease 0.1s backwards;
+        }
+
+        /* Premium Form Card */
+        .upload-card {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            max-width: 650px;
+            margin: -60px auto 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            animation: slideUp 0.6s ease;
+        }
+
+        .upload-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #334155;
+            font-size: 1.05rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Premium Feed */
         .feed-container {
-            max-width: 700px;
+            max-width: 750px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
+            padding: 0 15px;
         }
 
         .post-card {
             background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            animation: fadeIn 0.5s ease;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 0.5s ease backwards;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
 
         .post-header {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            gap: 12px;
+            margin-bottom: 18px;
+            gap: 14px;
         }
 
         .post-avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .post-info h3 {
             margin: 0;
-            font-size: 1.1rem;
-            color: var(--text-color);
+            font-size: 1.15rem;
+            color: #1e293b;
+            font-weight: 700;
         }
 
         .post-date {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #94a3b8;
+            margin-top: 2px;
         }
 
         .post-body {
             font-size: 1.1rem;
-            line-height: 1.6;
-            color: #334155;
+            line-height: 1.8;
+            color: #475569;
             margin-bottom: 20px;
             white-space: pre-wrap;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-right: 4px solid #667eea;
         }
 
         .post-actions {
-            border-top: 1px solid #f1f5f9;
-            padding-top: 15px;
+            border-top: 2px solid #f1f5f9;
+            padding-top: 18px;
             display: flex;
-            gap: 20px;
+            gap: 15px;
         }
 
-        /* Reusing social-btn styles */
         .action-btn {
             background: transparent;
-            border: none;
+            border: 2px solid transparent;
             color: #64748b;
             font-family: inherit;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 15px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            font-weight: 500;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .action-btn:hover {
             background: #f1f5f9;
-            color: var(--primary-color);
+            color: #667eea;
+            border-color: #667eea;
+            transform: translateY(-2px);
         }
 
         .action-btn.active {
-            color: #ff4757;
-            background: #fff0f1;
+            color: #ef4444;
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+
+        .action-btn .icon {
+            font-size: 1.2rem;
         }
 
         .comments-section {
             display: none;
             background: #f8fafc;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
         }
 
         .comments-section.show {
             display: block;
+            animation: slideDown 0.3s ease;
         }
 
         .comments-list {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
         .comment-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-right: 3px solid #667eea;
         }
 
-        .comment-item:last-child {
-            border-bottom: none;
+        .comment-item strong {
+            color: #667eea;
+            font-weight: 700;
         }
 
         .comment-form {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .comment-input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
             font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
-        @keyframes fadeIn {
+        .comment-input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .comment-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .comment-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(30px);
             }
 
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .competition-hero h1 {
+                font-size: 2rem;
+            }
+
+            .upload-card {
+                margin: -40px 15px 30px;
+                padding: 25px;
+            }
+
+            .post-card {
+                padding: 20px;
+            }
+
+            .post-body {
+                font-size: 1rem;
             }
         }
     </style>
@@ -180,11 +407,11 @@
         <p data-i18n="competitionDesc">شارك أفكارك وتواصل مع زملائك في بيئة إيجابية</p>
     </section>
 
-    <!-- Upload Form -->
-    <!-- Upload Form (Now Post Form) -->
+    <!-- Post Form -->
     <main class="competition-content">
         <div class="upload-card">
-            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="shareThoughts">شاركنا أفكارك</h2>
+            <h2 style="text-align: center; margin-bottom: 25px; color: #1e293b; font-size: 1.5rem;"
+                data-i18n="shareThoughts">شاركنا أفكارك</h2>
 
             <form id="postForm">
                 <div class="form-group">
@@ -198,12 +425,7 @@
                         placeholder="ما الذي يدور في ذهنك؟ ..."></textarea>
                 </div>
 
-                <div class="form-group" style="display:none">
-                    <!-- Hidden field for compatibility/future expansion -->
-                    <input type="file" id="logoFile">
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
                     <span data-i18n="publishBtn">نشر</span>
                 </button>
             </form>
@@ -211,9 +433,9 @@
 
         <!-- Feed -->
         <section class="gallery-section">
-            <h2 style="text-align: center; margin-bottom: 20px;">ساحة النقاش</h2>
+            <h2 style="text-align: center; margin-bottom: 30px; color: #1e293b; font-size: 1.8rem;">ساحة النقاش 💬</h2>
             <div class="feed-container" id="postsFeed">
-                <!-- Items will be loaded here -->
+                <!-- Posts will be loaded here -->
             </div>
         </section>
     </main>
@@ -229,24 +451,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
 
-    <script src="js/firebase-config.js?v=2.8"></script>
-    <script src="js/i18n.js?v=2.8"></script>
-    <script src="js/competition.js?v=2.8"></script>
+    <script src="js/firebase-config.js?v=2.9"></script>
+    <script src="js/i18n.js?v=2.9"></script>
+    <script src="js/competition.js?v=2.9"></script>
 
     <script>
-        // UI Helpers
-        function previewImage(input) {
-            const preview = document.getElementById('imagePreview');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
         // Initialize i18n
         document.addEventListener('DOMContentLoaded', () => {
             initI18n();
@@ -259,6 +468,13 @@
                     setLanguage(btn.dataset.lang);
                 });
             });
+
+            // Stagger animation for existing posts
+            setTimeout(() => {
+                document.querySelectorAll('.post-card').forEach((card, index) => {
+                    card.style.animationDelay = `${index * 0.1}s`;
+                });
+            }, 100);
         });
     </script>
 </body>
