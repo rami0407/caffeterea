@@ -16,20 +16,30 @@
         /* Landing Page Specific Overrides */
         .landing-container {
             min-height: 80vh !important;
-            /* Reduce minimum height */
-            padding-top: 4rem !important;
-            padding-bottom: 2rem !important;
+            padding-top: 6rem !important;
+            /* Adjusted for top nav */
+            padding-bottom: 1rem !important;
             justify-content: flex-start !important;
-            /* Align to top instead of center */
+            gap: 1rem;
+            /* Control gap between flex items */
         }
 
         .hero {
-            margin-bottom: 2rem !important;
-            /* Reduce bottom margin */
+            margin-bottom: 0.5rem !important;
+            /* Minimal margin */
         }
 
         .user-selection {
             margin-top: 0 !important;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .selection-title {
+            margin-bottom: 1.5rem !important;
+            /* Tighter title space */
         }
 
         .top-nav {
