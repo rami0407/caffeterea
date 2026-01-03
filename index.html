@@ -72,6 +72,30 @@
             z-index: 5;
         }
 
+        /* School Logo Corner */
+        .school-logo-corner {
+            position: absolute;
+            top: 130px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .school-logo-corner:hover {
+            transform: scale(1.05);
+        }
+
+        .school-logo-corner img {
+            width: 70px;
+            height: 70px;
+            display: block;
+            border-radius: 50%;
+        }
+
         /* Top Nav Adjustments */
         .top-nav {
             position: absolute;
@@ -127,6 +151,11 @@
     <div class="landing-container cafeteria-theme">
         <!-- Background Image -->
         <div class="cafeteria-background"></div>
+
+        <!-- School Logo -->
+        <div class="school-logo-corner">
+            <img src="images/logo.png" alt="School Logo">
+        </div>
 
         <!-- User Type Selection (Redesigned) -->
         <!-- User Type Selection (Redesigned) -->
