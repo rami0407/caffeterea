@@ -291,7 +291,14 @@ async function generateOrderNumber() {
 // Create order
 async function createOrder(studentId, items, total) {
     try {
-        const orderNumber = await generateOrderNumber();
+        let orderNumber;
+        try {
+            orderNumber = await generateOrderNumber();
+        } catch (counterError) {
+            console.warn("⚠️ Counter access failed (likely permissions). Using fallback ID.", counterError.message);
+            // Fallback: Generate a random 4-digit number
+            orderNumber = Math.floor(1000 + Math.random() * 9000);
+        }
 
         const orderRef = await db.collection('orders').add({
             studentId,
