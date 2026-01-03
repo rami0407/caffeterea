@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Load products from Firebase
+let productsUnsubscribe = null; // Store unsubscribe function
+
 async function loadProducts() {
     const grid = document.getElementById('productsGrid');
     if (grid) grid.innerHTML = '<div class="spinner"></div><p style="text-align:center;width:100%;">جاري تحميل القائمة...</p>';
@@ -33,21 +35,30 @@ async function loadProducts() {
             initializeFirebase();
         }
 
-        // Fetch from Firestore
-        if (typeof getProducts === 'function') {
-            products = await getProducts();
-            console.log('✅ Loaded products:', products.length);
+        // Subscribe to products for real-time updates
+        if (typeof subscribeToProducts === 'function') {
+            productsUnsubscribe = subscribeToProducts((newProducts) => {
+                products = newProducts;
+                console.log('✅ Products updated:', products.length);
+                renderCategories(); // Update categories
+                renderProducts(); // Re-render products
+            });
         } else {
-            console.error('getProducts function not found');
+            console.error('subscribeToProducts function not found');
         }
 
-        renderCategories(); // Dynamic categories
-        renderProducts();
     } catch (error) {
         console.error('Error loading products:', error);
         if (grid) grid.innerHTML = '<p class="error-msg">حدث خطأ في تحميل المنتجات. الرجاء المحاولة لاحقاً.</p>';
     }
 }
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (productsUnsubscribe) {
+        productsUnsubscribe();
+    }
+});
 
 // Setup dynamic categories
 function renderCategories() {

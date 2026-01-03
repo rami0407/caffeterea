@@ -191,24 +191,41 @@ function checkAuthAndLoad() {
 }
 
 // Load products from Firebase
+let productsUnsubscribe = null;
+
 async function loadProducts() {
     try {
-        products = await getProducts();
-        if (products.length === 0) {
-            // Seed database if empty
-            if (typeof seedProducts === 'function') {
-                await seedProducts();
-                products = await getProducts();
-            }
+        // Subscribe to products for real-time updates
+        if (typeof subscribeToProducts === 'function') {
+            productsUnsubscribe = subscribeToProducts((newProducts) => {
+                products = newProducts;
+                console.log('✅ Student products updated:', products.length);
+
+                // If empty and seed available, seed once
+                if (products.length === 0 && typeof seedProducts === 'function') {
+                    seedProducts().then(() => {
+                        // Subscription will auto-update
+                    });
+                }
+
+                renderCategories();
+                renderProducts();
+            });
+        } else {
+            console.error('subscribeToProducts function not found');
         }
-        renderCategories(); // Render dynamic categories
-        renderProducts();
     } catch (error) {
         console.error('Error loading products:', error);
-        // Minimal fallback to avoid breaking UI completely if offline
         document.getElementById('productsGrid').innerHTML = '<p class="error-text">حدث خطأ في تحميل المنتجات</p>';
     }
 }
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (productsUnsubscribe) {
+        productsUnsubscribe();
+    }
+});
 
 // Load sample products (removed)
 function loadSampleProducts() {

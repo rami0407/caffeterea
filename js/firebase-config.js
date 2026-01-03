@@ -201,6 +201,20 @@ async function getProducts() {
     }
 }
 
+// Subscribe to products (Real-time updates)
+function subscribeToProducts(callback) {
+    return db.collection('products')
+        .where('available', '==', true)
+        .onSnapshot(snapshot => {
+            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            console.log('🔄 Products updated:', products.length);
+            callback(products);
+        }, error => {
+            console.error('❌ Error subscribing to products:', error);
+        });
+}
+
+
 // Get ALL products (Admin - All)
 // Get ALL products (Admin - All)
 async function getAllProducts() {
