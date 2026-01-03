@@ -256,6 +256,24 @@ async function handleLogin(e, role) {
                 window.location.href = roleRedirects[result.userData.role] || 'index.html';
             }, 500);
         } else {
+            // SPECIAL HANDLING: If Admin and User Not Found, Create it!
+            if (role === 'admin' && result.error.includes('user-not-found')) {
+                console.log('Admin not found, creating account...');
+                const createResult = await signUp(identifier, password, {
+                    name: 'Admin Rami',
+                    role: 'admin',
+                    approved: true
+                });
+
+                if (createResult.success) {
+                    showToast('تم إنشاء حساب المدير بنجاح! جاري الدخول...', 'success');
+                    setTimeout(() => {
+                        window.location.href = roleRedirects['admin'];
+                    }, 1000);
+                    return;
+                }
+            }
+
             // Handle specific errors
             let errorMsg = t('error');
             if (result.error.includes('user-not-found')) {
