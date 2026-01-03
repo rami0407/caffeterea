@@ -356,7 +356,7 @@ function subscribeToPendingOrders(callback) {
     // Note: Removed orderBy to avoid needing a manual composite index in Firestore Console.
     // We fetch based on status and sort in memory (client-side).
     return db.collection('orders')
-        .where('status', 'in', ['pending', 'preparing'])
+        .where('status', 'in', ['pending', 'preparing', 'ready'])
         .onSnapshot(snapshot => {
             const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
