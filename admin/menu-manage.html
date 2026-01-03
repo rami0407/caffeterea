@@ -251,143 +251,145 @@
     <script src="../js/firebase-config.js?v=4"></script>
 
     <script>
-        let db;
-        let currentUser;
-        let userData;
+        <script>
+        // Use global variables from firebase-config.js
+            // let db; // Conflcits with firebase-config.js
+            let currentUserData; // Renamed to avoid confusion if any
+
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const firebaseData = initializeFirebase();
-                if (!firebaseData) {
+            if (!firebaseData) {
                     throw new Error('فشل في تهيئة النظام (Firebase)');
                 }
-                db = firebaseData.db;
+            db = firebaseData.db;
 
                 // Wait for Auth State
                 onAuthStateChange(async (authData) => {
-                    currentUser = authData.user;
-                    userData = authData.userData;
+                currentUser = authData.user;
+            userData = authData.userData;
 
-                    if (!currentUser) {
-                        window.location.href = '../login.html'; // Redirect if not logged in
-                        return;
+            if (!currentUser) {
+                window.location.href = '../login.html'; // Redirect if not logged in
+            return;
                     }
 
-                    if (!userData || (userData.role !== 'admin' && userData.role !== 'cafeteria')) {
-                        document.body.innerHTML = '<h1 style="text-align:center; margin-top:50px;">⛔ غير مصرح لك بالوصول لهذه الصفحة</h1>';
-                        return;
+            if (!userData || (userData.role !== 'admin' && userData.role !== 'cafeteria')) {
+                document.body.innerHTML = '<h1 style="text-align:center; margin-top:50px;">⛔ غير مصرح لك بالوصول لهذه الصفحة</h1>';
+            return;
                     }
 
-                    // Logged in and authorized, load products
-                    await loadProducts();
+            // Logged in and authorized, load products
+            await loadProducts();
                 });
 
             } catch (error) {
                 console.error("Critical Error:", error);
-                document.getElementById('productsGrid').innerHTML = `
-                    <div style="text-align:center; color:red; padding:20px;">
-                        <p>⚠️ حدث خطأ أثناء التحميل</p>
-                        <small>${error.message}</small>
-                    </div>
-                `;
+            document.getElementById('productsGrid').innerHTML = `
+            <div style="text-align:center; color:red; padding:20px;">
+                <p>⚠️ حدث خطأ أثناء التحميل</p>
+                <small>${error.message}</small>
+            </div>
+            `;
             }
 
             // Handle Add Product
             document.getElementById('addProductForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const btn = e.target.querySelector('button');
-                const originalText = btn.textContent;
-                btn.textContent = 'جاري الحفظ... ⏳';
-                btn.disabled = true;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'جاري الحفظ... ⏳';
+            btn.disabled = true;
 
-                try {
+            try {
                     const productData = {
-                        nameAr: document.getElementById('prodNameAr').value,
-                        nameHe: document.getElementById('prodNameHe').value,
-                        price: parseInt(document.getElementById('prodPrice').value),
-                        category: document.getElementById('prodCategory').value,
-                        icon: document.getElementById('prodIcon').value,
-                        trafficLight: document.getElementById('prodTraffic').value,
-                        available: true
+                nameAr: document.getElementById('prodNameAr').value,
+            nameHe: document.getElementById('prodNameHe').value,
+            price: parseInt(document.getElementById('prodPrice').value),
+            category: document.getElementById('prodCategory').value,
+            icon: document.getElementById('prodIcon').value,
+            trafficLight: document.getElementById('prodTraffic').value,
+            available: true
                     };
 
-                    if (isNaN(productData.price)) {
+            if (isNaN(productData.price)) {
                         throw new Error('السعر يجب أن يكون رقماً صحيحاً');
                     }
 
-                    const result = await addProduct(productData);
-                    if (result && result.success) {
-                        showToast('تمت إضافة المنتج بنجاح! 🎉', 'success');
-                        e.target.reset();
-                        await loadProducts();
+            const result = await addProduct(productData);
+            if (result && result.success) {
+                showToast('تمت إضافة المنتج بنجاح! 🎉', 'success');
+            e.target.reset();
+            await loadProducts();
                     } else {
                         throw new Error(result.error || 'فشل في الإضافة لسبب غير معروف');
                     }
                 } catch (error) {
-                    console.error("Add Product Error:", error);
-                    alert('خطأ في إضافة المنتج: ' + error.message + '\nError Code: ' + (error.code || 'N/A')); // Direct alert for visibility
-                    showToast('خطأ: ' + error.message, 'error');
+                console.error("Add Product Error:", error);
+            alert('خطأ في إضافة المنتج: ' + error.message + '\nError Code: ' + (error.code || 'N/A')); // Direct alert for visibility
+            showToast('خطأ: ' + error.message, 'error');
                 } finally {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                btn.textContent = originalText;
+            btn.disabled = false;
                 }
             });
         });
 
-        async function loadProducts() {
+            async function loadProducts() {
             const grid = document.getElementById('productsGrid');
             try {
                 grid.innerHTML = '<p>جاري تحميل المنتجات... ⏳</p>';
-                const products = await getAllProducts();
+            const products = await getAllProducts();
 
-                if (!products || products.length === 0) {
-                    grid.innerHTML = '<p>لا توجد منتجات حالياً 📭</p>';
-                    return;
+            if (!products || products.length === 0) {
+                grid.innerHTML = '<p>لا توجد منتجات حالياً 📭</p>';
+            return;
                 }
 
                 grid.innerHTML = products.map(p => `
-                    <div class="product-card">
-                        <div class="product-icon">${p.icon || '📦'}</div>
-                        <div class="product-info">
-                            <span class="product-name">${p.nameAr}</span>
-                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
-                                <span>${p.price} نقاط</span>
-                                <span>${p.nameHe || ''}</span>
-                            </div>
-                        </div>
-                        <div class="product-actions">
-                            <button class="btn-icon btn-delete" onclick="handleDeleteProduct('${p.id}')" title="حذف">
-                                🗑️
-                            </button>
-                        </div>
+            <div class="product-card">
+                <div class="product-icon">${p.icon || '📦'}</div>
+                <div class="product-info">
+                    <span class="product-name">${p.nameAr}</span>
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
+                        <span>${p.price} نقاط</span>
+                        <span>${p.nameHe || ''}</span>
                     </div>
-                `).join('');
+                </div>
+                <div class="product-actions">
+                    <button class="btn-icon btn-delete" onclick="handleDeleteProduct('${p.id}')" title="حذف">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+            `).join('');
             } catch (error) {
                 console.error("Load Products Error:", error);
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 20px; background: #fee2e2; border-radius: 10px; border: 1px solid #ef4444;">
-                        <span style="font-size: 2rem;">⚠️</span>
-                        <p style="color: #b91c1c; font-weight: bold; margin: 10px 0;">حدث خطأ أثناء تحميل المنتجات</p>
-                        <code style="display: block; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 4px; font-size: 0.8rem;">${error.message}</code>
-                        <button onclick="loadProducts()" style="margin-top: 10px; padding: 5px 15px; cursor: pointer;">محاولة مرة أخرى</button>
-                    </div>
-                `;
+            grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 20px; background: #fee2e2; border-radius: 10px; border: 1px solid #ef4444;">
+                <span style="font-size: 2rem;">⚠️</span>
+                <p style="color: #b91c1c; font-weight: bold; margin: 10px 0;">حدث خطأ أثناء تحميل المنتجات</p>
+                <code style="display: block; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 4px; font-size: 0.8rem;">${error.message}</code>
+                <button onclick="loadProducts()" style="margin-top: 10px; padding: 5px 15px; cursor: pointer;">محاولة مرة أخرى</button>
+            </div>
+            `;
             }
         }
 
-        async function handleDeleteProduct(id) {
+            async function handleDeleteProduct(id) {
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
                 await db.collection('products').doc(id).delete();
-                showToast('تم الحذف', 'success');
-                loadProducts();
+            showToast('تم الحذف', 'success');
+            loadProducts();
             } catch (e) {
                 console.error(e);
-                showToast('خطأ في الحذف', 'error');
+            showToast('خطأ في الحذف', 'error');
             }
         }
 
-        function showToast(msg, type) {
+            function showToast(msg, type) {
             const t = document.getElementById('toast');
             t.textContent = msg;
             t.className = `toast show ${type === 'error' ? 'error' : ''}`;
