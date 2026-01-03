@@ -13,54 +13,133 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/main.css?v=3.1">
     <style>
-        /* Landing Page Specific Overrides */
-        .landing-container {
-            min-height: 85vh !important;
-            /* increased slightly to ensure full view feel */
-            padding-top: 1rem !important;
-            /* drastically reduced top padding */
-            padding-bottom: 1rem !important;
-            justify-content: center !important;
-            /* Center the whole group vertically */
-            gap: 0.5rem;
-            /* Minimal gap between Hero and Cards */
-        }
-
-        .hero {
-            margin-bottom: 0 !important;
-            /* No bottom margin */
-            flex-grow: 0;
-            /* Prevent expanding */
-        }
-
-        .user-selection {
-            margin-top: 0 !important;
-            width: 100%;
+        /* Cafeteria Theme Landing Page */
+        .cafeteria-theme {
+            position: relative;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Background Image */
+        .cafeteria-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/cafeteria-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.9);
+            z-index: -1;
+        }
+
+        .cafeteria-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.1) 0%, rgba(249, 115, 22, 0.15) 100%);
+        }
+
+        /* Chalkboard Menu */
+        .chalkboard-menu {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            background: linear-gradient(145deg, #2d2d2d 0%, #1a1a1a 100%);
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.3),
+                inset 0 0 60px rgba(255, 255, 255, 0.05);
+            border: 8px solid #8b4513;
+            max-width: 350px;
+            text-align: center;
+            transform: rotate(-1deg);
+            z-index: 10;
+        }
+
+        .chalkboard-logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: brightness(1.2);
+        }
+
+        .chalkboard-title {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .chalkboard-subtitle {
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.3rem;
+            color: #fbbf24;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #e5e7eb;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .menu-items span {
+            position: relative;
+            padding-right: 5px;
+        }
+
+        /* Landing Container Adjustments */
+        .landing-container {
+            padding-top: 140px !important;
+        }
+
+        .user-selection {
+            margin-top: 80px !important;
+            padding: 0 20px;
         }
 
         .selection-title {
-            margin-bottom: 1rem !important;
-            /* Tighter title space */
-            margin-top: 0.5rem !important;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f2937;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem !important;
+            z-index: 5;
         }
 
-        .top-nav {
-            position: absolute;
-            top: 65px;
-            right: 20px;
-            /* Moved to Right */
-            left: auto;
-            display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px 15px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
+        /* Top Nav Adjustments */
+        position: absolute;
+        top: 65px;
+        right: 20px;
+        /* Moved to Right */
+        left: auto;
+        display: flex;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 15px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 100;
         }
 
         .nav-link {
@@ -98,27 +177,25 @@
         <a href="guest.html" class="nav-link">🍽️ القائمة</a>
     </nav>
 
-    <!-- Main Container -->
-    <div class="landing-container">
-        <!-- Decorative Elements -->
-        <div class="floating-leaf leaf-1">🌿</div>
-        <div class="floating-leaf leaf-2">🍃</div>
-        <div class="floating-leaf leaf-3">🌱</div>
-        <div class="floating-seed seed-1">🌾</div>
-        <div class="floating-seed seed-2">☘️</div>
 
-        <!-- Hero Section -->
-        <header class="hero">
-            <div class="logo-container">
-                <img src="images/logo.png" alt="School Logo" class="school-logo"
-                    style="width: 120px; height: auto; margin-bottom: 20px;">
-                <h1 class="logo-text" data-i18n="appName">مقصف المعرفة</h1>
-                <p class="logo-tagline" data-i18n="tagline">منظومة المقصف الذكي والمستدام</p>
-                <!-- Description moved to about.html -->
+    <!-- Main Container with Cafeteria Background -->
+    <div class="landing-container cafeteria-theme">
+        <!-- Background Image -->
+        <div class="cafeteria-background"></div>
+
+        <!-- Chalkboard Menu with Logo -->
+        <div class="chalkboard-menu">
+            <img src="images/logo.png" alt="School Logo" class="chalkboard-logo">
+            <h1 class="chalkboard-title">Smart Eco-Market</h1>
+            <p class="chalkboard-subtitle">مقصف المعرفة</p>
+            <div class="menu-items">
+                <span>✓ خيارات صحية</span>
+                <span>✓ قائمة اليوم</span>
+                <span>✓ حياة مستدامة</span>
             </div>
-        </header>
+        </div>
 
-        <!-- User Type Selection -->
+        <!-- User Type Selection (Redesigned) -->
         <!-- User Type Selection (Redesigned) -->
         <main class="user-selection">
             <h2 class="selection-title" data-i18n="selectRole">اختر نوع المستخدم</h2>
