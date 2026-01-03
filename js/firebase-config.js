@@ -315,13 +315,25 @@ async function getStudentOrders(studentId) {
 }
 
 // Get pending orders (for cafeteria)
+// Get pending orders (for cafeteria)
 function subscribeToPendingOrders(callback) {
+    // Note: Removed orderBy to avoid needing a manual composite index in Firestore Console.
+    // We fetch based on status and sort in memory (client-side).
     return db.collection('orders')
         .where('status', 'in', ['pending', 'preparing'])
-        .orderBy('createdAt', 'asc')
         .onSnapshot(snapshot => {
             const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // Client-side sort: Oldest first (FIFO)
+            orders.sort((a, b) => {
+                const timeA = a.createdAt ? a.createdAt.toMillis() : Date.now();
+                const timeB = b.createdAt ? b.createdAt.toMillis() : Date.now();
+                return timeA - timeB;
+            });
+
             callback(orders);
+        }, error => {
+            console.error("Error subscribing to orders:", error);
         });
 }
 
