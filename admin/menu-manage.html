@@ -185,7 +185,7 @@
 
             <!-- Add Product Form -->
             <div class="add-form-container">
-                <h3>➕ إضافة منتج جديد</h3>
+                <h3 id="formTitle">➕ إضافة منتج جديد</h3>
                 <form id="addProductForm">
                     <div class="form-grid">
                         <div class="form-group">
@@ -252,9 +252,37 @@
 
     <script>
         // Use global variables from firebase-config.js
-        // let db; // Conflcits with firebase-config.js
-        let currentUserData; // Renamed to avoid confusion if any
+        let currentUserData;
+        let editingProductId = null; // Track if we are editing
 
+        // Auto-Icon Dictionary
+        const iconMap = {
+            'apple': '🍎', 'تفاح': '🍎', 'تفوح': '🍎',
+            'banana': '🍌', 'موز': '🍌',
+            'orange': '🍊', 'برتقال': '🍊',
+            'juice': '🧃', 'عصير': '🧃',
+            'water': '💧', 'ماء': '💧', 'مياه': '💧',
+            'sandwich': '🥪', 'سندويش': '🥪', 'شطيرة': '🥪',
+            'burger': '🍔', 'برغر': '🍔',
+            'pizza': '🍕', 'بيتزا': '🍕',
+            'salad': '🥗', 'سلطة': '🥗',
+            'carrot': '🥕', 'جزر': '🥕',
+            'cucumber': '🥒', 'خيار': '🥒',
+            'chocolate': '🍫', 'شوكلاته': '🍫',
+            'cake': '🍰', 'كعكة': '🍰', 'كيك': '🍰',
+            'milk': '🥛', 'حليب': '🥛',
+            'coffee': '☕', 'قهوة': '☕',
+            'tea': '🍵', 'شاي': '🍵',
+            'cookie': '🍪', 'بسكويت': '🍪',
+            'ice cream': '🍦', 'مثلجات': '🍦'
+        };
+
+        const categoryIcons = {
+            'sandwiches': '🥪',
+            'drinks': '🧃',
+            'snacks': '🥨',
+            'healthy': '🥗'
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -262,41 +290,65 @@
                 if (!firebaseData) {
                     throw new Error('فشل في تهيئة النظام (Firebase)');
                 }
-                db = firebaseData.db;
+
+                // Auto-Icon Logic
+                const nameArInput = document.getElementById('prodNameAr');
+                const catInput = document.getElementById('prodCategory');
+                const iconInput = document.getElementById('prodIcon');
+
+                function updateIcon() {
+                    // Don't overwrite if user manually set it (unless empty)
+                    // But here we want to be helpful, so let's overwrite if it matches a keyword strongly
+                    const text = nameArInput.value.toLowerCase();
+                    let bestIcon = '';
+
+                    // 1. Check specific keywords
+                    for (const [key, icon] of Object.entries(iconMap)) {
+                        if (text.includes(key)) {
+                            bestIcon = icon;
+                            break;
+                        }
+                    }
+
+                    // 2. If no keyword, use category default
+                    if (!bestIcon) {
+                        bestIcon = categoryIcons[catInput.value] || '📦';
+                    }
+
+                    // Update input
+                    if (bestIcon) iconInput.value = bestIcon;
+                }
+
+                nameArInput.addEventListener('input', updateIcon);
+                catInput.addEventListener('change', updateIcon);
 
                 // Wait for Auth State
                 onAuthStateChange(async (authData) => {
-                    currentUser = authData.user;
-                    userData = authData.userData;
+                    const user = authData.user;
+                    currentUserData = authData.userData;
 
-                    if (!currentUser) {
-                        window.location.href = '../login.html'; // Redirect if not logged in
+                    if (!user) {
+                        window.location.href = '../login.html';
                         return;
                     }
 
-                    if (!userData || (userData.role !== 'admin' && userData.role !== 'cafeteria')) {
+                    if (!currentUserData || (currentUserData.role !== 'admin' && currentUserData.role !== 'cafeteria')) {
                         document.body.innerHTML = '<h1 style="text-align:center; margin-top:50px;">⛔ غير مصرح لك بالوصول لهذه الصفحة</h1>';
                         return;
                     }
 
-                    // Logged in and authorized, load products
                     await loadProducts();
                 });
 
             } catch (error) {
                 console.error("Critical Error:", error);
-                document.getElementById('productsGrid').innerHTML = `
-            <div style="text-align:center; color:red; padding:20px;">
-                <p>⚠️ حدث خطأ أثناء التحميل</p>
-                <small>${error.message}</small>
-            </div>
-            `;
+                document.getElementById('productsGrid').innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
             }
 
-            // Handle Add Product
+            // Handle Add/Edit Product
             document.getElementById('addProductForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const btn = e.target.querySelector('button');
+                const btn = e.target.querySelector('button[type="submit"]');
                 const originalText = btn.textContent;
                 btn.textContent = 'جاري الحفظ... ⏳';
                 btn.disabled = true;
@@ -312,86 +364,140 @@
                         available: true
                     };
 
-                    if (isNaN(productData.price)) {
-                        throw new Error('السعر يجب أن يكون رقماً صحيحاً');
+                    if (isNaN(productData.price)) throw new Error('السعر يجب أن يكون رقماً صحيحاً');
+
+                    let result;
+                    if (editingProductId) {
+                        // UPDATE EXISTING
+                        result = await updateProduct(editingProductId, productData);
+                        if (result.success) showToast('تم التعديل بنجاح! ✏️', 'success');
+                    } else {
+                        // CREATE NEW
+                        result = await addProduct(productData);
+                        if (result.success) showToast('تمت الإضافة بنجاح! 🎉', 'success');
                     }
 
-                    const result = await addProduct(productData);
                     if (result && result.success) {
-                        showToast('تمت إضافة المنتج بنجاح! 🎉', 'success');
-                        e.target.reset();
+                        resetForm();
                         await loadProducts();
                     } else {
-                        throw new Error(result.error || 'فشل في الإضافة لسبب غير معروف');
+                        throw new Error(result.error || 'فشل العملية');
                     }
                 } catch (error) {
-                    console.error("Add Product Error:", error);
-                    alert('خطأ في إضافة المنتج: ' + error.message + '\nError Code: ' + (error.code || 'N/A')); // Direct alert for visibility
-                    showToast('خطأ: ' + error.message, 'error');
+                    console.error("Save Error:", error);
+                    alert('خطأ: ' + error.message);
                 } finally {
-                    btn.textContent = originalText;
+                    btn.textContent = editingProductId ? 'تحديث المنتج' : 'حفظ المنتج';
+                    if (!editingProductId) btn.textContent = 'حفظ المنتج'; // Reset text if we reset form
                     btn.disabled = false;
                 }
             });
         });
 
+        function resetForm() {
+            document.getElementById('addProductForm').reset();
+            editingProductId = null;
+            document.querySelector('#addProductForm button[type="submit"]').textContent = 'حفظ المنتج';
+            document.getElementById('formTitle').textContent = '➕ إضافة منتج جديد';
+
+            // Remove cancel button if exists
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            if (cancelBtn) cancelBtn.remove();
+        }
+
+        function startEdit(productEnc) {
+            const product = JSON.parse(decodeURIComponent(productEnc));
+            editingProductId = product.id;
+
+            document.getElementById('prodNameAr').value = product.nameAr || product.name_ar || '';
+            document.getElementById('prodNameHe').value = product.nameHe || product.name_he || '';
+            document.getElementById('prodPrice').value = product.price;
+            document.getElementById('prodCategory').value = product.category;
+            document.getElementById('prodIcon').value = product.icon;
+            document.getElementById('prodTraffic').value = product.trafficLight || 'green';
+
+            // UI Changes
+            document.getElementById('formTitle').textContent = '✏️ تعديل منتج: ' + (product.nameAr || product.name_ar);
+            const submitBtn = document.querySelector('#addProductForm button[type="submit"]');
+            submitBtn.textContent = 'حفظ التعديلات';
+
+            // Add Cancel Button
+            if (!document.getElementById('cancelEditBtn')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancelEditBtn';
+                cancelBtn.type = 'button';
+                cancelBtn.textContent = 'إلغاء';
+                cancelBtn.className = 'submit-btn';
+                cancelBtn.style.background = '#64748b';
+                cancelBtn.style.marginTop = '10px';
+                cancelBtn.onclick = resetForm;
+                document.getElementById('addProductForm').appendChild(cancelBtn);
+            }
+
+            // Scroll to form
+            document.querySelector('.add-form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
             try {
                 grid.innerHTML = '<p>جاري تحميل المنتجات... ⏳</p>';
-                const products = await getAllProducts();
+                const products = await getAllProducts(); // From firebase-config.js
 
                 if (!products || products.length === 0) {
                     grid.innerHTML = '<p>لا توجد منتجات حالياً 📭</p>';
                     return;
                 }
 
-                grid.innerHTML = products.map(p => `
-            <div class="product-card">
-                <div class="product-icon">${p.icon || '📦'}</div>
-                <div class="product-info">
-                    <span class="product-name">${p.nameAr || p.name_ar || 'منتج (بدون اسم)'}</span>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
-                        <span>${p.price} نقاط</span>
-                        <span>${p.nameHe || p.name_he || ''}</span>
+                grid.innerHTML = products.map(p => {
+                    // Encode for safe passing to function
+                    const pSafe = encodeURIComponent(JSON.stringify(p));
+                    return `
+                    <div class="product-card">
+                        <div class="product-icon">${p.icon || '📦'}</div>
+                        <div class="product-info">
+                            <span class="product-name">${p.nameAr || p.name_ar || 'بدون اسم'}</span>
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
+                                <span>${p.price} نقاط</span>
+                                <span>${p.nameHe || p.name_he || ''}</span>
+                            </div>
+                        </div>
+                        <div class="product-actions" style="flex-direction:column;">
+                             <button class="btn-icon" style="background:#e0f2fe; color:#0284c7;" 
+                                onclick="startEdit('${pSafe}')" title="تعديل">
+                                ✏️
+                            </button>
+                            <button class="btn-icon btn-delete" onclick="handleDeleteProduct('${p.id}')" title="حذف">
+                                🗑️
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="product-actions">
-                    <button class="btn-icon btn-delete" onclick="handleDeleteProduct('${p.id}')" title="حذف">
-                        🗑️
-                    </button>
-                </div>
-            </div>
-            `).join('');
+                `}).join('');
             } catch (error) {
-                console.error("Load Products Error:", error);
-                grid.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 20px; background: #fee2e2; border-radius: 10px; border: 1px solid #ef4444;">
-                <span style="font-size: 2rem;">⚠️</span>
-                <p style="color: #b91c1c; font-weight: bold; margin: 10px 0;">حدث خطأ أثناء تحميل المنتجات</p>
-                <code style="display: block; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 4px; font-size: 0.8rem;">${error.message}</code>
-                <button onclick="loadProducts()" style="margin-top: 10px; padding: 5px 15px; cursor: pointer;">محاولة مرة أخرى</button>
-            </div>
-            `;
+                console.error("Load Error:", error);
+                grid.innerHTML = `<p style="color:red">خطأ في التحميل: ${error.message}</p>`;
             }
         }
 
         async function handleDeleteProduct(id) {
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
-                // Use window.db explicitly to avoid any scope ambiguity
-                await window.db.collection('products').doc(id).delete();
-                showToast('تم الحذف بنجاح', 'success');
-                await loadProducts(); // Reload list
+                // Use global deleteProduct from firebase-config.js
+                const result = await deleteProduct(id);
+                if (result.success) {
+                    showToast('تم الحذف بنجاح', 'success');
+                    await loadProducts();
+                } else {
+                    throw new Error(result.error);
+                }
             } catch (e) {
-                console.error("Delete Error:", e);
-                alert('فشل الحذف: ' + e.message); // Show visible error
-                showToast('خطأ في الحذف', 'error');
+                alert('فشل الحذف: ' + e.message);
             }
         }
 
         function showToast(msg, type) {
             const t = document.getElementById('toast');
+            if (!t) return;
             t.textContent = msg;
             t.className = `toast show ${type === 'error' ? 'error' : ''}`;
             setTimeout(() => t.className = 'toast', 3000);

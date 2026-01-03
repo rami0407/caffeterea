@@ -253,6 +253,17 @@ async function updateProduct(productId, updates) {
     }
 }
 
+// Delete product (admin only)
+async function deleteProduct(productId) {
+    try {
+        await db.collection('products').doc(productId).delete();
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error deleting product:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 // ========================================
 // Database Functions - Orders
 // ========================================
