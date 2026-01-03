@@ -206,12 +206,17 @@
                         </div>
                         <div class="form-group">
                             <label>الفئة</label>
-                            <select id="prodCategory" required>
+                            <select id="prodCategory" required onchange="toggleCustomCategory()">
                                 <option value="sandwiches">سندويشات</option>
                                 <option value="drinks">مشروبات</option>
                                 <option value="snacks">وجبات خفيفة</option>
                                 <option value="healthy">صحي</option>
+                                <option value="other">أخر (فئة مخصصة)</option>
                             </select>
+                        </div>
+                        <div class="form-group" id="customCategoryGroup" style="display:none;">
+                            <label>اسم الفئة المخصصة</label>
+                            <input type="text" id="customCategoryInput" placeholder="مثال: أدوات قرطاسية">
                         </div>
                         <div class="form-group">
                             <label>الأيقونة</label>
@@ -362,11 +367,20 @@
                 btn.disabled = true;
 
                 try {
+                    let category = document.getElementById('prodCategory').value;
+                    if (category === 'other') {
+                        const customCat = document.getElementById('customCategoryInput').value.trim();
+                        if (!customCat) {
+                            throw new Error('الرجاء إدخال اسم الفئة المخصصة');
+                        }
+                        category = customCat;
+                    }
+
                     const productData = {
-                        nameAr: document.getElementById('prodNameAr').value,
-                        nameHe: document.getElementById('prodNameHe').value,
+                        name_ar: document.getElementById('prodNameAr').value,
+                        name_he: document.getElementById('prodNameHe').value,
                         price: parseInt(document.getElementById('prodPrice').value),
-                        category: document.getElementById('prodCategory').value,
+                        category: category,
                         icon: document.getElementById('prodIcon').value,
                         trafficLight: document.getElementById('prodTraffic').value,
                         available: true
@@ -509,6 +523,21 @@
             t.textContent = msg;
             t.className = `toast show ${type === 'error' ? 'error' : ''}`;
             setTimeout(() => t.className = 'toast', 3000);
+        }
+
+        function toggleCustomCategory() {
+            const select = document.getElementById('prodCategory');
+            const customGroup = document.getElementById('customCategoryGroup');
+            const customInput = document.getElementById('customCategoryInput');
+
+            if (select.value === 'other') {
+                customGroup.style.display = 'block';
+                customInput.required = true;
+            } else {
+                customGroup.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
         }
     </script>
 </body>
