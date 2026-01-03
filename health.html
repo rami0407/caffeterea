@@ -95,6 +95,57 @@
                     <p class="challenge-reward">المكافأة: <strong>3 كوبونات</strong> 🎟️</p>
                 </div>
 
+                <!-- Challenge Commitment Form -->
+                <div class="commitment-form" id="commitmentForm">
+                    <h3>📝 التزم بالتحدي</h3>
+                    <p class="form-desc">سجّل التزامك وكن من أبطال الصحة!</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>اسمك *</label>
+                            <input type="text" id="studentName" placeholder="اسم الطالب" required>
+                        </div>
+                        <div class="form-group">
+                            <label>نوع التحدي *</label>
+                            <select id="challengeType" required>
+                                <option value="">اختر التحدي...</option>
+                                <option value="walk">مشي يومي 🚶‍♂️</option>
+                                <option value="run">جري منتظم 🏃‍♂️</option>
+                                <option value="swim">سباحة أسبوعية 🏊‍♂️</option>
+                                <option value="bike">ركوب دراجة 🚴‍♂️</option>
+                                <option value="pe">حضور حصص التربية البدنية 🏅</option>
+                                <option value="mixed">تحدي متنوع 💪</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>السعرات المستهدفة *</label>
+                            <input type="number" id="targetCalories" placeholder="مثال: 200" min="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label>المدة الزمنية *</label>
+                            <select id="timeframe" required>
+                                <option value="">اختر المدة...</option>
+                                <option value="1">يوم واحد</option>
+                                <option value="3">3 أيام</option>
+                                <option value="7">أسبوع</option>
+                                <option value="14">أسبوعين</option>
+                                <option value="30">شهر</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="submitCommitment()" class="btn-primary">🚀 التزم بالتحدي</button>
+                </div>
+
+                <!-- Commitment Success Message -->
+                <div id="commitmentSuccess" class="commitment-success hidden">
+                    <div class="success-icon">🎉</div>
+                    <h3>مبروك! لقد التزمت بالتحدي</h3>
+                    <p id="successMessage"></p>
+                    <button onclick="resetCommitment()" class="btn-secondary">تحدي جديد</button>
+                </div>
+
                 <!-- Progress -->
                 <div class="challenge-progress">
                     <div class="progress-info">
@@ -140,6 +191,16 @@
                 <button id="claimRewardBtn" onclick="claimReward()" class="btn-claim hidden">
                     🎉 استلام المكافأة (3 كوبونات)
                 </button>
+            </section>
+
+            <!-- Honor Board -->
+            <section class="health-card honor-board-section">
+                <h2 class="section-title">🏆 لوحة الشرف</h2>
+                <p class="section-desc">أبطال التحديات الأكبر!</p>
+
+                <div id="honorBoard" class="honor-board">
+                    <p class="empty-state">لا توجد تحديات بعد... كن الأول!</p>
+                </div>
             </section>
 
             <!-- Info Section -->

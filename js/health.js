@@ -2,6 +2,7 @@
 let currentUser = null;
 let currentCalories = 0;
 let activities = [];
+let allChallenges = []; // For honor board
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,12 +13,157 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userData) {
             loadUserChallenge(userData.uid);
             updateCouponDisplay();
+            loadHonorBoard();
+        } else {
+            loadHonorBoard(); // Load even without login
         }
     });
 
     // Set initial state for duration field
     toggleDurationField();
 });
+
+// Submit Challenge Commitment
+async function submitCommitment() {
+    const name = document.getElementById('studentName').value.trim();
+    const challengeType = document.getElementById('challengeType').value;
+    const targetCalories = parseInt(document.getElementById('targetCalories').value);
+    const timeframe = document.getElementById('timeframe').value;
+
+    if (!name || !challengeType || !targetCalories || !timeframe) {
+        showToast('الرجاء تعبئة جميع الحقول', 'error');
+        return;
+    }
+
+    if (targetCalories < 50) {
+        showToast('التحدي يجب أن يكون 50 سعرة على الأقل', 'error');
+        return;
+    }
+
+    // Challenge type names
+    const challengeNames = {
+        'walk': 'مشي يومي',
+        'run': 'جري منتظم',
+        'swim': 'سباحة أسبوعية',
+        'bike': 'ركوب دراجة',
+        'pe': 'حصص تربية بدنية',
+        'mixed': 'تحدي متنوع'
+    };
+
+    const timeframeText = {
+        '1': 'يوم واحد',
+        '3': '3 أيام',
+        '7': 'أسبوع',
+        '14': 'أسبوعين',
+        '30': 'شهر'
+    };
+
+    const commitment = {
+        name: name,
+        challengeType: challengeNames[challengeType],
+        targetCalories: targetCalories,
+        timeframe: parseInt(timeframe),
+        timeframeText: timeframeText[timeframe],
+        timestamp: new Date().toISOString(),
+        userId: currentUser ? currentUser.uid : null
+    };
+
+    try {
+        // Save to Firebase
+        const db = firebase.firestore();
+        await db.collection('challenges').add(commitment);
+
+        // Generate motivational message
+        const message = generateMotivationalMessage(name, targetCalories, timeframeText[timeframe]);
+
+        // Show success
+        document.getElementById('commitmentForm').classList.add('hidden');
+        document.getElementById('successMessage').innerHTML = message;
+        document.getElementById('commitmentSuccess').classList.remove('hidden');
+
+        // Reload honor board
+        await loadHonorBoard();
+
+        confetti();
+    } catch (error) {
+        console.error('Error saving commitment:', error);
+        showToast('حدث خطأ، حاول مرة أخرى', 'error');
+    }
+}
+
+// Generate Motivational Message
+function generateMotivationalMessage(name, calories, timeframe) {
+    const messages = [
+        `🌟 رائع يا <strong>${name}</strong>! التزامك بحرق ${calories} سعرة خلال ${timeframe} يدل على عزيمة قوية!`,
+        `💪 أنت بطل يا <strong>${name}</strong>! ${calories} سعرة خلال ${timeframe} هو تحدٍ رائع! نحن فخورون بك!`,
+        `🔥 إصرارك مُلهم يا <strong>${name}</strong>! ${calories} سعرة في ${timeframe} - أنت قدوة للجميع!`,
+        `⭐ يا له من التزام يا <strong>${name}</strong>! ${calories} سعرة خلال ${timeframe} - استمر وستصل للقمة!`,
+        `🏆 تحدي قوي يا <strong>${name}</strong>! ${calories} سعرة في ${timeframe} - نحن معك حتى النهاية!`
+    ];
+
+    return messages[Math.floor(Math.random() * messages.length)] +
+        '<br><br>🎯 تذكّر: الاستمرارية هي سر النجاح!';
+}
+
+// Reset Commitment Form
+function resetCommitment() {
+    document.getElementById('commitmentSuccess').classList.add('hidden');
+    document.getElementById('commitmentForm').classList.remove('hidden');
+
+    // Clear form
+    document.getElementById('studentName').value = '';
+    document.getElementById('challengeType').value = '';
+    document.getElementById('targetCalories').value = '';
+    document.getElementById('timeframe').value = '';
+}
+
+// Load Honor Board
+async function loadHonorBoard() {
+    try {
+        const db = firebase.firestore();
+        const snapshot = await db.collection('challenges')
+            .orderBy('targetCalories', 'desc')
+            .limit(10)
+            .get();
+
+        allChallenges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        renderHonorBoard();
+    } catch (error) {
+        console.error('Error loading honor board:', error);
+    }
+}
+
+// Render Honor Board
+function renderHonorBoard() {
+    const board = document.getElementById('honorBoard');
+
+    if (allChallenges.length === 0) {
+        board.innerHTML = '<p class="empty-state">لا توجد تحديات بعد... كن الأول!</p>';
+        return;
+    }
+
+    board.innerHTML = allChallenges.map((challenge, index) => {
+        const rank = index + 1;
+        const rankClass = rank === 1 ? 'first' : rank === 2 ? 'second' : rank === 3 ? 'third' : '';
+        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+
+        return `
+        <div class="honor-card">
+            <div class="honor-rank ${rankClass}">${medal}</div>
+            <div class="honor-info">
+                <div class="honor-name">${challenge.name}</div>
+                <div class="honor-challenge">${challenge.challengeType}</div>
+                <div class="honor-stats">
+                    <span>🔥 ${challenge.targetCalories} سعرة</span>
+                    <span>⏰ ${challenge.timeframeText}</span>
+                </div>
+            </div>
+            <div class="honor-badge">${challenge.targetCalories}</div>
+        </div>
+    `;
+    }).join('');
+}
 
 // Calculator Functions
 function calculateDistance() {
