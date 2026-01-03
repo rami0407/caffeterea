@@ -79,10 +79,10 @@ function updateCounts() {
     const preparing = orders.filter(o => o.status === 'preparing').length;
     const ready = orders.filter(o => o.status === 'ready').length;
 
-    document.getElementById('pendingCount').textContent = pending;
-    document.getElementById('preparingCount').textContent = preparing;
-    document.getElementById('readyCount').textContent = ready;
-    document.getElementById('ordersCount').textContent = pending + preparing + ready;
+    if (document.getElementById('pendingCount')) document.getElementById('pendingCount').textContent = pending;
+    if (document.getElementById('preparingCount')) document.getElementById('preparingCount').textContent = preparing;
+    if (document.getElementById('readyCount')) document.getElementById('readyCount').textContent = ready;
+    // document.getElementById('ordersCount').textContent = pending + preparing + ready; // Removed as it doesn't exist in HTML
 }
 
 // Render orders
