@@ -2,73 +2,59 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeFirebase(); // Fix: Initialize Firebase
     loadEntries();
 
-    const uploadForm = document.getElementById('uploadForm');
-    if (uploadForm) {
-        uploadForm.addEventListener('submit', handleUpload);
+    const postForm = document.getElementById('postForm');
+    if (postForm) {
+        postForm.addEventListener('submit', handlePost);
     }
 });
 
-async function handleUpload(e) {
+async function handlePost(e) {
     e.preventDefault();
 
-    const name = document.getElementById('uploaderName').value;
-    const phone = document.getElementById('uploaderPhone').value;
-    const fileInput = document.getElementById('logoFile');
-    const file = fileInput.files[0];
+    const name = document.getElementById('posterName').value;
+    const content = document.getElementById('postContent').value;
     const submitBtn = document.getElementById('submitBtn');
 
-    if (!file) {
-        alert(t('uploadDesign'));
-        return;
-    }
+    if (!content.trim()) return;
 
     submitBtn.disabled = true;
     submitBtn.textContent = '...';
 
     try {
-        // 1. Upload Image to Storage
-        const timestamp = Date.now();
-        const filename = `${timestamp}_${file.name}`;
-        const storageRef = storage.ref('competitions/logos/' + filename);
-
-        const snapshot = await storageRef.put(file);
-        const downloadURL = await snapshot.ref.getDownloadURL();
-
-        // 2. Save Entry to Firestore
+        // Save Post to Firestore
         await db.collection('competition_entries').add({
-            name: name,
-            phone: phone,
-            imageUrl: downloadURL,
+            name: name, // User's name
+            text: content, // Text content
+            type: 'text',
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            status: 'pending',
+            status: 'approved', // Auto-approve for now
             likes: 0,
             commentsCount: 0
         });
 
-        // 3. Success
-        alert(t('uploadSuccess'));
+        // Success
+        alert('تم نشر مشاركتك بنجاح!');
 
         // Reset Form
-        document.getElementById('uploadForm').reset();
-        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('postForm').reset();
 
-        // Refresh Gallery
+        // Refresh Feed
         loadEntries();
 
     } catch (error) {
-        console.error('Upload error:', error);
-        alert(t('error') + ': ' + error.message);
+        console.error('Post error:', error);
+        alert('حدث خطأ: ' + error.message);
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = t('uploadBtn');
+        submitBtn.textContent = 'نشر';
     }
 }
 
 async function loadEntries() {
-    const galleryGrid = document.getElementById('galleryGrid');
-    if (!galleryGrid) return;
+    const feedContainer = document.getElementById('postsFeed');
+    if (!feedContainer) return;
 
-    galleryGrid.innerHTML = '<p>' + t('loading') + '</p>';
+    feedContainer.innerHTML = '<p style="text-align:center">جاري التحميل...</p>';
 
     try {
         const snapshot = await db.collection('competition_entries')
@@ -76,10 +62,10 @@ async function loadEntries() {
             .limit(20)
             .get();
 
-        galleryGrid.innerHTML = '';
+        feedContainer.innerHTML = '';
 
         if (snapshot.empty) {
-            galleryGrid.innerHTML = '<p>' + t('noResults') + '</p>';
+            feedContainer.innerHTML = '<p style="text-align:center" data-i18n="noResults">لا توجد مشاركات بعد. كن أول من يشارك!</p>';
             return;
         }
 
@@ -87,42 +73,52 @@ async function loadEntries() {
             const entry = doc.data();
             const entryId = doc.id;
             const isLiked = localStorage.getItem(`liked_${entryId}`) === 'true';
+            const time = entry.createdAt ? new Date(entry.createdAt.toDate()).toLocaleDateString('ar-EG', { weekday: 'long', hour: '2-digit', minute: '2-digit' }) : 'الآن';
+            const initial = entry.name ? entry.name.charAt(0).toUpperCase() : '?';
 
             const div = document.createElement('div');
-            div.className = 'gallery-item';
+            div.className = 'post-card';
             div.innerHTML = `
-                <img src="${entry.imageUrl}" alt="${entry.name}" class="gallery-img" loading="lazy">
-                <div class="gallery-info">
-                    <div class="gallery-name">${entry.name}</div>
-                    
-                    <div class="social-actions">
-                        <button class="social-btn ${isLiked ? 'active' : ''}" onclick="handleLike('${entryId}', this)">
-                            <span class="icon">❤️</span>
-                            <span class="count">${entry.likes || 0}</span>
-                        </button>
-                        <button class="social-btn" onclick="toggleComments('${entryId}')">
-                            <span class="icon">💬</span>
-                            <span class="count">${entry.commentsCount || 0}</span>
-                        </button>
-                    </div>
-
-                    <div id="comments-${entryId}" class="comments-section">
-                        <div class="comments-list" id="list-${entryId}">
-                            <!-- Comments loaded here -->
-                        </div>
-                        <form class="comment-form" onsubmit="submitComment(event, '${entryId}')">
-                            <input type="text" class="comment-input" placeholder="${t('writeComment')}" required>
-                            <button type="submit" class="comment-submit">${t('send')}</button>
-                        </form>
+                <div class="post-header">
+                    <div class="post-avatar">${initial}</div>
+                    <div class="post-info">
+                        <h3>${entry.name}</h3>
+                        <div class="post-date">${time}</div>
                     </div>
                 </div>
+
+                <div class="post-body">
+                    ${entry.text || ''}
+                    ${entry.imageUrl ? `<br><img src="${entry.imageUrl}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
+                </div>
+                
+                <div class="post-actions">
+                    <button class="action-btn ${isLiked ? 'active' : ''}" onclick="handleLike('${entryId}', this)">
+                        <span class="icon">❤️</span>
+                        <span class="count">${entry.likes || 0}</span> أعجبني
+                    </button>
+                    <button class="action-btn" onclick="toggleComments('${entryId}')">
+                        <span class="icon">💬</span>
+                        <span class="count">${entry.commentsCount || 0}</span> تعليق
+                    </button>
+                </div>
+
+                <div id="comments-${entryId}" class="comments-section">
+                    <div class="comments-list" id="list-${entryId}">
+                        <!-- Comments loaded here -->
+                    </div>
+                    <form class="comment-form" onsubmit="submitComment(event, '${entryId}')">
+                        <input type="text" class="comment-input" placeholder="اكتب تعليقاً..." required>
+                        <button type="submit" class="comment-submit">إرسال</button>
+                    </form>
+                </div>
             `;
-            galleryGrid.appendChild(div);
+            feedContainer.appendChild(div);
         });
 
     } catch (error) {
         console.error('Error loading entries:', error);
-        galleryGrid.innerHTML = '<p style="color:red">' + t('error') + '</p>';
+        feedContainer.innerHTML = '<p style="color:red; text-align:center">حدث خطأ في تحميل المنشورات</p>';
     }
 }
 

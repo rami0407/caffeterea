@@ -14,229 +14,136 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/guest.css">
     <style>
-        .competition-hero {
-            text-align: center;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            border-radius: 0 0 30px 30px;
-            margin-bottom: 30px;
-        }
-
-        .upload-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 600px;
-            margin: -50px auto 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 10;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-
-        .file-upload-wrapper {
-            border: 2px dashed #cbd5e1;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-        }
-
-        .file-upload-wrapper:hover {
-            border-color: var(--primary-color);
-            background: #f0fdf4;
-        }
-
-        .file-upload-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        #imagePreview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 15px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
+        .feed-container {
+            max-width: 700px;
             margin: 0 auto;
-        }
-
-        .gallery-item {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s;
             display: flex;
             flex-direction: column;
+            gap: 20px;
         }
 
-        .gallery-item:hover {
-            transform: translateY(-5px);
+        .post-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s ease;
         }
 
-        .gallery-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .gallery-info {
-            padding: 15px;
-        }
-
-        .gallery-name {
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--text-color);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .social-actions {
+        .post-header {
             display: flex;
-            justify-content: space-around;
-            border-top: 1px solid #f1f5f9;
-            padding-top: 10px;
-            margin-top: 5px;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 12px;
         }
 
-        .social-btn {
-            background: none;
+        .post-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .post-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
+        .post-date {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .post-body {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #334155;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+
+        .post-actions {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Reusing social-btn styles */
+        .action-btn {
+            background: transparent;
             border: none;
+            color: #64748b;
+            font-family: inherit;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: #64748b;
-            font-family: inherit;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 10px;
+            gap: 6px;
+            padding: 8px 15px;
+            border-radius: 8px;
             transition: all 0.2s;
+            font-weight: 500;
         }
 
-        .social-btn:hover {
-            background-color: #f1f5f9;
+        .action-btn:hover {
+            background: #f1f5f9;
             color: var(--primary-color);
         }
 
-        .social-btn.active {
+        .action-btn.active {
             color: #ff4757;
-        }
-
-        .social-btn.active .icon {
-            transform: scale(1.1);
+            background: #fff0f1;
         }
 
         .comments-section {
             display: none;
             background: #f8fafc;
             padding: 15px;
-            border-top: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-top: 15px;
         }
 
         .comments-section.show {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
 
         .comments-list {
-            max-height: 200px;
-            overflow-y: auto;
             margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
         .comment-item {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .comment-item strong {
-            display: block;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 4px;
+        .comment-item:last-child {
+            border-bottom: none;
         }
 
         .comment-form {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
 
         .comment-input {
             flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #cbd5e1;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
             border-radius: 20px;
             font-family: inherit;
-            font-size: 0.9rem;
-        }
-
-        .comment-submit {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 15px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        [dir="ltr"] .form-group {
-            text-align: left;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-5px);
+                transform: translateY(10px);
             }
 
             to {
@@ -269,44 +176,43 @@
 
     <!-- Hero Section -->
     <section class="competition-hero">
-        <h1 data-i18n="competitionTitle">🎨 مسابقة أجمل شعار</h1>
-        <p data-i18n="competitionDesc">شاركنا إبداعك واربح جوائز!</p>
+        <h1 data-i18n="competitionTitle">💭 ساحة المعرفة</h1>
+        <p data-i18n="competitionDesc">شارك أفكارك وتواصل مع زملائك في بيئة إيجابية</p>
     </section>
 
     <!-- Upload Form -->
+    <!-- Upload Form (Now Post Form) -->
     <main class="competition-content">
         <div class="upload-card">
-            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="uploadDesign">ارفع تصميمك</h2>
+            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="shareThoughts">شاركنا أفكارك</h2>
 
-            <form id="uploadForm">
+            <form id="postForm">
                 <div class="form-group">
-                    <label data-i18n="uploaderName">الاسم الرباعي</label>
-                    <input type="text" id="uploaderName" class="form-control" required>
+                    <label data-i18n="uploaderName">الاسم</label>
+                    <input type="text" id="posterName" class="form-control" required placeholder="اكتب اسمك هنا...">
                 </div>
 
                 <div class="form-group">
-                    <label data-i18n="uploaderPhone">رقم الهاتف (اختياري)</label>
-                    <input type="tel" id="uploaderPhone" class="form-control">
+                    <label data-i18n="postContent">الموضوع</label>
+                    <textarea id="postContent" class="form-control" rows="4" required
+                        placeholder="ما الذي يدور في ذهنك؟ ..."></textarea>
                 </div>
 
-                <div class="file-upload-wrapper" onclick="document.getElementById('logoFile').click()">
-                    <span class="file-upload-icon">📁</span>
-                    <p data-i18n="uploadDesign">اضغط لاختيار الصورة</p>
-                    <input type="file" id="logoFile" accept="image/*" style="display: none"
-                        onchange="previewImage(this)">
-                    <img id="imagePreview" src="" alt="Preview">
+                <div class="form-group" style="display:none">
+                    <!-- Hidden field for compatibility/future expansion -->
+                    <input type="file" id="logoFile">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
-                    <span data-i18n="uploadBtn">إرسال المشاركة</span>
+                    <span data-i18n="publishBtn">نشر</span>
                 </button>
             </form>
         </div>
 
-        <!-- Gallery -->
+        <!-- Feed -->
         <section class="gallery-section">
-            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="recentEntries">المشاركات الحالية</h2>
-            <div class="gallery-grid" id="galleryGrid">
+            <h2 style="text-align: center; margin-bottom: 20px;">ساحة النقاش</h2>
+            <div class="feed-container" id="postsFeed">
                 <!-- Items will be loaded here -->
             </div>
         </section>
