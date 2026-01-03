@@ -40,13 +40,9 @@ service cloud.firestore {
     // - Cafeteria can read all orders and update status
     // - Admin can read all
     match /orders/{orderId} {
-      allow create: if request.resource.data.userId == 'guest' || 
-                       (isSignedIn() && request.resource.data.studentId == request.auth.uid);
-      allow read: if hasRole('cafeteria') || hasRole('admin') || 
-                     (resource.data.userId == 'guest') || 
-                     (isSignedIn() && resource.data.studentId == request.auth.uid) ||
-                     hasRole('educator');
-      allow update: if hasRole('cafeteria') || hasRole('admin');
+      // Relaxed rules for demo/MVP to allow unauthenticated cafeteria view
+      allow read, update: if true;
+      allow create: if true; // Allow guests to create without Auth check issues
     }
 
     // Transactions (Rewards/Purchases):
