@@ -3,12 +3,48 @@
 console.log('🚀 Guest Script Loaded v1.5');
 let cart = [];
 const GUEST_CART_KEY = 'knowledge_canteen_guest_cart';
+let currentCategory = 'all';
 
+// Product Data
+const products = [
+    { id: '1', name: 'سندويش جبنة صفراء', price: 5, category: 'sandwiches', icon: '🧀', trafficLight: 'yellow' },
+    { id: '2', name: 'سندويش لبنة وزعتر', price: 4, category: 'sandwiches', icon: '🥙', trafficLight: 'green' },
+    { id: '3', name: 'سندويش حمص', price: 4, category: 'sandwiches', icon: '🥙', trafficLight: 'green' },
+    { id: '4', name: 'عصير برتقال طبيعي', price: 6, category: 'drinks', icon: '🍊', trafficLight: 'green' },
+    { id: '5', name: 'ماء معدني', price: 2, category: 'drinks', icon: '💧', trafficLight: 'green' },
+    { id: '6', name: 'عصير تفاح', price: 5, category: 'drinks', icon: '🍎', trafficLight: 'yellow' },
+    { id: '7', name: 'بسكويت شوفان', price: 3, category: 'snacks', icon: '🍪', trafficLight: 'yellow' },
+    { id: '8', name: 'كعكة تمر', price: 4, category: 'snacks', icon: '🧁', trafficLight: 'yellow' },
+    { id: '9', name: 'سلطة خضار', price: 6, category: 'healthy', icon: '🥗', trafficLight: 'green' },
+    { id: '10', name: 'فواكه مقطعة', price: 5, category: 'healthy', icon: '🍇', trafficLight: 'green' },
+    { id: '11', name: 'لبن زبادي', price: 3, category: 'healthy', icon: '🥛', trafficLight: 'green' },
+    { id: '12', name: 'شوكولاتة', price: 4, category: 'snacks', icon: '🍫', trafficLight: 'red' }
+];
+
+// Load cart on startup
 // Load cart on startup
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     updateCartUI();
+
+    // Initial Render if on guest page
+    const grid = document.getElementById('productsGrid');
+    if (grid) {
+        renderProducts();
+        setupCategoryListeners();
+    }
 });
+
+function setupCategoryListeners() {
+    document.querySelectorAll('.category-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = btn.dataset.category;
+            renderProducts();
+        });
+    });
+}
 
 function loadCart() {
     const saved = localStorage.getItem(GUEST_CART_KEY);
