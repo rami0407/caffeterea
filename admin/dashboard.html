@@ -193,6 +193,20 @@
         document.addEventListener('DOMContentLoaded', () => {
             initI18n();
 
+            // Display Admin Name
+            const authCheck = setInterval(() => {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    firebase.firestore().collection('users').doc(user.uid).get().then(doc => {
+                        if (doc.exists) {
+                            const name = doc.data().name;
+                            document.getElementById('adminWelcomeName').textContent = `مرحباً، ${name}`;
+                        }
+                    });
+                    clearInterval(authCheck);
+                }
+            }, 500);
+
             // Language buttons
             document.querySelectorAll('.lang-mini-btn').forEach(btn => {
                 btn.addEventListener('click', () => {

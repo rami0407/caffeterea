@@ -21,7 +21,11 @@
     <header class="app-header">
         <div class="header-right">
             <a href="../index.html" class="logo-mini">🌱</a>
-            <h1 class="header-title" data-i18n="menu">القائمة</h1>
+            <div style="display:flex; flex-direction:column;">
+                <h1 class="header-title" data-i18n="menu" style="margin:0; font-size:1.2rem;">القائمة</h1>
+                <span id="userNameDisplay"
+                    style="font-size:0.85rem; color:var(--primary-dark); font-weight:bold;"></span>
+            </div>
             <a href="../index.html" style="margin-right:15px; font-size:1.2rem; text-decoration:none;"
                 title="الرئيسية">🏠</a>
         </div>

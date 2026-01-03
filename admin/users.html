@@ -165,7 +165,10 @@
     <!-- Main Content -->
     <main class="admin-main">
         <header class="admin-header">
-            <h1>إدارة المستخدمين</h1>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1>إدارة المستخدمين</h1>
+                <span id="adminWelcomeName" style="color:var(--primary-color); font-weight:bold;"></span>
+            </div>
         </header>
 
         <section class="content-wrapper">
@@ -258,6 +261,9 @@
                     }
 
                     // Logged in as admin, load users
+                    if (userData && userData.name) {
+                        document.getElementById('adminWelcomeName').textContent = `مرحباً، ${userData.name}`;
+                    }
                     await loadUsers();
                 });
 

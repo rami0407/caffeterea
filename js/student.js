@@ -175,6 +175,10 @@ function checkAuthAndLoad() {
     onAuthStateChange(async ({ user, userData }) => {
         if (user && userData) {
             currentUser = userData;
+            // Persistence: Display Name
+            const nameDisplay = document.getElementById('userNameDisplay');
+            if (nameDisplay) nameDisplay.textContent = `مرحباً، ${userData.name || 'طالب'}`;
+
             updateBalanceDisplay();
             await loadProducts();
         } else {
