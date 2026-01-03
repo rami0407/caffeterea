@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نمط حياة صحي | مقصف المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/health.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🌱</span>
+                    <span class="logo-text">مقصف المعرفة</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="index.html">الرئيسية</a>
+                    <a href="health.html" class="active">نمط حياة صحي</a>
+                    <a href="competition.html">ساحة المعرفة</a>
+                </nav>
+                <div class="header-actions">
+                    <span id="userCoupons" class="coupon-badge">🎟️ <span id="couponCount">0</span></span>
+                    <a href="login.html" class="btn-login">تسجيل دخول</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="health-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">🏃‍♂️ نمط حياة صحي</h1>
+                <p class="hero-subtitle">احرق السعرات، احصل على مكافآت، عِش بصحة أفضل!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="health-main">
+        <div class="container">
+
+            <!-- Calorie Calculator -->
+            <section class="health-card calculator-section">
+                <h2 class="section-title">🔥 حاسبة المسافة لحرق السعرات</h2>
+                <p class="section-desc">احسب المسافة التي تحتاج لمشيها لحرق عدد معين من السعرات</p>
+
+                <div class="calculator-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>وزنك (كجم)</label>
+                            <input type="number" id="weightInput" placeholder="70" value="70" min="30" max="150">
+                        </div>
+                        <div class="form-group">
+                            <label>السعرات المراد حرقها</label>
+                            <input type="number" id="caloriesInput" placeholder="100" value="100" min="10">
+                        </div>
+                    </div>
+                    <button onclick="calculateDistance()" class="btn-primary">احسب المسافة</button>
+                </div>
+
+                <div id="calculatorResult" class="calculator-result hidden">
+                    <div class="result-card">
+                        <div class="result-icon">🚶‍♂️</div>
+                        <div class="result-text">
+                            <h3>مشي</h3>
+                            <p class="result-value"><span id="walkDistance">-</span> كم</p>
+                            <p class="result-time">حوالي <span id="walkTime">-</span> دقيقة</p>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-icon">🏃‍♂️</div>
+                        <div class="result-text">
+                            <h3>جري</h3>
+                            <p class="result-value"><span id="runDistance">-</span> كم</p>
+                            <p class="result-time">حوالي <span id="runTime">-</span> دقيقة</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Challenge Section -->
+            <section class="health-card challenge-section">
+                <div class="challenge-header">
+                    <h2 class="section-title">🎯 التحدي الأسبوعي</h2>
+                    <p class="challenge-reward">المكافأة: <strong>3 كوبونات</strong> 🎟️</p>
+                </div>
+
+                <!-- Progress -->
+                <div class="challenge-progress">
+                    <div class="progress-info">
+                        <span>الهدف: حرق 100 سعرة حرارية</span>
+                        <span class="progress-value"><span id="currentCalories">0</span> / 100 سعرة</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Activity Form -->
+                <div class="activity-form">
+                    <h3>سجّل نشاطك</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>نوع النشاط</label>
+                            <select id="activityType" onchange="toggleDurationField()">
+                                <option value="pe">حصة التربية البدنية 🏅</option>
+                                <option value="walk">مشي 🚶‍♂️</option>
+                                <option value="run">جري 🏃‍♂️</option>
+                                <option value="swim">سباحة 🏊‍♂️</option>
+                                <option value="bike">ركوب دراجة 🚴‍♂️</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="durationGroup">
+                            <label>المدة (دقائق)</label>
+                            <input type="number" id="activityDuration" placeholder="30" min="1">
+                        </div>
+                    </div>
+                    <button onclick="logActivity()" class="btn-success">تسجيل النشاط</button>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="activity-log">
+                    <h4>الأنشطة المسجلة</h4>
+                    <div id="activityList" class="activity-list">
+                        <p class="empty-state">لم تسجل أي نشاط بعد</p>
+                    </div>
+                </div>
+
+                <!-- Claim Reward Button -->
+                <button id="claimRewardBtn" onclick="claimReward()" class="btn-claim hidden">
+                    🎉 استلام المكافأة (3 كوبونات)
+                </button>
+            </section>
+
+            <!-- Info Section -->
+            <section class="health-card info-section">
+                <h2 class="section-title">📚 معلومات صحية موثوقة</h2>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>💪 لماذا النشاط البدني؟</h3>
+                        <ul>
+                            <li>يحسن صحة القلب والأوعية الدموية</li>
+                            <li>يزيد من طاقة الجسم</li>
+                            <li>يحسن المزاج والتركيز</li>
+                            <li>يساعد في الحفاظ على وزن صحي</li>
+                        </ul>
+                        <small class="source">المصدر: منظمة الصحة العالمية (WHO)</small>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🔥 السعرات المحروقة (وزن 70 كجم)</h3>
+                        <table class="calories-table">
+                            <tr>
+                                <td>🏅 حصة تربية بدنية</td>
+                                <td><strong>50 سعرة</strong></td>
+                            </tr>
+                            <tr>
+                                <td>🚶‍♂️ مشي (30 دقيقة)</td>
+                                <td>140 سعرة</td>
+                            </tr>
+                            <tr>
+                                <td>🏃‍♂️ جري (15 دقيقة)</td>
+                                <td>120 سعرة</td>
+                            </tr>
+                            <tr>
+                                <td>🏊‍♂️ سباحة (15 دقيقة)</td>
+                                <td>100 سعرة</td>
+                            </tr>
+                            <tr>
+                                <td>🚴‍♂️ ركوب دراجة (20 دقيقة)</td>
+                                <td>117 سعرة</td>
+                            </tr>
+                        </table>
+                        <small class="source">المصدر: Mayo Clinic</small>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/health.js"></script>
+</body>
+
+</html>

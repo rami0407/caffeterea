@@ -1,0 +1,454 @@
+/* Health Page Styles */
+
+.health-hero {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    padding: 80px 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    animation: slideDown 0.6s ease-out;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    animation: fadeIn 0.8s ease-out 0.2s backwards;
+}
+
+.health-main {
+    padding: 40px 20px;
+    min-height: 70vh;
+}
+
+.health-card {
+    background: white;
+    border-radius: 20px;
+    padding: 35px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.health-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.health-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #10b981;
+}
+
+.section-desc {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+
+/* Calculator Section */
+.calculator-form {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.btn-primary,
+.btn-success,
+.btn-claim {
+    padding: 14px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Cairo', sans-serif;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-claim {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    font-size: 1.3rem;
+    padding: 18px;
+    margin-top: 25px;
+}
+
+.btn-claim:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4);
+}
+
+.calculator-result {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.result-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #10b981;
+}
+
+.result-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.result-text h3 {
+    font-size: 1.3rem;
+    color: #059669;
+    margin-bottom: 10px;
+}
+
+.result-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #10b981;
+    margin-bottom: 5px;
+}
+
+.result-time {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+/* Challenge Section */
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.challenge-reward {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    border: 2px solid #f59e0b;
+}
+
+.challenge-progress {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.progress-value {
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+.progress-bar {
+    height: 30px;
+    background: #e2e8f0;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    transition: width 0.6s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+}
+
+.activity-form {
+    background: #f0fdf4;
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.activity-form h3 {
+    margin-bottom: 20px;
+    color: #059669;
+}
+
+.activity-log {
+    margin-top: 25px;
+}
+
+.activity-log h4 {
+    margin-bottom: 15px;
+    color: #334155;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-item {
+    background: #fef3c7;
+    padding: 15px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #f59e0b;
+    animation: slideInRight 0.4s ease-out;
+}
+
+.activity-item-info {
+    flex: 1;
+}
+
+.activity-item-type {
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 3px;
+}
+
+.activity-item-details {
+    font-size: 0.9rem;
+    color: #78350f;
+}
+
+.activity-item-calories {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f59e0b;
+}
+
+.empty-state {
+    text-align: center;
+    color: #94a3b8;
+    padding: 30px;
+    font-style: italic;
+}
+
+/* Info Section */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.info-card {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid #3b82f6;
+}
+
+.info-card h3 {
+    color: #1e40af;
+    margin-bottom: 15px;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-card ul li {
+    padding: 8px 0;
+    padding-right: 25px;
+    position: relative;
+}
+
+.info-card ul li:before {
+    content: '✓';
+    position: absolute;
+    right: 0;
+    color: #10b981;
+    font-weight: 800;
+}
+
+.calories-table {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.calories-table tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.calories-table td {
+    padding: 12px 8px;
+}
+
+.calories-table td:last-child {
+    text-align: left;
+    color: #10b981;
+    font-weight: 700;
+}
+
+.source {
+    display: block;
+    margin-top: 15px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Coupon Badge */
+.coupon-badge {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .health-card {
+        padding: 25px 20px;
+    }
+
+    .challenge-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
