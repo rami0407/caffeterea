@@ -1,5 +1,6 @@
 
 // Guest Cart System
+console.log('🚀 Guest Script Loaded v1.5');
 let cart = [];
 const GUEST_CART_KEY = 'knowledge_canteen_guest_cart';
 
@@ -161,14 +162,20 @@ async function submitGuestOrder() {
         date: new Date().toISOString().split('T')[0]
     };
 
-    // Check if DB is initialized (fallback to window.db)
-    if (!db && window.db) {
-        db = window.db;
+    // Check if DB is initialized (fallback to window.db or re-init)
+    if (!db) {
+        if (window.db) {
+            db = window.db;
+        } else if (typeof initializeFirebase === 'function') {
+            console.warn('⚠️ DB not found, attempting re-initialization...');
+            const init = initializeFirebase();
+            if (init) db = init.db;
+        }
     }
 
     if (!db) {
-        showToast('خطأ: فشل الاتصال بقاعدة البيانات. حاول تحديث الصفحة.', true);
-        console.error('Database not initialized');
+        showToast('خطأ: فشل الاتصال بقاعدة البيانات. (DB Refresh Failed)', true);
+        console.error('Database not initialized after retry');
         return;
     }
 
