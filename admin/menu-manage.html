@@ -223,6 +223,11 @@
                             <input type="text" id="prodIcon" required placeholder="🍎" class="emoji-input">
                         </div>
                         <div class="form-group">
+                            <label>السعرات الحرارية (اختياري)</label>
+                            <input type="number" id="prodCalories" min="0" placeholder="مثال: 120">
+                            <small style="color: #64748b; font-size: 0.85rem;">للتوعية الصحية</small>
+                        </div>
+                        <div class="form-group">
                             <label>الإشارة الضوئية</label>
                             <select id="prodTraffic" required>
                                 <option value="green">🟢 أخضر (صحي جداً)</option>
@@ -382,6 +387,7 @@
                         price: parseInt(document.getElementById('prodPrice').value),
                         category: category,
                         icon: document.getElementById('prodIcon').value,
+                        calories: parseInt(document.getElementById('prodCalories').value) || 0,
                         trafficLight: document.getElementById('prodTraffic').value,
                         available: true
                     };

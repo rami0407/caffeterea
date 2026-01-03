@@ -172,6 +172,7 @@ function renderProducts() {
     grid.innerHTML = filtered.map(product => {
         // Better name fallback: try Arabic, then Hebrew, then generic
         const name = product.name_ar || product.name_he || product.name || 'منتج';
+        const caloriesBadge = product.calories ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">🔥 ${product.calories} سعرة</div>` : '';
 
         return `
         <div class="guest-product-card">
@@ -179,10 +180,12 @@ function renderProducts() {
             <div class="product-image">${product.icon || '📦'}</div>
             <h3 class="product-name">${name}</h3>
             <div class="product-price">${product.price} نقطة</div>
+            ${caloriesBadge}
             <button onclick="addToCart({
                 id: '${product.id}', 
                 name: '${name}', 
-                price: ${product.price}
+                price: ${product.price},
+                calories: ${product.calories || 0}
             })" class="btn-add-cart">
                 أضف للسلة +
             </button>
@@ -208,18 +211,24 @@ function renderCartItems() {
     if (cart.length === 0) {
         container.innerHTML = '<div class="empty-cart-msg">السلة فارغة 🛒</div>';
         document.getElementById('cartTotal').textContent = '0';
+        // Hide calorie counter if exists
+        const calorieEl = document.getElementById('cartCalories');
+        if (calorieEl) calorieEl.style.display = 'none';
         return;
     }
 
     let total = 0;
+    let totalCalories = 0;
     container.innerHTML = cart.map(item => {
         const itemTotal = item.price * item.quantity;
         total += itemTotal;
+        totalCalories += (item.calories || 0) * item.quantity;
+
         return `
             <div class="cart-item">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
-                    <p>${item.price} نقطة</p>
+                    <p>${item.price} نقطة${item.calories ? ` | ${item.calories} سعرة` : ''}</p>
                 </div>
                 <div class="cart-item-controls">
                     <button onclick="updateQuantity('${item.id}', -1)">-</button>
@@ -231,6 +240,25 @@ function renderCartItems() {
     }).join('');
 
     document.getElementById('cartTotal').textContent = total;
+
+    // Show total calories if any
+    let calorieEl = document.getElementById('cartCalories');
+    if (totalCalories > 0) {
+        if (!calorieEl) {
+            // Create calorie display element
+            calorieEl = document.createElement('div');
+            calorieEl.id = 'cartCalories';
+            calorieEl.style.cssText = 'text-align: center; color: #ff6b35; font-weight: 600; margin-top: 10px; font-size: 0.95rem;';
+            const totalEl = document.getElementById('cartTotal');
+            if (totalEl && totalEl.parentElement) {
+                totalEl.parentElement.appendChild(calorieEl);
+            }
+        }
+        calorieEl.textContent = `🔥 إجمالي السعرات: ${totalCalories} سعرة حرارية`;
+        calorieEl.style.display = 'block';
+    } else if (calorieEl) {
+        calorieEl.style.display = 'none';
+    }
 }
 
 // Checkout Logic

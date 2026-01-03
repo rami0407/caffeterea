@@ -258,6 +258,8 @@ function renderProducts() {
             ? (product.name_he || product.name_ar || product.name || 'منتج')
             : (product.name_ar || product.name_he || product.name || 'منتج');
 
+        const caloriesBadge = product.calories ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 3px;">🔥 ${product.calories} ${lang === 'he' ? 'קלוריות' : 'سعرة'}</div>` : '';
+
         return `
         <div class="product-card" data-id="${product.id}">
             <div class="nutrition-badge ${trafficColor}">
@@ -266,6 +268,7 @@ function renderProducts() {
             <div class="product-image">${product.icon || '🍽️'}</div>
             <h3 class="product-name">${productName}</h3>
             <div class="product-price">${product.price}</div>
+            ${caloriesBadge}
             <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
                 ${t('addToCart')} +
             </button>
@@ -409,6 +412,7 @@ function addToCart(productId) {
             name_he: product.name_he,
             price: product.price,
             icon: product.icon,
+            calories: product.calories || 0,
             quantity: 1
         });
     }
@@ -460,12 +464,15 @@ function renderCart() {
     const container = document.getElementById('cartItems');
     const lang = getCurrentLang();
 
-    container.innerHTML = cart.map(item => `
+    let totalCalories = 0;
+    container.innerHTML = cart.map(item => {
+        totalCalories += (item.calories || 0) * item.quantity;
+        return `
         <div class="cart-item">
             <div class="cart-item-image">${item.icon || '🍽️'}</div>
             <div class="cart-item-details">
                 <div class="cart-item-name">${lang === 'he' ? item.name_he : item.name_ar}</div>
-                <div class="cart-item-price">${item.price} ${t('coins')}</div>
+                <div class="cart-item-price">${item.price} ${t('coins')}${item.calories ? ` | ${item.calories} ${lang === 'he' ? 'קלוריות' : 'سعرة'}` : ''}</div>
                 <div class="cart-item-quantity">
                     <button class="qty-btn" onclick="updateQuantity('${item.id}', -1)">−</button>
                     <span class="qty-value">${item.quantity}</span>
@@ -473,9 +480,27 @@ function renderCart() {
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 
     updateCartDisplay();
+
+    // Show total calories
+    let calorieEl = document.getElementById('studentCartCalories');
+    if (totalCalories > 0) {
+        if (!calorieEl) {
+            calorieEl = document.createElement('div');
+            calorieEl.id = 'studentCartCalories';
+            calorieEl.style.cssText = 'text-align: center; color: #ff6b35; font-weight: 600; margin: 10px 0; font-size: 0.95rem;';
+            const footer = document.getElementById('cartFooter');
+            if (footer) {
+                footer.insertBefore(calorieEl, footer.firstChild);
+            }
+        }
+        calorieEl.textContent = `🔥 ${lang === 'he' ? 'סך כל קלוריות' : 'إجمالي السعرات'}: ${totalCalories} ${lang === 'he' ? 'קלוריות' : 'سعرة'}`;
+        calorieEl.style.display = 'block';
+    } else if (calorieEl) {
+        calorieEl.style.display = 'none';
+    }
 }
 
 function openCart() {
