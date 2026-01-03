@@ -161,7 +161,24 @@ const translations = {
         selectEducator: "اختر المربي",
         selectEducatorPlaceholder: "اختر اسم المربي...",
         accountPending: "الحساب بانتظار موافقة المربي",
-        waitForApproval: "يرجى الانتظار حتى يقوم المربي بتفعيل حسابك"
+        waitForApproval: "يرجى الانتظار حتى يقوم المربي بتفعيل حسابك",
+
+        // Competition
+        competitionTitle: "مسابقة أجمل شعار",
+        competitionDesc: "شاركنا إبداعك واربح جوائز!",
+        uploadDesign: "ارفع تصميمك",
+        uploaderName: "الاسم الرباعي",
+        uploaderPhone: "رقم الهاتف (اختياري)",
+        uploadBtn: "إرسال المشاركة",
+        uploadSuccess: "تم استلام مشاركتك بنجاح!",
+        recentEntries: "المشاركات الحالية",
+        like: "إعجاب",
+        comment: "تعليق",
+        writeComment: "اكتب تعليقاً...",
+        send: "إرسال",
+        noComments: "كن أول المعلقين!",
+        likesCount: "إعجاب",
+        commentsCount: "تعليق"
     },
 
     he: {
@@ -319,7 +336,24 @@ const translations = {
         selectEducator: "בחר מחנך",
         selectEducatorPlaceholder: "בחר שם המחנך...",
         accountPending: "החשבון ממתין לאישור המחנך",
-        waitForApproval: "אנא המתן עד שהמחנך יפעיל את חשבונך"
+        waitForApproval: "אנא המתן עד שהמחנך יפעיל את חשבונך",
+
+        // Competition
+        competitionTitle: "תחרות הלוגו היפה ביותר",
+        competitionDesc: "!שתף אותנו ביצירתיות שלך וזכה בפרסים",
+        uploadDesign: "העלה את העיצוב שלך",
+        uploaderName: "שם מלא",
+        uploaderPhone: "מספר טלפון (אופציונלי)",
+        uploadBtn: "שלח השתתפות",
+        uploadSuccess: "!ההשתתפות התקבלה בהצלחה",
+        recentEntries: "משתתפים אחרונים",
+        like: "לייק",
+        comment: "תגובה",
+        writeComment: "...כתוב תגובה",
+        send: "שלח",
+        noComments: "!היה הראשון להגיב",
+        likesCount: "לייקים",
+        commentsCount: "תגובות"
     }
 };
 

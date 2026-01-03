@@ -65,5 +65,17 @@ service cloud.firestore {
       allow create: if true; // Allow anyone to submit feedback
       allow read: if hasRole('admin');
     }
+    // Competition Entries:
+    // - Anyone can read and create entries
+    // - Anyone can update (for likes) - ideally validated but keeping simple
+    match /competition_entries/{entryId} {
+      allow read, create: if true;
+      allow update: if true; // Enabling public likes
+
+      // Comments sub-collection
+      match /comments/{commentId} {
+        allow read, create: if true;
+      }
+    }
   }
 }

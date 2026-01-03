@@ -33,6 +33,7 @@ function initializeFirebase() {
         window.app = app;
         window.auth = auth;
         window.db = db;
+        window.storage = firebase.storage(); // Initialize Storage
 
         // Set RTL language for auth UI
         auth.languageCode = 'ar';

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="مسابقة أجمل شعار - مقصف المعرفة">
+    <title>مسابقة أجمل شعار | مقصف المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/guest.css">
+    <style>
+        .competition-hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 30px;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            margin: -50px auto 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .file-upload-wrapper {
+            border: 2px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primary-color);
+            background: #f0fdf4;
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .gallery-info {
+            padding: 15px;
+        }
+
+        .gallery-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .social-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+
+        .social-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .social-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .social-btn.active {
+            color: #ff4757;
+        }
+
+        .social-btn.active .icon {
+            transform: scale(1.1);
+        }
+
+        .comments-section {
+            display: none;
+            background: #f8fafc;
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .comments-section.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .comments-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comment-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .comment-item strong {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .comment-submit {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        [dir="ltr"] .form-group {
+            text-align: left;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="guest-header">
+        <a href="index.html" class="logo-link">
+            <span class="logo-icon">🌱</span>
+            <span class="logo-text" data-i18n="appName">مقصف المعرفة</span>
+        </a>
+        <div class="header-actions">
+            <a href="index.html" class="home-btn"
+                style="background:#f1f5f9; color:#334155; margin-left:10px; padding: 8px 15px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                <span>🏠</span>
+                <span data-i18n="home">الرئيسية</span>
+            </a>
+            <div class="lang-mini">
+                <button class="lang-mini-btn active" data-lang="ar">ع</button>
+                <button class="lang-mini-btn" data-lang="he">ע</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="competition-hero">
+        <h1 data-i18n="competitionTitle">🎨 مسابقة أجمل شعار</h1>
+        <p data-i18n="competitionDesc">شاركنا إبداعك واربح جوائز!</p>
+    </section>
+
+    <!-- Upload Form -->
+    <main class="competition-content">
+        <div class="upload-card">
+            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="uploadDesign">ارفع تصميمك</h2>
+
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label data-i18n="uploaderName">الاسم الرباعي</label>
+                    <input type="text" id="uploaderName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="uploaderPhone">رقم الهاتف (اختياري)</label>
+                    <input type="tel" id="uploaderPhone" class="form-control">
+                </div>
+
+                <div class="file-upload-wrapper" onclick="document.getElementById('logoFile').click()">
+                    <span class="file-upload-icon">📁</span>
+                    <p data-i18n="uploadDesign">اضغط لاختيار الصورة</p>
+                    <input type="file" id="logoFile" accept="image/*" style="display: none"
+                        onchange="previewImage(this)">
+                    <img id="imagePreview" src="" alt="Preview">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                    <span data-i18n="uploadBtn">إرسال المشاركة</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Gallery -->
+        <section class="gallery-section">
+            <h2 style="text-align: center; margin-bottom: 20px;" data-i18n="recentEntries">المشاركات الحالية</h2>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Items will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="guest-footer">
+        <p data-i18n="footer">🌍 من الكود إلى الأخضر | مقصف المعرفة © 2024</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/competition.js"></script>
+
+    <script>
+        // UI Helpers
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Initialize i18n
+        document.addEventListener('DOMContentLoaded', () => {
+            initI18n();
+
+            // Language buttons
+            document.querySelectorAll('.lang-mini-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.lang-mini-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    setLanguage(btn.dataset.lang);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
