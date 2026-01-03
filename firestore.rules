@@ -78,5 +78,17 @@ service cloud.firestore {
         allow read, create: if true;
       }
     }
+    
+    // Challenges collection - for health page
+    match /challenges/{challengeId} {
+      // Anyone can read challenges (for honor board)
+      allow read: if true;
+      // Anyone can create a challenge
+      allow create: if true;
+      // Only creator or admin can update/delete
+      allow update, delete: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         get(/databases/$(database)/documents/students/$(request.auth.uid)).data.role == 'admin');
+    }
   }
 }

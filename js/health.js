@@ -121,16 +121,34 @@ function resetCommitment() {
 async function loadHonorBoard() {
     try {
         const db = firebase.firestore();
-        const snapshot = await db.collection('challenges')
-            .orderBy('targetCalories', 'desc')
-            .limit(10)
-            .get();
 
-        allChallenges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Try with orderBy first
+        try {
+            const snapshot = await db.collection('challenges')
+                .orderBy('targetCalories', 'desc')
+                .limit(10)
+                .get();
+
+            allChallenges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (indexError) {
+            // If index doesn't exist, get all and sort client-side
+            console.log('Using client-side sorting (Firebase index not created yet)');
+            const snapshot = await db.collection('challenges').get();
+
+            allChallenges = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .sort((a, b) => b.targetCalories - a.targetCalories)
+                .slice(0, 10);
+        }
 
         renderHonorBoard();
     } catch (error) {
         console.error('Error loading honor board:', error);
+        // Show empty state on error
+        const board = document.getElementById('honorBoard');
+        if (board) {
+            board.innerHTML = '<p class="empty-state">حدث خطأ في تحميل لوحة الشرف</p>';
+        }
     }
 }
 
