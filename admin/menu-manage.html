@@ -350,10 +350,10 @@
             <div class="product-card">
                 <div class="product-icon">${p.icon || '📦'}</div>
                 <div class="product-info">
-                    <span class="product-name">${p.nameAr}</span>
+                    <span class="product-name">${p.nameAr || p.name_ar || 'منتج (بدون اسم)'}</span>
                     <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
                         <span>${p.price} نقاط</span>
-                        <span>${p.nameHe || ''}</span>
+                        <span>${p.nameHe || p.name_he || ''}</span>
                     </div>
                 </div>
                 <div class="product-actions">
@@ -379,11 +379,13 @@
         async function handleDeleteProduct(id) {
             if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
-                await db.collection('products').doc(id).delete();
-                showToast('تم الحذف', 'success');
-                loadProducts();
+                // Use window.db explicitly to avoid any scope ambiguity
+                await window.db.collection('products').doc(id).delete();
+                showToast('تم الحذف بنجاح', 'success');
+                await loadProducts(); // Reload list
             } catch (e) {
-                console.error(e);
+                console.error("Delete Error:", e);
+                alert('فشل الحذف: ' + e.message); // Show visible error
                 showToast('خطأ في الحذف', 'error');
             }
         }
