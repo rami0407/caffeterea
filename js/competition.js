@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    initializeFirebase(); // Fix: Initialize Firebase
     loadEntries();
 
     const uploadForm = document.getElementById('uploadForm');
