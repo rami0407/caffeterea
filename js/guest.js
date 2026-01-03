@@ -6,22 +6,9 @@ const GUEST_CART_KEY = 'knowledge_canteen_guest_cart';
 let currentCategory = 'all';
 
 // Product Data
-const products = [
-    { id: '1', name: 'سندويش جبنة صفراء', price: 5, category: 'sandwiches', icon: '🧀', trafficLight: 'yellow' },
-    { id: '2', name: 'سندويش لبنة وزعتر', price: 4, category: 'sandwiches', icon: '🥙', trafficLight: 'green' },
-    { id: '3', name: 'سندويش حمص', price: 4, category: 'sandwiches', icon: '🥙', trafficLight: 'green' },
-    { id: '4', name: 'عصير برتقال طبيعي', price: 6, category: 'drinks', icon: '🍊', trafficLight: 'green' },
-    { id: '5', name: 'ماء معدني', price: 2, category: 'drinks', icon: '💧', trafficLight: 'green' },
-    { id: '6', name: 'عصير تفاح', price: 5, category: 'drinks', icon: '🍎', trafficLight: 'yellow' },
-    { id: '7', name: 'بسكويت شوفان', price: 3, category: 'snacks', icon: '🍪', trafficLight: 'yellow' },
-    { id: '8', name: 'كعكة تمر', price: 4, category: 'snacks', icon: '🧁', trafficLight: 'yellow' },
-    { id: '9', name: 'سلطة خضار', price: 6, category: 'healthy', icon: '🥗', trafficLight: 'green' },
-    { id: '10', name: 'فواكه مقطعة', price: 5, category: 'healthy', icon: '🍇', trafficLight: 'green' },
-    { id: '11', name: 'لبن زبادي', price: 3, category: 'healthy', icon: '🥛', trafficLight: 'green' },
-    { id: '12', name: 'شوكولاتة', price: 4, category: 'snacks', icon: '🍫', trafficLight: 'red' }
-];
+// Product Data
+let products = [];
 
-// Load cart on startup
 // Load cart on startup
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
@@ -30,10 +17,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial Render if on guest page
     const grid = document.getElementById('productsGrid');
     if (grid) {
-        renderProducts();
+        loadProducts();
         setupCategoryListeners();
     }
 });
+
+// Load products from Firebase
+async function loadProducts() {
+    const grid = document.getElementById('productsGrid');
+    if (grid) grid.innerHTML = '<div class="spinner"></div><p style="text-align:center;width:100%;">جاري تحميل القائمة...</p>';
+
+    try {
+        // Wait for Firebase to be ready if needed
+        if (!window.db && typeof initializeFirebase === 'function') {
+            initializeFirebase();
+        }
+
+        // Fetch from Firestore
+        if (typeof getProducts === 'function') {
+            products = await getProducts();
+            console.log('✅ Loaded products:', products.length);
+        } else {
+            console.error('getProducts function not found');
+        }
+
+        renderProducts();
+    } catch (error) {
+        console.error('Error loading products:', error);
+        if (grid) grid.innerHTML = '<p class="error-msg">حدث خطأ في تحميل المنتجات. الرجاء المحاولة لاحقاً.</p>';
+    }
+}
 
 function setupCategoryListeners() {
     document.querySelectorAll('.category-chip').forEach(btn => {
@@ -114,21 +127,25 @@ function renderProducts() {
         ? products
         : products.filter(p => p.category === currentCategory);
 
-    grid.innerHTML = filtered.map(product => `
+    grid.innerHTML = filtered.map(product => {
+        // Handle bilingual names (fallback to name property if name_ar missing, or vice versa)
+        const name = product.name_ar || product.name || 'منتج';
+
+        return `
         <div class="guest-product-card">
-            <div class="nutrition-dot ${product.trafficLight}"></div>
-            <div class="product-image">${product.icon}</div>
-            <h3 class="product-name">${product.name}</h3>
+            <div class="nutrition-dot ${product.trafficLight || 'green'}"></div>
+            <div class="product-image">${product.icon || '📦'}</div>
+            <h3 class="product-name">${name}</h3>
             <div class="product-price">${product.price} نقطة</div>
             <button onclick="addToCart({
                 id: '${product.id}', 
-                name: '${product.name}', 
+                name: '${name}', 
                 price: ${product.price}
             })" class="btn-add-cart">
                 أضف للسلة +
             </button>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 // Cart Modal Logic
