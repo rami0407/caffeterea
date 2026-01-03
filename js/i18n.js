@@ -178,7 +178,17 @@ const translations = {
         send: "إرسال",
         noComments: "كن أول المعلقين!",
         likesCount: "إعجاب",
-        commentsCount: "تعليق"
+        commentsCount: "تعليق",
+
+        // About Page
+        about: "نبذة عن المشروع",
+        aboutTitle: "عن مقصف المعرفة",
+        ourVision: "رؤيتنا",
+        visionText: "نسعى لبناء جيل واعٍ صحياً وبيئياً من خلال دمج التكنولوجيا في حياتهم اليومية.",
+        contactUs: "تواصل معنا",
+        email: "البريد الإلكتروني",
+        location: "الموقع",
+        phone: "الهاتف"
     },
 
     he: {
@@ -353,7 +363,17 @@ const translations = {
         send: "שלח",
         noComments: "!היה הראשון להגיב",
         likesCount: "לייקים",
-        commentsCount: "תגובות"
+        commentsCount: "תגובות",
+
+        // About Page
+        about: "אודות הפרויקט",
+        aboutTitle: "על קנטינה הידע",
+        ourVision: "החזון שלנו",
+        visionText: "אנו שואפים לבנות דור מודע בריאותית וסביבתית באמצעות שילוב טכנולוגיה בחיי היומיום.",
+        contactUs: "צור קשר",
+        email: "אימייל",
+        location: "מיקום",
+        phone: "טלפון"
     }
 };
 

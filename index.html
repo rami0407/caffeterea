@@ -58,6 +58,7 @@
         <a href="login.html?role=educator" class="nav-link">👨‍🏫 المربي</a>
         <a href="cafeteria/orders.html" class="nav-link">👨‍🍳 المقصف</a>
         <a href="competition.html" class="nav-link">🎨 المسابقة</a>
+        <a href="about.html" class="nav-link">ℹ️ نبذة عن المشروع</a>
         <a href="guest.html" class="nav-link">🍽️ القائمة</a>
     </nav>
 
@@ -77,42 +78,38 @@
                     style="width: 120px; height: auto; margin-bottom: 20px;">
                 <h1 class="logo-text" data-i18n="appName">مقصف المعرفة</h1>
                 <p class="logo-tagline" data-i18n="tagline">منظومة المقصف الذكي والمستدام</p>
-                <p class="project-description"
-                    style="max-width: 600px; margin: 15px auto; font-size: 1.1rem; line-height: 1.6; opacity: 0.9;">
-                    مشروع مقصف المعرفة هو مبادرة مدرسية تهدف إلى تعزيز الغذاء الصحي ونشر الوعي البيئي بين الطلاب.
-                    نجمع بين التكنولوجيا الحديثة والقيم التربوية لنقدم تجربة مقصف فريدة تدعم صحة الطالب وتحافظ على
-                    بيئتنا.
-                </p>
+                <!-- Description moved to about.html -->
             </div>
-        </header>
+    </div>
+    </header>
 
-        <!-- User Type Selection -->
-        <main class="user-selection">
-            <h2 class="selection-title" data-i18n="selectRole">اختر نوع المستخدم</h2>
+    <!-- User Type Selection -->
+    <main class="user-selection">
+        <h2 class="selection-title" data-i18n="selectRole">اختر نوع المستخدم</h2>
 
-            <div class="user-cards">
-                <!-- Student Card -->
-                <a href="login.html?role=student" class="user-card student-card">
-                    <div class="card-icon">👨‍🎓</div>
-                    <h3 class="card-title" data-i18n="student">طالب</h3>
-                    <p class="card-desc" data-i18n="studentDesc">اطلب وجبتك واستمتع!</p>
-                    <div class="card-arrow">←</div>
-                </a>
+        <div class="user-cards">
+            <!-- Student Card -->
+            <a href="login.html?role=student" class="user-card student-card">
+                <div class="card-icon">👨‍🎓</div>
+                <h3 class="card-title" data-i18n="student">طالب</h3>
+                <p class="card-desc" data-i18n="studentDesc">اطلب وجبتك واستمتع!</p>
+                <div class="card-arrow">←</div>
+            </a>
 
-                <!-- Guest Card -->
-                <a href="guest.html" class="user-card guest-card">
-                    <div class="card-icon">👤</div>
-                    <h3 class="card-title" data-i18n="guest">ضيف</h3>
-                    <p class="card-desc" data-i18n="guestDesc">تصفح القائمة</p>
-                    <div class="card-arrow">←</div>
-                </a>
-            </div>
-        </main>
+            <!-- Guest Card -->
+            <a href="guest.html" class="user-card guest-card">
+                <div class="card-icon">👤</div>
+                <h3 class="card-title" data-i18n="guest">ضيف</h3>
+                <p class="card-desc" data-i18n="guestDesc">تصفح القائمة</p>
+                <div class="card-arrow">←</div>
+            </a>
+        </div>
+    </main>
 
-        <!-- Footer -->
-        <footer class="landing-footer">
-            <p data-i18n="footer">🌍 من الكود إلى الأخضر | Knowledge Canteen</p>
-        </footer>
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <p data-i18n="footer">🌍 من الكود إلى الأخضر | Knowledge Canteen</p>
+    </footer>
     </div>
 
     <script src="js/i18n.js"></script>
