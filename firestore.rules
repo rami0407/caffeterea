@@ -90,5 +90,21 @@ service cloud.firestore {
         (request.auth.uid == resource.data.userId || 
          get(/databases/$(database)/documents/students/$(request.auth.uid)).data.role == 'admin');
     }
+
+    // Educators collection - for educator login and management
+    match /educators/{educatorId} {
+      // Educators can read their own profile, admins can read all
+      allow read: if hasRole('admin') || isSignedIn();
+      // Only admins can write
+      allow write: if hasRole('admin');
+    }
+
+    // Weekly Points Tracking - for educator weekly limits
+    match /weeklyPoints/{weekKey} {
+      // Educators can read and write their own tracking
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn();
+      allow delete: if hasRole('admin');
+    }
   }
 }

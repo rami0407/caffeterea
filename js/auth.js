@@ -302,8 +302,9 @@ async function handleRegister(e, role) {
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
 
-    // Get Educator
-    const educatorName = document.getElementById('regEducator')?.value || '';
+    // Get Grade and Section (for students)
+    const grade = document.getElementById('regGrade')?.value || null;
+    const section = document.getElementById('regSection')?.value || null;
 
     // Validate
     if (!name) {
@@ -311,8 +312,8 @@ async function handleRegister(e, role) {
         return;
     }
 
-    if (role === 'student' && !educatorName) {
-        showError('يرجى اختيار المربي');
+    if (role === 'student' && (!grade || !section)) {
+        showError('يرجى اختيار الصف والشعبة');
         return;
     }
 
@@ -361,7 +362,8 @@ async function handleRegister(e, role) {
             name,
             role,
             approved: role === 'student' ? false : true, // Students pending by default
-            educatorName: role === 'student' ? educatorName : '',
+            grade: role === 'student' ? parseInt(grade) : null,
+            section: role === 'student' ? parseInt(section) : null,
             // Store original phone if needed
             phone: role === 'student' ? identifier.split('@')[0] : null
         });

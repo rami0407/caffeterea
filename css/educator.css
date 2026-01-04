@@ -327,3 +327,129 @@
     flex-direction: column;
     gap: var(--space-lg);
 }
+
+/* Pending Students Styles */
+.pending-card {
+    background: #fffaeb !important;
+    border-left: 4px solid#f59e0b;
+}
+
+[dir="ltr"] .pending-card {
+    border-left: none;
+    border-right: 4px solid #f59e0b;
+}
+
+.pending-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: auto;
+}
+
+[dir="ltr"] .pending-actions {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.btn-sm {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.875rem;
+    border-radius: var(--radius-md);
+}
+
+.btn-success {
+    background: var(--primary-green);
+    color: white;
+}
+
+.btn-success:hover {
+    background: var(--primary-green-dark);
+    box-shadow: var(--shadow-glow);
+}
+
+.btn-danger {
+    background: var(--nutrition-red);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+/* Tabs */
+.tabs-container {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.tab-btn {
+    flex: 1;
+    background: #f3f4f6;
+    position: relative;
+}
+
+.tab-btn.active {
+    background: var(--primary-green);
+    color: white;
+}
+
+/* Actions Bar */
+.actions-bar {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    align-items: center;
+}
+
+.actions-bar .search-box {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.bulk-btn {
+    white-space: nowrap;
+}
+
+.student-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.balance-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+}
+
+.balance-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+}
+
+.student-details {
+    flex: 1;
+}
+
+.reward-btn {
+    background: var(--primary-green);
+    color: white;
+}
+
+.reward-btn:hover {
+    background: var(--primary-green-dark);
+    transform: scale(1.1);
+}
