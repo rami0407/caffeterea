@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="آلة حاسبة التغذية الذكية - بذور المعرفة">
+    <title>آلة حاسبة التغذية | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/stem.css">
+</head>
+
+<body class="stem-page">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-right">
+            <a href="index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title">آلة حاسبة التغذية الذكية</h1>
+        </div>
+        <div class="header-left">
+            <a href="index.html" class="btn-back">← العودة</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content stem-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-icon">🧮</div>
+            <h2>احسب الاحتياجات الغذائية اليومية</h2>
+            <p>أداة علمية تساعدك وعائلتك على بناء نظام تغذية صحي ومتوازن - للأطفال والكبار</p>
+        </section>
+
+        <!-- Calculator Form -->
+        <section class="calculator-section">
+            <div class="calculator-card">
+                <h3 class="section-title">
+                    <span class="title-icon">📊</span>
+                    أدخل معلوماتك
+                </h3>
+
+                <form id="nutritionForm">
+                    <!-- Age -->
+                    <div class="input-group">
+                        <label for="age" class="input-label">
+                            <span class="label-icon">🎂</span>
+                            العمر (سنوات)
+                        </label>
+                        <input type="number" id="age" class="input-field" min="5" max="100" value="10" required>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="input-group">
+                        <label class="input-label">
+                            <span class="label-icon">👤</span>
+                            الجنس
+                        </label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="male" checked>
+                                <span class="radio-custom">ذكر</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="female">
+                                <span class="radio-custom">أنثى</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Weight -->
+                    <div class="input-group">
+                        <label for="weight" class="input-label">
+                            <span class="label-icon">⚖️</span>
+                            الوزن (كغ)
+                        </label>
+                        <input type="number" id="weight" class="input-field" min="15" max="200" step="0.5" value="35"
+                            required>
+                    </div>
+
+                    <!-- Height -->
+                    <div class="input-group">
+                        <label for="height" class="input-label">
+                            <span class="label-icon">📏</span>
+                            الطول (سم)
+                        </label>
+                        <input type="number" id="height" class="input-field" min="80" max="250" value="140" required>
+                    </div>
+
+                    <!-- Activity Level -->
+                    <div class="input-group">
+                        <label for="activity" class="input-label">
+                            <span class="label-icon">🏃</span>
+                            مستوى النشاط
+                        </label>
+                        <select id="activity" class="input-field">
+                            <option value="1.2">قليل الحركة (لا رياضة)</option>
+                            <option value="1.375">نشاط خفيف (رياضة 1-3 مرات/أسبوع)</option>
+                            <option value="1.55" selected>نشاط متوسط (رياضة 3-5 مرات/أسبوع)</option>
+                            <option value="1.725">نشاط عالي (رياضة 6-7 مرات/أسبوع)</option>
+                            <option value="1.9">نشاط عالي جداً (رياضي محترف)</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-calculate">
+                        <span>🧮</span>
+                        <span>احسب احتياجاتي</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section hidden" id="results">
+                <div class="results-card">
+                    <h3 class="section-title">
+                        <span class="title-icon">📋</span>
+                        نتائج التحليل
+                    </h3>
+
+                    <div class="results-grid">
+                        <!-- BMI -->
+                        <div class="result-box" data-type="bmi">
+                            <div class="result-icon">📊</div>
+                            <div class="result-value" id="bmiValue">0</div>
+                            <div class="result-label">مؤشر كتلة الجسم (BMI)</div>
+                            <div class="result-status" id="bmiStatus">-</div>
+                        </div>
+
+                        <!-- Calories -->
+                        <div class="result-box" data-type="calories">
+                            <div class="result-icon">🔥</div>
+                            <div class="result-value" id="caloriesValue">0</div>
+                            <div class="result-label">سعرات حرارية/يوم</div>
+                        </div>
+
+                        <!-- Protein -->
+                        <div class="result-box" data-type="protein">
+                            <div class="result-icon">🥩</div>
+                            <div class="result-value" id="proteinValue">0</div>
+                            <div class="result-label">بروتين (غرام/يوم)</div>
+                        </div>
+
+                        <!-- Carbs -->
+                        <div class="result-box" data-type="carbs">
+                            <div class="result-icon">🍞</div>
+                            <div class="result-value" id="carbsValue">0</div>
+                            <div class="result-label">كربوهيدرات (غرام/يوم)</div>
+                        </div>
+
+                        <!-- Fats -->
+                        <div class="result-box" data-type="fats">
+                            <div class="result-icon">🥑</div>
+                            <div class="result-value" id="fatsValue">0</div>
+                            <div class="result-label">دهون (غرام/يوم)</div>
+                        </div>
+
+                        <!-- Water -->
+                        <div class="result-box" data-type="water">
+                            <div class="result-icon">💧</div>
+                            <div class="result-value" id="waterValue">0</div>
+                            <div class="result-label">ماء (لتر/يوم)</div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="recommendations" id="recommendations">
+                        <h4 class="recommendations-title">💡 توصيات للأهل</h4>
+                        <div class="recommendation-list" id="recommendationList">
+                            <!-- Will be filled by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Meal Plan -->
+                    <div class="meal-plan">
+                        <h4 class="meal-plan-title">🍽️ خطة وجبات مقترحة</h4>
+                        <div class="meal-grid" id="mealPlan">
+                            <!-- Will be filled by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Section -->
+        <section class="info-section">
+            <div class="info-card">
+                <h3 class="info-title">📚 كيف تعمل الحاسبة؟</h3>
+                <div class="info-content">
+                    <div class="info-item">
+                        <div class="info-number">1</div>
+                        <div class="info-text">
+                            <h4>معادلة هاريس-بنديكت</h4>
+                            <p>نستخدم معادلة علمية معتمدة لحساب معدل الأيض الأساسي (BMR)</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-number">2</div>
+                        <div class="info-text">
+                            <h4>مستوى النشاط</h4>
+                            <p>نضرب BMR في معامل النشاط للحصول على السعرات الإجمالية</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-number">3</div>
+                        <div class="info-text">
+                            <h4>توزيع المغذيات</h4>
+                            <p>نقسم السعرات إلى: 50% كربوهيدرات، 30% بروتين، 20% دهون</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="js/nutrition-calculator.js"></script>
+</body>
+
+</html>

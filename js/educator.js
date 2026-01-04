@@ -4,7 +4,7 @@
 // ========================================
 
 // Global state
-let currentEducator = null;
+// currentEducator is declared in educator-auth.js
 let students = [];
 let pendingStudents = [];
 let selectedStudent = null;

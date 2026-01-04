@@ -1,0 +1,510 @@
+/* ========================================
+   Nutrition Lab Specific Styles
+   تنسيقات مختبر التغذية
+   ======================================== */
+
+.lab-page {
+    background: linear-gradient(135deg, #dbeafe 0%, #f0fdf4 50%, #fef3c7 100%);
+}
+
+.lab-hero {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border-radius: 24px;
+    padding: var(--space-2xl);
+}
+
+/* ========================================
+   عرض النقاط
+   ======================================== */
+.points-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.points-icon {
+    font-size: 1.5rem;
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.points-value {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: white;
+}
+
+/* ========================================
+   شبكة العناصر الغذائية
+   ======================================== */
+.nutrients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.nutrient-card {
+    background: white;
+    border-radius: 20px;
+    padding: var(--space-xl);
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeInUp 0.6s forwards;
+}
+
+.nutrient-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.nutrient-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--space-md);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.nutrient-card:hover .nutrient-icon {
+    transform: scale(1.1) rotate(10deg);
+}
+
+.nutrient-card h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.nutrient-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.btn-learn {
+    background: transparent;
+    border: 2px solid var(--primary-green);
+    color: var(--primary-green);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-learn:hover {
+    background: var(--primary-green);
+    color: white;
+}
+
+/* ========================================
+   دوامة الحقائق
+   ======================================== */
+.facts-carousel {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto var(--space-2xl);
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 50%;
+    border: none;
+    font-size: 2rem;
+    color: var(--primary-green);
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.carousel-btn:hover {
+    background: var(--primary-green);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev {
+    right: -25px;
+}
+
+.carousel-btn.next {
+    left: -25px;
+}
+
+.fact-card {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-2xl);
+    text-align: center;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fact-icon {
+    font-size: 5rem;
+    margin-bottom: var(--space-lg);
+}
+
+.fact-card h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.fact-card p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ========================================
+   الاختبار
+   ======================================== */
+.quiz-card {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-2xl);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    margin: 0 auto var(--space-2xl);
+}
+
+.quiz-counter {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.quiz-question {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    line-height: 1.5;
+}
+
+.quiz-options {
+    display: grid;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.quiz-option {
+    padding: var(--space-lg);
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: right;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.quiz-option:hover:not(:disabled) {
+    background: #f0fdf4;
+    border-color: var(--primary-green);
+    transform: translateX(-5px);
+}
+
+.quiz-option.correct {
+    background: #d1fae5;
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+}
+
+.quiz-option.wrong {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.quiz-option:disabled {
+    cursor: not-allowed;
+}
+
+.quiz-feedback {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border-radius: 16px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.feedback-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-sm);
+}
+
+.feedback-explanation {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-sm);
+}
+
+.quiz-actions {
+    text-align: center;
+}
+
+/* ========================================
+   نتائج الاختبار
+   ======================================== */
+.quiz-results {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-2xl);
+    text-align: center;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+    animation: scaleIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.results-icon {
+    font-size: 6rem;
+    margin-bottom: var(--space-md);
+}
+
+.quiz-results h4 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.results-score {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.results-points {
+    font-size: 1.5rem;
+    color: var(--primary-green);
+    font-weight: 700;
+    margin-bottom: var(--space-xl);
+}
+
+/* ========================================
+   الشارات
+   ======================================== */
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-lg);
+}
+
+.badge-card {
+    background: white;
+    border-radius: 16px;
+    padding: var(--space-lg);
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.badge-card.unlocked {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border: 2px solid var(--primary-green-light);
+}
+
+.badge-card.locked {
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+.badge-card.unlocked:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+}
+
+.badge-icon {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.badge-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.badge-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   نافذة العنصر الغذائي
+   ======================================== */
+.nutrient-modal-content {
+    max-width: 600px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.nutrient-modal-header {
+    padding: var(--space-2xl);
+    text-align: center;
+    color: white;
+}
+
+.nutrient-modal-icon {
+    font-size: 5rem;
+    margin-bottom: var(--space-md);
+}
+
+.nutrient-modal-header h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+}
+
+.nutrient-modal-body {
+    padding: var(--space-2xl);
+}
+
+.nutrient-description {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+    line-height: 1.6;
+}
+
+.nutrient-modal-body h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.benefits-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: var(--space-xl);
+}
+
+.benefits-list li {
+    padding: var(--space-sm) var(--space-md);
+    background: #f0fdf4;
+    margin-bottom: var(--space-sm);
+    border-radius: 8px;
+    padding-right: 35px;
+    position: relative;
+}
+
+.benefits-list li::before {
+    content: '✓';
+    position: absolute;
+    right: 10px;
+    color: var(--primary-green);
+    font-weight: 700;
+}
+
+.sources-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.source-tag {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.daily-need {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    padding: var(--space-md);
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+/* ========================================
+   الاستجابة
+   ======================================== */
+@media (max-width: 768px) {
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+
+    .carousel-btn.prev {
+        right: -20px;
+    }
+
+    .carousel-btn.next {
+        left: -20px;
+    }
+
+    .nutrients-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .badges-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

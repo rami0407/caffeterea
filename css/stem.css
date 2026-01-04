@@ -1,0 +1,565 @@
+/* ========================================
+   STEM Features Styles
+   تنسيقات ميزات STEM
+   ======================================== */
+
+/* ========================================
+   الصفحة العامة
+   ======================================== */
+.stem-page {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f9fafb 100%);
+    min-height: 100vh;
+}
+
+.stem-content {
+    padding: var(--space-lg);
+    padding-top: 100px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   قسم البطل (Hero)
+   ======================================== */
+.hero-section {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.hero-icon {
+    font-size: 6rem;
+    margin-bottom: var(--space-lg);
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.hero-section h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-md);
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   بطاقة الحاسبة
+   ======================================== */
+.calculator-card {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-2xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    margin-bottom: var(--space-2xl);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xl);
+}
+
+.title-icon {
+    font-size: 2rem;
+}
+
+/* ========================================
+   حقول الإدخال
+   ======================================== */
+.input-group {
+    margin-bottom: var(--space-xl);
+}
+
+.input-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+    font-size: 1rem;
+}
+
+.label-icon {
+    font-size: 1.5rem;
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s;
+    background: white;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+/* ========================================
+   أزرار الراديو
+   ======================================== */
+.radio-group {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.radio-label {
+    cursor: pointer;
+    position: relative;
+}
+
+.radio-label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.radio-custom {
+    display: inline-block;
+    padding: 12px 28px;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.radio-label input[type="radio"]:checked+.radio-custom {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-color: #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.radio-custom:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   زر الحساب
+   ======================================== */
+.btn-calculate {
+    width: 100%;
+    padding: 18px 32px;
+    font-size: 1.2rem;
+    margin-top: var(--space-lg);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-calculate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+}
+
+/* ========================================
+   قسم النتائج
+   ======================================== */
+.results-section {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.results-section.hidden {
+    display: none;
+}
+
+.results-card {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-2xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.result-box {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 16px;
+    padding: var(--space-lg);
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.4s;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-green-light);
+}
+
+.result-box[data-type="bmi"] {
+    background: linear-gradient(135deg, #fff 0%, #f0fdf4 100%);
+}
+
+.result-box[data-type="calories"] {
+    background: linear-gradient(135deg, #fff 0%, #fef3c7 100%);
+}
+
+.result-box[data-type="protein"] {
+    background: linear-gradient(135deg, #fff 0%, #fee2e2 100%);
+}
+
+.result-box[data-type="carbs"] {
+    background: linear-gradient(135deg, #fff 0%, #fef3c7 100%);
+}
+
+.result-box[data-type="fats"] {
+    background: linear-gradient(135deg, #fff 0%, #fffbeb 100%);
+}
+
+.result-box[data-type="water"] {
+    background: linear-gradient(135deg, #fff 0%, #dbeafe 100%);
+}
+
+.result-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-sm);
+}
+
+.result-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-green);
+    margin-bottom: var(--space-xs);
+}
+
+.result-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.result-status {
+    margin-top: var(--space-xs);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   التوصيات
+   ======================================== */
+.recommendations {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border-radius: 20px;
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.recommendations-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.recommendation-list {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    background: white;
+    padding: var(--space-md);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+}
+
+.recommendation-item:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.recommendation-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.recommendation-content h5 {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.recommendation-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ========================================
+   خطة الوجبات
+   ======================================== */
+.meal-plan {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-radius: 20px;
+    padding: var(--space-xl);
+}
+
+.meal-plan-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.meal-grid {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.meal-card {
+    background: white;
+    border-radius: 16px;
+    padding: var(--space-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+}
+
+.meal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.2);
+}
+
+.meal-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid #fef3c7;
+}
+
+.meal-icon {
+    font-size: 2.5rem;
+}
+
+.meal-info {
+    flex: 1;
+}
+
+.meal-info h4 {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.meal-time {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.meal-calories {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f59e0b;
+    background: #fffbeb;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.meal-items {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.meal-items li {
+    padding-right: 24px;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.meal-items li::before {
+    content: '✓';
+    position: absolute;
+    right: 0;
+    color: var(--primary-green);
+    font-weight: 700;
+}
+
+/* ========================================
+   قسم المعلومات
+   ======================================== */
+.info-section {
+    margin-top: var(--space-2xl);
+}
+
+.info-card {
+    background: white;
+    border-radius: 24px;
+    padding: var(--space-2xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.info-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+
+.info-content {
+    display: grid;
+    gap: var(--space-xl);
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+}
+
+.info-number {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 800;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.info-text h4 {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.info-text p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ========================================
+   زر العودة
+   ======================================== */
+.btn-back {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(5px);
+}
+
+[dir="ltr"] .btn-back:hover {
+    transform: translateX(-5px);
+}
+
+/* ========================================
+   الاستجابة للأجهزة المحمولة
+   ======================================== */
+@media (max-width: 768px) {
+    .stem-content {
+        padding: var(--space-md);
+        padding-top: 90px;
+    }
+
+    .hero-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .hero-icon {
+        font-size: 4rem;
+    }
+
+    .calculator-card,
+    .results-card,
+    .info-card {
+        padding: var(--space-lg);
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .meal-header {
+        flex-wrap: wrap;
+    }
+
+    .meal-calories {
+        width: 100%;
+        text-align: center;
+    }
+
+    .info-item {
+        flex-direction: column;
+    }
+
+    .radio-group {
+        flex-direction: column;
+    }
+
+    .radio-custom {
+        display: block;
+        text-align: center;
+    }
+}

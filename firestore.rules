@@ -25,6 +25,7 @@ service cloud.firestore {
       // TEMP: Allow authenticated users to create their profile
       allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if hasRole('admin') || (isOwner(userId) && request.resource.data.role == resource.data.role);
+      allow delete: if hasRole('admin');
     }
 
     // Products:

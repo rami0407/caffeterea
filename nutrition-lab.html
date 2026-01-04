@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="مختبر التغذية الافتراضي - تعلم التغذية بطريقة ممتعة">
+    <title>مختبر التغذية | بذور المعرفة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/stem.css">
+    <link rel="stylesheet" href="css/nutrition-lab.css">
+</head>
+
+<body class="lab-page">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-right">
+            <a href="index.html" class="logo-mini">🌱</a>
+            <h1 class="header-title">مختبر التغذية الافتراضي</h1>
+        </div>
+        <div class="header-left">
+            <div class="points-display" id="labPoints">
+                <span class="points-icon">⭐</span>
+                <span class="points-value">0</span>
+            </div>
+            <a href="index.html" class="btn-back">← العودة</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content lab-content">
+        <!-- Hero Section -->
+        <section class="hero-section lab-hero">
+            <div class="hero-icon">🔬</div>
+            <h2>اكتشف عالم التغذية الصحية</h2>
+            <p>تعلم، استكشف، واكسب النقاط في رحلة تعليمية ممتعة</p>
+        </section>
+
+        <!-- Nutrients Showcase -->
+        <section class="nutrients-section">
+            <h3 class="section-title">
+                <span class="title-icon">💊</span>
+                تعرف على العناصر الغذائية
+            </h3>
+
+            <div class="nutrients-grid" id="nutrientsGrid">
+                <!-- Will be filled by JS -->
+            </div>
+        </section>
+
+        <!-- Did You Know Section -->
+        <section class="facts-section">
+            <h3 class="section-title">
+                <span class="title-icon">💡</span>
+                هل تعلم؟
+            </h3>
+
+            <div class="facts-carousel">
+                <button class="carousel-btn prev" onclick="prevFact()">‹</button>
+                <div class="fact-display" id="factDisplay">
+                    <!-- Will be filled by JS -->
+                </div>
+                <button class="carousel-btn next" onclick="nextFact()">›</button>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="quiz-section">
+            <h3 class="section-title">
+                <span class="title-icon">🎯</span>
+                اختبر معلوماتك
+            </h3>
+
+            <div class="quiz-card" id="quizCard">
+                <div class="quiz-counter">
+                    السؤال <span id="currentQuestion">1</span> من <span id="totalQuestions">5</span>
+                </div>
+
+                <div class="quiz-question" id="quizQuestion">
+                    <!-- Will be filled by JS -->
+                </div>
+
+                <div class="quiz-options" id="quizOptions">
+                    <!-- Will be filled by JS -->
+                </div>
+
+                <div class="quiz-feedback hidden" id="quizFeedback">
+                    <!-- Will be filled by JS -->
+                </div>
+
+                <div class="quiz-actions">
+                    <button class="btn btn-primary" id="quizNextBtn" onclick="nextQuestion()" style="display:none;">
+                        السؤال التالي →
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-results hidden" id="quizResults">
+                <div class="results-icon">🎉</div>
+                <h4>أحسنت!</h4>
+                <p class="results-score">
+                    حصلت على <strong id="finalScore">0</strong> من <strong id="finalTotal">0</strong>
+                </p>
+                <p class="results-points">
+                    ربحت <strong id="earnedPoints">0</strong> نقطة! ⭐
+                </p>
+                <button class="btn btn-primary" onclick="restartQuiz()">
+                    🔄 ابدأ من جديد
+                </button>
+            </div>
+        </section>
+
+        <!-- Badges Section -->
+        <section class="badges-section">
+            <h3 class="section-title">
+                <span class="title-icon">🏅</span>
+                شاراتك
+            </h3>
+
+            <div class="badges-grid" id="badgesGrid">
+                <!-- Will be filled by JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Nutrient Modal -->
+    <div class="modal-overlay hidden" id="nutrientModal">
+        <div class="modal-content nutrient-modal-content">
+            <button class="modal-close" onclick="closeNutrientModal()">✕</button>
+            <div id="nutrientModalContent">
+                <!-- Will be filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="js/nutrition-lab.js"></script>
+</body>
+
+</html>
