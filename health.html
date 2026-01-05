@@ -50,6 +50,7 @@
                 <button class="tab-btn" data-tab="distance-calculator">🔥 حاسبة المسافة</button>
                 <button class="tab-btn active" data-tab="weekly-challenge">🎯 التحدي الأسبوعي</button>
                 <button class="tab-btn" data-tab="log-activity">📝 سجّل نشاطك</button>
+                <button class="tab-btn" data-tab="weight-loss-plan">💪 خطة تنزيل الوزن</button>
                 <button class="tab-btn" data-tab="nutrition-calculator">🧮 حاسبة التغذية</button>
                 <button class="tab-btn" data-tab="nutrition-lab">🔬 مختبر التغذية</button>
             </div>
@@ -270,7 +271,141 @@
                 </section>
             </div>
 
-            <!-- Tab 4: Nutrition Calculator -->
+            <!-- Tab 4: Weight Loss Plan -->
+            <div class="tab-content" data-tab-content="weight-loss-plan">
+                <section class="health-card weight-loss-section">
+                    <h2 class="section-title">💪 بناء خطة لتنزيل الوزن</h2>
+                    <p class="section-desc">أنشئ خطة علمية مخصصة لتنزيل وزنك بشكل صحي وآمن</p>
+
+                    <!-- Weight Loss Form -->
+                    <div class="weight-loss-form" id="weightLossForm">
+                        <h3>📝 معلوماتك الشخصية</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>العمر (سنوات) *</label>
+                                <input type="number" id="wlAge" placeholder="25" min="15" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الجنس *</label>
+                                <select id="wlGender" required>
+                                    <option value="">اختر...</option>
+                                    <option value="male">ذكر</option>
+                                    <option value="female">أنثى</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>الطول (سم) *</label>
+                                <input type="number" id="wlHeight" placeholder="170" min="120" max="250" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الوزن الحالي (كجم) *</label>
+                                <input type="number" id="wlCurrentWeight" placeholder="85" min="40" max="200" step="0.1"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>الوزن المستهدف (كجم) *</label>
+                                <input type="number" id="wlTargetWeight" placeholder="75" min="40" max="200" step="0.1"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>مستوى النشاط *</label>
+                                <select id="wlActivity" required>
+                                    <option value="">اختر...</option>
+                                    <option value="1.2">قليل الحركة (لا رياضة)</option>
+                                    <option value="1.375">نشاط خفيف (1-3 أيام/أسبوع)</option>
+                                    <option value="1.55">نشاط متوسط (3-5 أيام/أسبوع)</option>
+                                    <option value="1.725">نشاط عالي (6-7 أيام/أسبوع)</option>
+                                    <option value="1.9">نشاط عالي جداً (رياضي)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>سرعة التنزيل المستهدفة *</label>
+                                <select id="wlSpeed" required>
+                                    <option value="">اختر...</option>
+                                    <option value="slow">بطيء وآمن (0.3-0.5 كجم/أسبوع)</option>
+                                    <option value="moderate">متوسط (0.5-0.7 كجم/أسبوع)</option>
+                                    <option value="fast">سريع (0.8-1 كجم/أسبوع)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>عدد الوجبات المفضل يومياً *</label>
+                                <select id="wlMeals" required>
+                                    <option value="">اختر...</option>
+                                    <option value="3">3 وجبات رئيسية</option>
+                                    <option value="4">4 وجبات</option>
+                                    <option value="5">5 وجبات (3 رئيسية + 2 خفيفة)</option>
+                                    <option value="6">6 وجبات صغيرة</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="generateWeightLossPlan()" class="btn-primary">🚀 إنشاء خطتي الآن</button>
+                    </div>
+
+                    <!-- Weight Loss Plan Display -->
+                    <div class="weight-loss-plan hidden" id="weightLossPlan">
+                        <div class="plan-header">
+                            <h3>🎯 خطتك المخصصة لتنزيل الوزن</h3>
+                            <div class="plan-actions">
+                                <button onclick="downloadPlanAsPDF()" class="btn-download">📥 تنزيل PDF</button>
+                                <button onclick="shareViaWhatsApp()" class="btn-share">📱 مشاركة واتساب</button>
+                            </div>
+                        </div>
+
+                        <div class="plan-summary" id="planSummary">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+
+                        <div class="plan-sections">
+                            <!-- Calories & Macros -->
+                            <div class="plan-section">
+                                <h4>🔥 السعرات والمغذيات اليومية</h4>
+                                <div id="planMacros" class="plan-macros">
+                                    <!-- Will be filled by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Meal Plan -->
+                            <div class="plan-section">
+                                <h4>🍽️ توزيع الوجبات المقترح</h4>
+                                <div id="planMeals" class="plan-meals">
+                                    <!-- Will be filled by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Exercise Plan -->
+                            <div class="plan-section">
+                                <h4>🏋️ الخطة الرياضية</h4>
+                                <div id="planExercise" class="plan-exercise">
+                                    <!-- Will be filled by JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Tips & Warnings -->
+                            <div class="plan-section">
+                                <h4>💡 نصائح وإرشادات</h4>
+                                <div id="planTips" class="plan-tips">
+                                    <!-- Will be filled by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="resetWeightLossPlan()" class="btn-secondary">🔄 إنشاء خطة جديدة</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab 5: Nutrition Calculator -->
             <div class="tab-content" data-tab-content="nutrition-calculator">
                 <section class="calculator-section">
                     <div class="calculator-card">
@@ -571,6 +706,7 @@
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
@@ -578,6 +714,7 @@
     <script src="js/health.js"></script>
     <script src="js/nutrition-calculator.js"></script>
     <script src="js/nutrition-lab.js"></script>
+    <script src="js/weight-loss-plan.js"></script>
 </body>
 
 </html>

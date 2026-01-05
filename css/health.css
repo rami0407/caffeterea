@@ -806,3 +806,332 @@
         gap: 10px;
     }
 }
+
+/* Weight Loss Plan Styles */
+.weight-loss-form {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    border: 2px solid #3b82f6;
+}
+
+.weight-loss-form h3 {
+    color: #1e40af;
+    margin-bottom: 20px;
+}
+
+.weight-loss-plan {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.plan-header h3 {
+    color: #059669;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-download,
+.btn-share {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-download {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-share {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-share:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.plan-summary {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    border-right: 5px solid #10b981;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.summary-icon {
+    font-size: 2.5rem;
+}
+
+.summary-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.summary-text strong {
+    font-size: 1.1rem;
+    color: #047857;
+}
+
+.summary-text span {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.plan-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.plan-section {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 15px;
+    border-right: 4px solid #3b82f6;
+}
+
+.plan-section h4 {
+    color: #1e40af;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.macros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.macro-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.macro-card:hover {
+    transform: translateY(-3px);
+}
+
+.macro-card.main {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #f59e0b;
+}
+
+.macro-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.macro-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #10b981;
+    margin-bottom: 5px;
+}
+
+.macro-card.main .macro-value {
+    color: #f59e0b;
+    font-size: 2.5rem;
+}
+
+.macro-label {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.macro-card small {
+    display: block;
+    margin-top: 5px;
+    color: #78350f;
+    font-size: 0.8rem;
+}
+
+.meals-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.meal-item {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-right: 3px solid #10b981;
+}
+
+.meal-time {
+    font-weight: 600;
+    color: #334155;
+}
+
+.meal-calories {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.exercise-recommendation {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.exercise-recommendation strong {
+    display: block;
+    color: #059669;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.exercise-recommendation ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.exercise-recommendation ul li {
+    padding: 8px 0;
+    padding-right: 25px;
+    position: relative;
+}
+
+.exercise-recommendation ul li:before {
+    content: '✓';
+    position: absolute;
+    right: 0;
+    color: #10b981;
+    font-weight: 800;
+}
+
+.exercise-note {
+    display: block;
+    margin-top: 15px;
+    padding: 10px;
+    background: #f0fdf4;
+    color: #047857;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tip-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.tip-item.warning {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+}
+
+.tip-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.tip-content strong {
+    display: block;
+    color: #334155;
+    margin-bottom: 5px;
+}
+
+.tip-content p {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.sources {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.sources strong {
+    color: #334155;
+}
+
+@media (max-width: 768px) {
+    .plan-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .plan-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-download,
+    .btn-share {
+        width: 100%;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .macros-grid {
+        grid-template-columns: 1fr;
+    }
+}
