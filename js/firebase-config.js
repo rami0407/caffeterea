@@ -57,20 +57,33 @@ function initializeFirebase() {
 // Sign up with email and password
 async function signUp(email, password, userData) {
     try {
+        console.log('📝 === signUp - البيانات المستلمة ===');
+        console.log('userData:', userData);
+        console.log('grade:', userData.grade, 'section:', userData.section);
+
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Create user document in Firestore
-        await db.collection('users').doc(user.uid).set({
+        // Prepare data to save
+        const dataToSave = {
             uid: user.uid,
             email: email,
             name: userData.name,
             role: userData.role,
             balance: 0,
             approved: userData.approved,
+            grade: userData.grade || null,
+            section: userData.section || null,
+            phone: userData.phone || null,
             educatorName: userData.educatorName || '',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        };
+
+        console.log('💾 === Data to save ===');
+        console.log(dataToSave);
+
+        // Create user document in Firestore
+        await db.collection('users').doc(user.uid).set(dataToSave);
 
         console.log('✅ User created:', user.uid);
         return { success: true, user };
