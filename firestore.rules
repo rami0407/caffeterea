@@ -21,11 +21,11 @@ service cloud.firestore {
     // - Admin can read/write all
     // - TEMPORARY: Allow authenticated users to create their own profile (for bootstrapping)
     match /users/{userId} {
-      allow read: if isOwner(userId) || hasRole('admin') || hasRole('educator') || hasRole('cafeteria');
+      allow read: if true; // TEMPORARY: Open for educators without Firebase Auth
       // TEMP: Allow authenticated users to create their profile
       allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if hasRole('admin') || (isOwner(userId) && request.resource.data.role == resource.data.role);
-      allow delete: if hasRole('admin');
+      allow delete: if true; // TEMPORARY: Allow educators to delete students
     }
 
     // Products:
