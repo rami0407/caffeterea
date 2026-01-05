@@ -358,6 +358,13 @@ async function handleRegister(e, role) {
     submitBtn.disabled = true;
 
     try {
+        // Log for debugging
+        console.log('🔍 === بيانات التسجيل ===');
+        console.log('الصف (قبل parseInt):', grade);
+        console.log('الشعبة (قبل parseInt):', section);
+        console.log('الصف (بعد parseInt):', parseInt(grade));
+        console.log('الشعبة (بعد parseInt):', parseInt(section));
+
         const result = await signUp(identifier, password, {
             name,
             role,
