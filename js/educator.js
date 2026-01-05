@@ -6,9 +6,7 @@
 // Global state
 // currentEducator is declared in educator-auth.js
 let students = [];
-let pendingStudents = [];
 let selectedStudent = null;
-let activeTab = 'active';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,35 +45,21 @@ async function loadStudents() {
     if (!db || !currentEducator) return;
 
     try {
-        // Load active students (approved and in educator's class)
-        const activeSnapshot = await db.collection('users')
+        // Load all students in educator's class
+        const snapshot = await db.collection('users')
             .where('role', '==', 'student')
             .where('grade', '==', currentEducator.grade)
             .where('section', '==', currentEducator.section)
-            .where('approved', '==', true)
             .get();
 
-        students = activeSnapshot.docs.map(doc => ({
+        students = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
 
-        // Load pending students (not approved and in educator's class)
-        const pendingSnapshot = await db.collection('users')
-            .where('role', '==', 'student')
-            .where('grade', '==', currentEducator.grade)
-            .where('section', '==', currentEducator.section)
-            .where('approved', '==', false)
-            .get();
+        console.log(`✅ Loaded ${students.length} students`);
 
-        pendingStudents = pendingSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        console.log(`✅ Loaded ${students.length} active students, ${pendingStudents.length} pending`);
-
-        renderStudentTabs();
+        renderStudents(students, 'studentsList');
         updateStats();
     } catch (error) {
         console.error('❌ Error loading students:', error);
@@ -83,41 +67,7 @@ async function loadStudents() {
     }
 }
 
-/**
- * Render student tabs
- */
-function renderStudentTabs() {
-    if (activeTab === 'active') {
-        renderStudents(students, 'studentsList');
-        document.getElementById('studentsList').classList.remove('hidden');
-        document.getElementById('pendingList').classList.add('hidden');
-    } else {
-        renderPendingStudents();
-        document.getElementById('studentsList').classList.add('hidden');
-        document.getElementById('pendingList').classList.remove('hidden');
-    }
 
-    // Update tab buttons
-    document.getElementById('tab-active').classList.toggle('active', activeTab === 'active');
-    document.getElementById('tab-pending').classList.toggle('active', activeTab === 'pending');
-
-    // Update pending badge
-    const badge = document.getElementById('pendingCountBadge');
-    if (pendingStudents.length > 0) {
-        badge.textContent = pendingStudents.length;
-        badge.style.display = 'inline';
-    } else {
-        badge.style.display = 'none';
-    }
-}
-
-/**
- * Switch between tabs
- */
-function switchTab(tab) {
-    activeTab = tab;
-    renderStudentTabs();
-}
 
 /**
  * Render active students list
@@ -149,46 +99,12 @@ function renderStudents(list, containerId) {
                 <span class="balance-value">${student.balance || 0}</span>
                 <span class="balance-label">نقطة</span>
             </div>
-            <button class="btn btn-icon reward-btn" onclick="openRewardModal('${student.id}')" title="إضافة نقاط">
-                <span>🎁</span>
-            </button>
-        </div>
-    `).join('');
-}
-
-/**
- * Render pending students
- */
-function renderPendingStudents() {
-    const container = document.getElementById('pendingList');
-    if (!container) return;
-
-    if (pendingStudents.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <span class="empty-icon">✅</span>
-                <p>لا توجد طلبات معلقة</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = pendingStudents.map(student => `
-        <div class="student-card pending-card" data-student-id="${student.id}">
-            <div class="student-info">
-                <div class="student-avatar">${student.name.charAt(0)}</div>
-                <div class="student-details">
-                    <h3 class="student-name">${student.name}</h3>
-                    <p class="student-meta">الصف ${student.grade || ''} - شعبة ${student.section || ''}</p>
-                    <p class="student-meta" style="font-size:0.85rem; color:#888;">📞 ${student.phone || 'غير متوفر'}</p>
-                </div>
-            </div>
-            <div class="pending-actions">
-                <button class="btn btn-success btn-sm" onclick="approveStudent('${student.id}')" data-i18n="approveStudent">
-                    ✅ قبول
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-icon reward-btn" onclick="openRewardModal('${student.id}')" title="إضافة نقاط">
+                    <span>🎁</span>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="rejectStudent('${student.id}')" data-i18n="rejectStudent">
-                    ❌ رفض
+                <button class="btn btn-icon" onclick="deleteStudent('${student.id}')" title="حذف الطالب" style="background: #ff4444; color: white;">
+                    <span>🗑️</span>
                 </button>
             </div>
         </div>
@@ -196,45 +112,25 @@ function renderPendingStudents() {
 }
 
 /**
- * Approve student
+ * Delete student
  */
-async function approveStudent(studentId) {
-    if (!confirm('هل تريد قبول هذا الطالب؟')) return;
+async function deleteStudent(studentId) {
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
 
-    try {
-        await db.collection('users').doc(studentId).update({
-            approved: true,
-            approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            approvedBy: currentEducator.id
-        });
-
-        showToast('تم قبول الطالب بنجاح! ✅', 'success');
-
-        // Reload students
-        await loadStudents();
-    } catch (error) {
-        console.error('❌ Error approving student:', error);
-        showToast('حدث خطأ في قبول الطالب', 'error');
-    }
-}
-
-/**
- * Reject student
- */
-async function rejectStudent(studentId) {
-    if (!confirm('هل تريد رفض هذا الطالب؟ سيتم حذف حسابه نهائياً.')) return;
+    if (!confirm(`هل تريد حذف الطالب "${student.name}" نهائياً؟\n\nتحذير: سيتم حذف حساب الطالب بالكامل ولن يتمكن من تسجيل الدخول.`)) return;
 
     try {
         // Delete the user document
         await db.collection('users').doc(studentId).delete();
 
-        showToast('تم رفض وحذف الطالب', 'success');
+        showToast(`تم حذف الطالب "${student.name}" بنجاح`, 'success');
 
         // Reload students
         await loadStudents();
     } catch (error) {
-        console.error('❌ Error rejecting student:', error);
-        showToast('حدث خطأ في رفض الطالب', 'error');
+        console.error('❌ Error deleting student:', error);
+        showToast('حدث خطأ في حذف الطالب', 'error');
     }
 }
 
