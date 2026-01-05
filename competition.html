@@ -403,26 +403,52 @@
 
     <!-- Hero Section -->
     <section class="competition-hero">
-        <h1 data-i18n="competitionTitle">💭 ساحة المعرفة</h1>
-        <p data-i18n="competitionDesc">شارك أفكارك وتواصل مع زملائك في بيئة إيجابية</p>
+        <h1 data-i18n="competitionTitle">🏆 مسابقة أجمل شعار</h1>
+        <p data-i18n="competitionDesc">شاركنا إبداعك واربح جوائز!&nbsp;</p>
     </section>
 
     <!-- Post Form -->
     <main class="competition-content">
         <div class="upload-card">
+            <!-- مقدمة المسابقة -->
+            <div
+                style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 25px; border-radius: 15px; margin-bottom: 30px; border-right: 5px solid #667eea;">
+                <h3 style="color: #1e293b; font-size: 1.3rem; margin-bottom: 15px; text-align: center;">✨ عن المسابقة ✨
+                </h3>
+                <p
+                    style="color: #475569; line-height: 1.8; font-size: 1.05rem; text-align: right; margin-bottom: 12px;">
+                    نبحث عن <strong style="color: #667eea;">أجمل شعار إبداعي</strong> يعبر عن روح مقصف المعرفة! شارك
+                    بشعارك المميز واحصل على فرصة الفوز بجوائز رائعة:
+                </p>
+                <ul style="list-style: none; padding: 0; margin: 15px 0;">
+                    <li style="padding: 8px 0; color: #334155; font-size: 1rem;">
+                        <span style="color: #10b981; font-size: 1.2rem;">🎁</span>
+                        <strong>نقاط للشراء:</strong> الفائز يحصل على نقاط إضافية في محفظته للشراء من مقصف المعرفة!
+                    </li>
+                    <li style="padding: 8px 0; color: #334155; font-size: 1rem;">
+                        <span style="color: #f59e0b; font-size: 1.2rem;">📦</span>
+                        <strong>تكريم خاص:</strong> الشعار الفائز سيُطبع على صندوق المبيعات القادم للمدرسة!
+                    </li>
+                </ul>
+                <p
+                    style="color: #64748b; text-align: center; font-size: 0.95rem; margin-top: 15px; font-style: italic;">
+                    أطلق العنان لإبداعك وكن جزءاً من قصة نجاحنا! 🌟
+                </p>
+            </div>
+
             <h2 style="text-align: center; margin-bottom: 25px; color: #1e293b; font-size: 1.5rem;"
-                data-i18n="shareThoughts">شاركنا أفكارك</h2>
+                data-i18n="shareThoughts">شاركنا شعارك 📝</h2>
 
             <form id="postForm">
                 <div class="form-group">
-                    <label data-i18n="uploaderName">الاسم</label>
+                    <label data-i18n="uploaderName">الاسم الرباعي</label>
                     <input type="text" id="posterName" class="form-control" required placeholder="اكتب اسمك هنا...">
                 </div>
 
                 <div class="form-group">
-                    <label data-i18n="postContent">الموضوع</label>
+                    <label data-i18n="postContent">شعارك المبدع 🎨</label>
                     <textarea id="postContent" class="form-control" rows="4" required
-                        placeholder="ما الذي يدور في ذهنك؟ ..."></textarea>
+                        placeholder="اكتب شعارك الإبداعي هنا..."></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary" id="submitBtn">
