@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص الطلاب</title>
+    <style>
+        body {
+            font-family: Cairo, Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2ecc71;
+        }
+
+        .result {
+            background: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 فحص الطلاب في Firebase</h1>
+
+        <button onclick="checkStudents()">فحص الطلاب</button>
+        <button onclick="checkRules()">فحص قواعد Firestore</button>
+
+        <div id="results"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script>
+        const results = document.getElementById('results');
+
+        function log(message, type = 'result') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+
+        function clear() {
+            results.innerHTML = '';
+        }
+
+        async function checkStudents() {
+            clear();
+            log('⏳ جاري فحص الطلاب...', 'result');
+
+            try {
+                const snapshot = await firebase.firestore()
+                    .collection('users')
+                    .where('role', '==', 'student')
+                    .where('grade', '==', 1)
+                    .where('section', '==', 1)
+                    .get();
+
+                log(`✅ عدد الطلاب في الصف 1 شعبة 1: ${snapshot.size}`, 'success');
+
+                if (snapshot.size === 0) {
+                    log('⚠️ لا يوجد طلاب! تأكد من:', 'error');
+                    log('1. هل سجلت طالب في الصف 1 شعبة 1؟', 'result');
+                    log('2. هل الطالب approved: true؟', 'result');
+                } else {
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        log(`👤 ${data.name} - الصف ${data.grade} شعبة ${data.section} - موافق: ${data.approved}`, 'result');
+                    });
+                }
+            } catch (error) {
+                log(`❌ خطأ: ${error.message}`, 'error');
+
+                if (error.message.includes('permissions') || error.message.includes('insufficient')) {
+                    log('⚠️ مشكلة في الصلاحيات!', 'error');
+                    log('الحل: يجب نشر قواعد Firestore الجديدة في Firebase Console!', 'error');
+                }
+            }
+        }
+
+        async function checkRules() {
+            clear();
+            log('⏳ فحص الصلاحيات...', 'result');
+
+            try {
+                // محاولة قراءة بسيطة
+                const snapshot = await firebase.firestore()
+                    .collection('users')
+                    .limit(1)
+                    .get();
+
+                log('✅ الصلاحيات تعمل! القواعد منشورة بشكل صحيح', 'success');
+            } catch (error) {
+                log('❌ الصلاحيات لا تعمل!', 'error');
+                log(`الخطأ: ${error.message}`, 'error');
+                log('', 'result');
+                log('🔧 الحل:', 'result');
+                log('1. افتح Firebase Console', 'result');
+                log('2. اذهب إلى Firestore Database > Rules', 'result');
+                log('3. الصق القواعد الجديدة', 'result');
+                log('4. اضغط Publish', 'result');
+            }
+        }
+
+        // فحص تلقائي عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('🚀 الصفحة جاهزة! اضغط على زر "فحص الطلاب"', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>
