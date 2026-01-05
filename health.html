@@ -49,11 +49,11 @@
             <div class="tabs-nav">
                 <button class="tab-btn" data-tab="distance-calculator">🔥 حاسبة المسافة</button>
                 <button class="tab-btn active" data-tab="weekly-challenge">🎯 التحدي الأسبوعي</button>
-                <button class="tab-btn" data-tab="log-activity">📝 سجّل نشاطك</button>
                 <button class="tab-btn" data-tab="weight-loss-plan">💪 خطة تنزيل الوزن</button>
                 <button class="tab-btn" data-tab="nutrition-calculator">🧮 حاسبة التغذية</button>
                 <button class="tab-btn" data-tab="nutrition-lab">🔬 مختبر التغذية</button>
             </div>
+        </div>
         </div>
     </section>
 
@@ -189,87 +189,6 @@
                 </section>
             </div>
 
-            <!-- Tab 3: Log Activity -->
-            <div class="tab-content" data-tab-content="log-activity">
-                <section class="health-card challenge-section">
-                    <h2 class="section-title">📝 سجّل نشاطك</h2>
-
-                    <!-- Activity Form -->
-                    <div class="activity-form">
-                        <h3>سجّل نشاطك</h3>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>نوع النشاط</label>
-                                <select id="activityType" onchange="toggleDurationField()">
-                                    <option value="pe">حصة التربية البدنية 🏅</option>
-                                    <option value="walk">مشي 🚶‍♂️</option>
-                                    <option value="run">جري 🏃‍♂️</option>
-                                    <option value="swim">سباحة 🏊‍♂️</option>
-                                    <option value="bike">ركوب دراجة 🚴‍♂️</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="durationGroup">
-                                <label>المدة (دقائق)</label>
-                                <input type="number" id="activityDuration" placeholder="30" min="1">
-                            </div>
-                        </div>
-                        <button onclick="logActivity()" class="btn-success">تسجيل النشاط</button>
-                    </div>
-
-                    <!-- Activity Log -->
-                    <div class="activity-log">
-                        <h4>الأنشطة المسجلة</h4>
-                        <div id="activityList" class="activity-list">
-                            <p class="empty-state">لم تسجل أي نشاط بعد</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Info Section -->
-                <section class="health-card info-section">
-                    <h2 class="section-title">📚 معلومات صحية موثوقة</h2>
-
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h3>💪 لماذا النشاط البدني؟</h3>
-                            <ul>
-                                <li>يحسن صحة القلب والأوعية الدموية</li>
-                                <li>يزيد من طاقة الجسم</li>
-                                <li>يحسن المزاج والتركيز</li>
-                                <li>يساعد في الحفاظ على وزن صحي</li>
-                            </ul>
-                            <small class="source">المصدر: منظمة الصحة العالمية (WHO)</small>
-                        </div>
-
-                        <div class="info-card">
-                            <h3>🔥 السعرات المحروقة (وزن 70 كجم)</h3>
-                            <table class="calories-table">
-                                <tr>
-                                    <td>🏅 حصة تربية بدنية</td>
-                                    <td><strong>50 سعرة</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>🚶‍♂️ مشي (30 دقيقة)</td>
-                                    <td>140 سعرة</td>
-                                </tr>
-                                <tr>
-                                    <td>🏃‍♂️ جري (15 دقيقة)</td>
-                                    <td>120 سعرة</td>
-                                </tr>
-                                <tr>
-                                    <td>🏊‍♂️ سباحة (15 دقيقة)</td>
-                                    <td>100 سعرة</td>
-                                </tr>
-                                <tr>
-                                    <td>🚴‍♂️ ركوب دراجة (20 دقيقة)</td>
-                                    <td>117 سعرة</td>
-                                </tr>
-                            </table>
-                            <small class="source">المصدر: Mayo Clinic</small>
-                        </div>
-                    </div>
-                </section>
-            </div>
 
             <!-- Tab 4: Weight Loss Plan -->
             <div class="tab-content" data-tab-content="weight-loss-plan">
