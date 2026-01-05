@@ -656,3 +656,16 @@ async function submitFeedback() {
         closeFeedbackModal();
     }
 }
+
+// Logout function for students
+function handleLogout() {
+    if (confirm('هل تريد تسجيل الخروج؟')) {
+        // Sign out from Firebase
+        if (typeof signOut === 'function') {
+            signOut();
+        }
+        // Redirect to login page
+        window.location.href = '../login.html?role=student';
+    }
+}
+
