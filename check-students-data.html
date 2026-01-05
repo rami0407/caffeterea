@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>فحص بيانات الطلاب</title>
+    <style>
+        body {
+            font-family: Cairo, Arial;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .result {
+            background: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            direction: ltr;
+            text-align: left;
+            font-family: monospace;
+        }
+
+        .student {
+            background: #2ecc71;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 فحص بيانات الطلاب المسجلين</h1>
+        <button onclick="checkAllStudents()">عرض جميع الطلاب</button>
+        <div id="results"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script>
+        const results = document.getElementById('results');
+
+        async function checkAllStudents() {
+            results.innerHTML = '<p>⏳ جاري التحميل...</p>';
+
+            try {
+                const snapshot = await firebase.firestore()
+                    .collection('users')
+                    .where('role', '==', 'student')
+                    .get();
+
+                results.innerHTML = `<h2>✅ عدد الطلاب: ${snapshot.size}</h2>`;
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const div = document.createElement('div');
+                    div.className = 'student';
+                    div.innerHTML = `
+                        <h3>👤 ${data.name}</h3>
+                        <div class="result">
+                            <strong>الحقول:</strong><br>
+                            ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                    results.appendChild(div);
+                });
+
+                if (snapshot.size === 0) {
+                    results.innerHTML += '<p style="color: red;">⚠️ لا يوجد طلاب مسجلين!</p>';
+                }
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">❌ خطأ: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>
