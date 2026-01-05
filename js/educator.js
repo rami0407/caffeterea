@@ -42,9 +42,21 @@ function displayEducatorInfo() {
  * Load students from Firebase
  */
 async function loadStudents() {
-    if (!db || !currentEducator) return;
+    console.log('🔍 === بدء تحميل الطلاب ===');
+    console.log('📊 db:', db ? 'موجود ✓' : 'غير موجود ✗');
+    console.log('👨‍🏫 currentEducator:', currentEducator);
+
+    if (!db || !currentEducator) {
+        console.error('❌ لا يمكن تحميل الطلاب:', {
+            db: !!db,
+            currentEducator: !!currentEducator
+        });
+        return;
+    }
 
     try {
+        console.log(`🔎 البحث عن طلاب: الصف ${currentEducator.grade} شعبة ${currentEducator.section}`);
+
         // Load all students in educator's class
         const snapshot = await db.collection('users')
             .where('role', '==', 'student')
@@ -57,12 +69,18 @@ async function loadStudents() {
             ...doc.data()
         }));
 
-        console.log(`✅ Loaded ${students.length} students`);
+        console.log(`✅ تم تحميل ${students.length} طالب`);
+        if (students.length > 0) {
+            console.log('👤 الطلاب:', students);
+        } else {
+            console.warn('⚠️ لا يوجد طلاب في الصف', currentEducator.grade, 'شعبة', currentEducator.section);
+        }
 
         renderStudents(students, 'studentsList');
         updateStats();
     } catch (error) {
-        console.error('❌ Error loading students:', error);
+        console.error('❌ خطأ في تحميل الطلاب:', error);
+        console.error('رسالة الخطأ:', error.message);
         showToast('حدث خطأ في تحميل الطلاب', 'error');
     }
 }
