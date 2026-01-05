@@ -21,7 +21,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Set initial state for duration field
     toggleDurationField();
+
+    // Initialize tabs
+    initializeTabs();
 });
+
+// Tab Management
+function initializeTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+}
+
+function switchTab(tabName) {
+    // Update buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Update content
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        if (content.getAttribute('data-tab-content') === tabName) {
+            content.classList.add('active');
+        } else {
+            content.classList.remove('active');
+        }
+    });
+}
+
 
 // Submit Challenge Commitment
 async function submitCommitment() {

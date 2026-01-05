@@ -84,7 +84,7 @@
     padding: 80px 20px;
     text-align: center;
     color: white;
-    margin-bottom: 40px;
+    margin-bottom: 0;
 }
 
 .hero-title {
@@ -99,6 +99,95 @@
     opacity: 0.95;
     animation: fadeIn 0.8s ease-out 0.2s backwards;
 }
+
+/* Tabs Navigation */
+.tabs-section {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 40px;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0 20px;
+    scrollbar-width: thin;
+}
+
+.tabs-nav::-webkit-scrollbar {
+    height: 3px;
+}
+
+.tabs-nav::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.tabs-nav::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 10px;
+}
+
+.tab-btn {
+    padding: 18px 25px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    white-space: nowrap;
+    position: relative;
+}
+
+.tab-btn:hover {
+    background: #f8fafc;
+    color: #10b981;
+}
+
+.tab-btn.active {
+    color: #10b981;
+    border-bottom-color: #10b981;
+    background: #f0fdf4;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes slideIn {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
 
 .health-main {
     padding: 40px 20px;

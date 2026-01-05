@@ -11,6 +11,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/health.css">
+    <link rel="stylesheet" href="css/stem.css">
+    <link rel="stylesheet" href="css/nutrition-lab.css">
 </head>
 
 <body>
@@ -47,210 +49,529 @@
         </div>
     </section>
 
+    <!-- Tabs Navigation -->
+    <section class="tabs-section">
+        <div class="container">
+            <div class="tabs-nav">
+                <button class="tab-btn" data-tab="distance-calculator">🔥 حاسبة المسافة</button>
+                <button class="tab-btn active" data-tab="weekly-challenge">🎯 التحدي الأسبوعي</button>
+                <button class="tab-btn" data-tab="log-activity">📝 سجّل نشاطك</button>
+                <button class="tab-btn" data-tab="nutrition-calculator">🧮 حاسبة التغذية</button>
+                <button class="tab-btn" data-tab="nutrition-lab">🔬 مختبر التغذية</button>
+            </div>
+        </div>
+    </section>
+
     <!-- Main Content -->
     <main class="health-main">
         <div class="container">
 
-            <!-- Calorie Calculator -->
-            <section class="health-card calculator-section">
-                <h2 class="section-title">🔥 حاسبة المسافة لحرق السعرات</h2>
-                <p class="section-desc">احسب المسافة التي تحتاج لمشيها لحرق عدد معين من السعرات</p>
+            <!-- Tab 1: Distance Calculator -->
+            <div class="tab-content" data-tab-content="distance-calculator">
+                <section class="health-card calculator-section">
+                    <h2 class="section-title">🔥 حاسبة المسافة لحرق السعرات</h2>
+                    <p class="section-desc">احسب المسافة التي تحتاج لمشيها لحرق عدد معين من السعرات</p>
 
-                <div class="calculator-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>وزنك (كجم)</label>
-                            <input type="number" id="weightInput" placeholder="70" value="70" min="30" max="150">
+                    <div class="calculator-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>وزنك (كجم)</label>
+                                <input type="number" id="weightInput" placeholder="70" value="70" min="30" max="150">
+                            </div>
+                            <div class="form-group">
+                                <label>السعرات المراد حرقها</label>
+                                <input type="number" id="caloriesInput" placeholder="100" value="100" min="10">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>السعرات المراد حرقها</label>
-                            <input type="number" id="caloriesInput" placeholder="100" value="100" min="10">
+                        <button onclick="calculateDistance()" class="btn-primary">احسب المسافة</button>
+                    </div>
+
+                    <div id="calculatorResult" class="calculator-result hidden">
+                        <div class="result-card">
+                            <div class="result-icon">🚶‍♂️</div>
+                            <div class="result-text">
+                                <h3>مشي</h3>
+                                <p class="result-value"><span id="walkDistance">-</span> كم</p>
+                                <p class="result-time">حوالي <span id="walkTime">-</span> دقيقة</p>
+                            </div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-icon">🏃‍♂️</div>
+                            <div class="result-text">
+                                <h3>جري</h3>
+                                <p class="result-value"><span id="runDistance">-</span> كم</p>
+                                <p class="result-time">حوالي <span id="runTime">-</span> دقيقة</p>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="calculateDistance()" class="btn-primary">احسب المسافة</button>
-                </div>
+                </section>
+            </div>
 
-                <div id="calculatorResult" class="calculator-result hidden">
-                    <div class="result-card">
-                        <div class="result-icon">🚶‍♂️</div>
-                        <div class="result-text">
-                            <h3>مشي</h3>
-                            <p class="result-value"><span id="walkDistance">-</span> كم</p>
-                            <p class="result-time">حوالي <span id="walkTime">-</span> دقيقة</p>
+            <!-- Tab 2: Weekly Challenge + Honor Board -->
+            <div class="tab-content active" data-tab-content="weekly-challenge">
+                <section class="health-card challenge-section">
+                    <div class="challenge-header">
+                        <h2 class="section-title">🎯 التحدي الأسبوعي</h2>
+                        <p class="challenge-reward">المكافأة: <strong>3 كوبونات</strong> 🎟️</p>
+                    </div>
+
+                    <!-- Challenge Commitment Form -->
+                    <div class="commitment-form" id="commitmentForm">
+                        <h3>📝 التزم بالتحدي</h3>
+                        <p class="form-desc">سجّل التزامك وكن من أبطال الصحة!</p>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>اسمك *</label>
+                                <input type="text" id="studentName" placeholder="اسم الطالب" required>
+                            </div>
+                            <div class="form-group">
+                                <label>نوع التحدي *</label>
+                                <select id="challengeType" required>
+                                    <option value="">اختر التحدي...</option>
+                                    <option value="walk">مشي يومي 🚶‍♂️</option>
+                                    <option value="run">جري منتظم 🏃‍♂️</option>
+                                    <option value="swim">سباحة أسبوعية 🏊‍♂️</option>
+                                    <option value="bike">ركوب دراجة 🚴‍♂️</option>
+                                    <option value="pe">حضور حصص التربية البدنية 🏅</option>
+                                    <option value="mixed">تحدي متنوع 💪</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>السعرات المستهدفة *</label>
+                                <input type="number" id="targetCalories" placeholder="مثال: 200" min="50" required>
+                            </div>
+                            <div class="form-group">
+                                <label>المدة الزمنية *</label>
+                                <select id="timeframe" required>
+                                    <option value="">اختر المدة...</option>
+                                    <option value="1">يوم واحد</option>
+                                    <option value="3">3 أيام</option>
+                                    <option value="7">أسبوع</option>
+                                    <option value="14">أسبوعين</option>
+                                    <option value="30">شهر</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="submitCommitment()" class="btn-primary">🚀 التزم بالتحدي</button>
+                    </div>
+
+                    <!-- Commitment Success Message -->
+                    <div id="commitmentSuccess" class="commitment-success hidden">
+                        <div class="success-icon">🎉</div>
+                        <h3>مبروك! لقد التزمت بالتحدي</h3>
+                        <p id="successMessage"></p>
+                        <button onclick="resetCommitment()" class="btn-secondary">تحدي جديد</button>
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="challenge-progress">
+                        <div class="progress-info">
+                            <span>الهدف: حرق 100 سعرة حرارية</span>
+                            <span class="progress-value"><span id="currentCalories">0</span> / 100 سعرة</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill" style="width: 0%"></div>
                         </div>
                     </div>
-                    <div class="result-card">
-                        <div class="result-icon">🏃‍♂️</div>
-                        <div class="result-text">
-                            <h3>جري</h3>
-                            <p class="result-value"><span id="runDistance">-</span> كم</p>
-                            <p class="result-time">حوالي <span id="runTime">-</span> دقيقة</p>
+
+                    <!-- Claim Reward Button -->
+                    <button id="claimRewardBtn" onclick="claimReward()" class="btn-claim hidden">
+                        🎉 استلام المكافأة (3 كوبونات)
+                    </button>
+                </section>
+
+                <!-- Honor Board (in same tab) -->
+                <section class="health-card honor-board-section">
+                    <h2 class="section-title">🏆 لوحة الشرف</h2>
+                    <p class="section-desc">أبطال التحديات الأكبر!</p>
+
+                    <div id="honorBoard" class="honor-board">
+                        <p class="empty-state">لا توجد تحديات بعد... كن الأول!</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab 3: Log Activity -->
+            <div class="tab-content" data-tab-content="log-activity">
+                <section class="health-card challenge-section">
+                    <h2 class="section-title">📝 سجّل نشاطك</h2>
+
+                    <!-- Activity Form -->
+                    <div class="activity-form">
+                        <h3>سجّل نشاطك</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>نوع النشاط</label>
+                                <select id="activityType" onchange="toggleDurationField()">
+                                    <option value="pe">حصة التربية البدنية 🏅</option>
+                                    <option value="walk">مشي 🚶‍♂️</option>
+                                    <option value="run">جري 🏃‍♂️</option>
+                                    <option value="swim">سباحة 🏊‍♂️</option>
+                                    <option value="bike">ركوب دراجة 🚴‍♂️</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="durationGroup">
+                                <label>المدة (دقائق)</label>
+                                <input type="number" id="activityDuration" placeholder="30" min="1">
+                            </div>
+                        </div>
+                        <button onclick="logActivity()" class="btn-success">تسجيل النشاط</button>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="activity-log">
+                        <h4>الأنشطة المسجلة</h4>
+                        <div id="activityList" class="activity-list">
+                            <p class="empty-state">لم تسجل أي نشاط بعد</p>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Challenge Section -->
-            <section class="health-card challenge-section">
-                <div class="challenge-header">
-                    <h2 class="section-title">🎯 التحدي الأسبوعي</h2>
-                    <p class="challenge-reward">المكافأة: <strong>3 كوبونات</strong> 🎟️</p>
-                </div>
+                <!-- Info Section -->
+                <section class="health-card info-section">
+                    <h2 class="section-title">📚 معلومات صحية موثوقة</h2>
 
-                <!-- Challenge Commitment Form -->
-                <div class="commitment-form" id="commitmentForm">
-                    <h3>📝 التزم بالتحدي</h3>
-                    <p class="form-desc">سجّل التزامك وكن من أبطال الصحة!</p>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>💪 لماذا النشاط البدني؟</h3>
+                            <ul>
+                                <li>يحسن صحة القلب والأوعية الدموية</li>
+                                <li>يزيد من طاقة الجسم</li>
+                                <li>يحسن المزاج والتركيز</li>
+                                <li>يساعد في الحفاظ على وزن صحي</li>
+                            </ul>
+                            <small class="source">المصدر: منظمة الصحة العالمية (WHO)</small>
+                        </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>اسمك *</label>
-                            <input type="text" id="studentName" placeholder="اسم الطالب" required>
-                        </div>
-                        <div class="form-group">
-                            <label>نوع التحدي *</label>
-                            <select id="challengeType" required>
-                                <option value="">اختر التحدي...</option>
-                                <option value="walk">مشي يومي 🚶‍♂️</option>
-                                <option value="run">جري منتظم 🏃‍♂️</option>
-                                <option value="swim">سباحة أسبوعية 🏊‍♂️</option>
-                                <option value="bike">ركوب دراجة 🚴‍♂️</option>
-                                <option value="pe">حضور حصص التربية البدنية 🏅</option>
-                                <option value="mixed">تحدي متنوع 💪</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>السعرات المستهدفة *</label>
-                            <input type="number" id="targetCalories" placeholder="مثال: 200" min="50" required>
-                        </div>
-                        <div class="form-group">
-                            <label>المدة الزمنية *</label>
-                            <select id="timeframe" required>
-                                <option value="">اختر المدة...</option>
-                                <option value="1">يوم واحد</option>
-                                <option value="3">3 أيام</option>
-                                <option value="7">أسبوع</option>
-                                <option value="14">أسبوعين</option>
-                                <option value="30">شهر</option>
-                            </select>
+                        <div class="info-card">
+                            <h3>🔥 السعرات المحروقة (وزن 70 كجم)</h3>
+                            <table class="calories-table">
+                                <tr>
+                                    <td>🏅 حصة تربية بدنية</td>
+                                    <td><strong>50 سعرة</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>🚶‍♂️ مشي (30 دقيقة)</td>
+                                    <td>140 سعرة</td>
+                                </tr>
+                                <tr>
+                                    <td>🏃‍♂️ جري (15 دقيقة)</td>
+                                    <td>120 سعرة</td>
+                                </tr>
+                                <tr>
+                                    <td>🏊‍♂️ سباحة (15 دقيقة)</td>
+                                    <td>100 سعرة</td>
+                                </tr>
+                                <tr>
+                                    <td>🚴‍♂️ ركوب دراجة (20 دقيقة)</td>
+                                    <td>117 سعرة</td>
+                                </tr>
+                            </table>
+                            <small class="source">المصدر: Mayo Clinic</small>
                         </div>
                     </div>
-                    <button onclick="submitCommitment()" class="btn-primary">🚀 التزم بالتحدي</button>
-                </div>
+                </section>
+            </div>
 
-                <!-- Commitment Success Message -->
-                <div id="commitmentSuccess" class="commitment-success hidden">
-                    <div class="success-icon">🎉</div>
-                    <h3>مبروك! لقد التزمت بالتحدي</h3>
-                    <p id="successMessage"></p>
-                    <button onclick="resetCommitment()" class="btn-secondary">تحدي جديد</button>
-                </div>
+            <!-- Tab 4: Nutrition Calculator -->
+            <div class="tab-content" data-tab-content="nutrition-calculator">
+                <section class="calculator-section">
+                    <div class="calculator-card">
+                        <h3 class="section-title">
+                            <span class="title-icon">📊</span>
+                            أدخل معلوماتك
+                        </h3>
 
-                <!-- Progress -->
-                <div class="challenge-progress">
-                    <div class="progress-info">
-                        <span>الهدف: حرق 100 سعرة حرارية</span>
-                        <span class="progress-value"><span id="currentCalories">0</span> / 100 سعرة</span>
+                        <form id="nutritionForm">
+                            <!-- Age -->
+                            <div class="input-group">
+                                <label for="age" class="input-label">
+                                    <span class="label-icon">🎂</span>
+                                    العمر (سنوات)
+                                </label>
+                                <input type="number" id="age" class="input-field" min="5" max="100" value="10" required>
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="input-group">
+                                <label class="input-label">
+                                    <span class="label-icon">👤</span>
+                                    الجنس
+                                </label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="gender" value="male" checked>
+                                        <span class="radio-custom">ذكر</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="gender" value="female">
+                                        <span class="radio-custom">أنثى</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Weight -->
+                            <div class="input-group">
+                                <label for="weight" class="input-label">
+                                    <span class="label-icon">⚖️</span>
+                                    الوزن (كغ)
+                                </label>
+                                <input type="number" id="weight" class="input-field" min="15" max="200" step="0.5"
+                                    value="35" required>
+                            </div>
+
+                            <!-- Height -->
+                            <div class="input-group">
+                                <label for="height" class="input-label">
+                                    <span class="label-icon">📏</span>
+                                    الطول (سم)
+                                </label>
+                                <input type="number" id="height" class="input-field" min="80" max="250" value="140"
+                                    required>
+                            </div>
+
+                            <!-- Activity Level -->
+                            <div class="input-group">
+                                <label for="activity" class="input-label">
+                                    <span class="label-icon">🏃</span>
+                                    مستوى النشاط
+                                </label>
+                                <select id="activity" class="input-field">
+                                    <option value="1.2">قليل الحركة (لا رياضة)</option>
+                                    <option value="1.375">نشاط خفيف (رياضة 1-3 مرات/أسبوع)</option>
+                                    <option value="1.55" selected>نشاط متوسط (رياضة 3-5 مرات/أسبوع)</option>
+                                    <option value="1.725">نشاط عالي (رياضة 6-7 مرات/أسبوع)</option>
+                                    <option value="1.9">نشاط عالي جداً (رياضي محترف)</option>
+                                </select>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary btn-calculate">
+                                <span>🧮</span>
+                                <span>احسب احتياجاتي</span>
+                            </button>
+                        </form>
                     </div>
-                    <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill" style="width: 0%"></div>
-                    </div>
-                </div>
 
-                <!-- Activity Form -->
-                <div class="activity-form">
-                    <h3>سجّل نشاطك</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>نوع النشاط</label>
-                            <select id="activityType" onchange="toggleDurationField()">
-                                <option value="pe">حصة التربية البدنية 🏅</option>
-                                <option value="walk">مشي 🚶‍♂️</option>
-                                <option value="run">جري 🏃‍♂️</option>
-                                <option value="swim">سباحة 🏊‍♂️</option>
-                                <option value="bike">ركوب دراجة 🚴‍♂️</option>
-                            </select>
+                    <!-- Results Section -->
+                    <div class="results-section hidden" id="results">
+                        <div class="results-card">
+                            <h3 class="section-title">
+                                <span class="title-icon">📋</span>
+                                نتائج التحليل
+                            </h3>
+
+                            <div class="results-grid">
+                                <!-- BMI -->
+                                <div class="result-box" data-type="bmi">
+                                    <div class="result-icon">📊</div>
+                                    <div class="result-value" id="bmiValue">0</div>
+                                    <div class="result-label">مؤشر كتلة الجسم (BMI)</div>
+                                    <div class="result-status" id="bmiStatus">-</div>
+                                </div>
+
+                                <!-- Calories -->
+                                <div class="result-box" data-type="calories">
+                                    <div class="result-icon">🔥</div>
+                                    <div class="result-value" id="caloriesValue">0</div>
+                                    <div class="result-label">سعرات حرارية/يوم</div>
+                                </div>
+
+                                <!-- Protein -->
+                                <div class="result-box" data-type="protein">
+                                    <div class="result-icon">🥩</div>
+                                    <div class="result-value" id="proteinValue">0</div>
+                                    <div class="result-label">بروتين (غرام/يوم)</div>
+                                </div>
+
+                                <!-- Carbs -->
+                                <div class="result-box" data-type="carbs">
+                                    <div class="result-icon">🍞</div>
+                                    <div class="result-value" id="carbsValue">0</div>
+                                    <div class="result-label">كربوهيدرات (غرام/يوم)</div>
+                                </div>
+
+                                <!-- Fats -->
+                                <div class="result-box" data-type="fats">
+                                    <div class="result-icon">🥑</div>
+                                    <div class="result-value" id="fatsValue">0</div>
+                                    <div class="result-label">دهون (غرام/يوم)</div>
+                                </div>
+
+                                <!-- Water -->
+                                <div class="result-box" data-type="water">
+                                    <div class="result-icon">💧</div>
+                                    <div class="result-value" id="waterValue">0</div>
+                                    <div class="result-label">ماء (لتر/يوم)</div>
+                                </div>
+                            </div>
+
+                            <!-- Recommendations -->
+                            <div class="recommendations" id="recommendations">
+                                <h4 class="recommendations-title">💡 توصيات للأهل</h4>
+                                <div class="recommendation-list" id="recommendationList">
+                                    <!-- Will be filled by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Meal Plan -->
+                            <div class="meal-plan">
+                                <h4 class="meal-plan-title">🍽️ خطة وجبات مقترحة</h4>
+                                <div class="meal-grid" id="mealPlan">
+                                    <!-- Will be filled by JS -->
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group" id="durationGroup">
-                            <label>المدة (دقائق)</label>
-                            <input type="number" id="activityDuration" placeholder="30" min="1">
-                        </div>
                     </div>
-                    <button onclick="logActivity()" class="btn-success">تسجيل النشاط</button>
-                </div>
+                </section>
 
-                <!-- Activity Log -->
-                <div class="activity-log">
-                    <h4>الأنشطة المسجلة</h4>
-                    <div id="activityList" class="activity-list">
-                        <p class="empty-state">لم تسجل أي نشاط بعد</p>
-                    </div>
-                </div>
-
-                <!-- Claim Reward Button -->
-                <button id="claimRewardBtn" onclick="claimReward()" class="btn-claim hidden">
-                    🎉 استلام المكافأة (3 كوبونات)
-                </button>
-            </section>
-
-            <!-- Honor Board -->
-            <section class="health-card honor-board-section">
-                <h2 class="section-title">🏆 لوحة الشرف</h2>
-                <p class="section-desc">أبطال التحديات الأكبر!</p>
-
-                <div id="honorBoard" class="honor-board">
-                    <p class="empty-state">لا توجد تحديات بعد... كن الأول!</p>
-                </div>
-            </section>
-
-            <!-- Info Section -->
-            <section class="health-card info-section">
-                <h2 class="section-title">📚 معلومات صحية موثوقة</h2>
-
-                <div class="info-grid">
+                <!-- Info Section -->
+                <section class="info-section">
                     <div class="info-card">
-                        <h3>💪 لماذا النشاط البدني؟</h3>
-                        <ul>
-                            <li>يحسن صحة القلب والأوعية الدموية</li>
-                            <li>يزيد من طاقة الجسم</li>
-                            <li>يحسن المزاج والتركيز</li>
-                            <li>يساعد في الحفاظ على وزن صحي</li>
-                        </ul>
-                        <small class="source">المصدر: منظمة الصحة العالمية (WHO)</small>
+                        <h3 class="info-title">📚 كيف تعمل الحاسبة؟</h3>
+                        <div class="info-content">
+                            <div class="info-item">
+                                <div class="info-number">1</div>
+                                <div class="info-text">
+                                    <h4>معادلة هاريس-بنديكت</h4>
+                                    <p>نستخدم معادلة علمية معتمدة لحساب معدل الأيض الأساسي (BMR)</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-number">2</div>
+                                <div class="info-text">
+                                    <h4>مستوى النشاط</h4>
+                                    <p>نضرب BMR في معامل النشاط للحصول على السعرات الإجمالية</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-number">3</div>
+                                <div class="info-text">
+                                    <h4>توزيع المغذيات</h4>
+                                    <p>نقسم السعرات إلى: 50% كربوهيدرات، 30% بروتين، 20% دهون</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab 5: Nutrition Lab -->
+            <div class="tab-content" data-tab-content="nutrition-lab">
+                <!-- Hero Section -->
+                <section class="hero-section lab-hero">
+                    <div class="hero-icon">🔬</div>
+                    <h2>اكتشف عالم التغذية الصحية</h2>
+                    <p>تعلم، استكشف، واكسب النقاط في رحلة تعليمية ممتعة</p>
+                    <div class="points-display" id="labPoints">
+                        <span class="points-icon">⭐</span>
+                        <span class="points-value">0</span>
+                    </div>
+                </section>
+
+                <!-- Nutrients Showcase -->
+                <section class="nutrients-section">
+                    <h3 class="section-title">
+                        <span class="title-icon">💊</span>
+                        تعرف على العناصر الغذائية
+                    </h3>
+
+                    <div class="nutrients-grid" id="nutrientsGrid">
+                        <!-- Will be filled by JS -->
+                    </div>
+                </section>
+
+                <!-- Did You Know Section -->
+                <section class="facts-section">
+                    <h3 class="section-title">
+                        <span class="title-icon">💡</span>
+                        هل تعلم؟
+                    </h3>
+
+                    <div class="facts-carousel">
+                        <button class="carousel-btn prev" onclick="prevFact()">‹</button>
+                        <div class="fact-display" id="factDisplay">
+                            <!-- Will be filled by JS -->
+                        </div>
+                        <button class="carousel-btn next" onclick="nextFact()">›</button>
+                    </div>
+                </section>
+
+                <!-- Quiz Section -->
+                <section class="quiz-section">
+                    <h3 class="section-title">
+                        <span class="title-icon">🎯</span>
+                        اختبر معلوماتك
+                    </h3>
+
+                    <div class="quiz-card" id="quizCard">
+                        <div class="quiz-counter">
+                            السؤال <span id="currentQuestion">1</span> من <span id="totalQuestions">5</span>
+                        </div>
+
+                        <div class="quiz-question" id="quizQuestion">
+                            <!-- Will be filled by JS -->
+                        </div>
+
+                        <div class="quiz-options" id="quizOptions">
+                            <!-- Will be filled by JS -->
+                        </div>
+
+                        <div class="quiz-feedback hidden" id="quizFeedback">
+                            <!-- Will be filled by JS -->
+                        </div>
+
+                        <div class="quiz-actions">
+                            <button class="btn btn-primary" id="quizNextBtn" onclick="nextQuestion()"
+                                style="display:none;">
+                                السؤال التالي →
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="info-card">
-                        <h3>🔥 السعرات المحروقة (وزن 70 كجم)</h3>
-                        <table class="calories-table">
-                            <tr>
-                                <td>🏅 حصة تربية بدنية</td>
-                                <td><strong>50 سعرة</strong></td>
-                            </tr>
-                            <tr>
-                                <td>🚶‍♂️ مشي (30 دقيقة)</td>
-                                <td>140 سعرة</td>
-                            </tr>
-                            <tr>
-                                <td>🏃‍♂️ جري (15 دقيقة)</td>
-                                <td>120 سعرة</td>
-                            </tr>
-                            <tr>
-                                <td>🏊‍♂️ سباحة (15 دقيقة)</td>
-                                <td>100 سعرة</td>
-                            </tr>
-                            <tr>
-                                <td>🚴‍♂️ ركوب دراجة (20 دقيقة)</td>
-                                <td>117 سعرة</td>
-                            </tr>
-                        </table>
-                        <small class="source">المصدر: Mayo Clinic</small>
+                    <div class="quiz-results hidden" id="quizResults">
+                        <div class="results-icon">🎉</div>
+                        <h4>أحسنت!</h4>
+                        <p class="results-score">
+                            حصلت على <strong id="finalScore">0</strong> من <strong id="finalTotal">0</strong>
+                        </p>
+                        <p class="results-points">
+                            ربحت <strong id="earnedPoints">0</strong> نقطة! ⭐
+                        </p>
+                        <button class="btn btn-primary" onclick="restartQuiz()">
+                            🔄 ابدأ من جديد
+                        </button>
                     </div>
-                </div>
-            </section>
+                </section>
+
+                <!-- Badges Section -->
+                <section class="badges-section">
+                    <h3 class="section-title">
+                        <span class="title-icon">🏅</span>
+                        شاراتك
+                    </h3>
+
+                    <div class="badges-grid" id="badgesGrid">
+                        <!-- Will be filled by JS -->
+                    </div>
+                </section>
+            </div>
+
         </div>
     </main>
+
+    <!-- Nutrient Modal -->
+    <div class="modal-overlay hidden" id="nutrientModal">
+        <div class="modal-content nutrient-modal-content">
+            <button class="modal-close" onclick="closeNutrientModal()">✕</button>
+            <div id="nutrientModalContent">
+                <!-- Will be filled by JS -->
+            </div>
+        </div>
+    </div>
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
@@ -261,6 +582,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/health.js"></script>
+    <script src="js/nutrition-calculator.js"></script>
+    <script src="js/nutrition-lab.js"></script>
 </body>
 
 </html>
