@@ -443,7 +443,7 @@ async function addReward(educatorId, studentId, amount, reason) {
     }
 }
 
-// Get students for educator
+// Get students for educator (by educator name)
 async function getEducatorStudents(educatorName) {
     try {
         const snapshot = await db.collection('users')
@@ -453,6 +453,25 @@ async function getEducatorStudents(educatorName) {
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
         console.error('❌ Error getting students:', error);
+        return [];
+    }
+}
+
+// Get students by grade and section
+async function getStudentsByGradeAndSection(grade, section) {
+    try {
+        console.log(`🔍 البحث عن طلاب: الصف ${grade} شعبة ${section}`);
+        const snapshot = await db.collection('users')
+            .where('role', '==', 'student')
+            .where('grade', '==', grade)
+            .where('section', '==', section)
+            .get();
+
+        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(`✅ تم تحميل ${students.length} طالب`);
+        return students;
+    } catch (error) {
+        console.error('❌ خطأ في تحميل الطلاب:', error);
         return [];
     }
 }

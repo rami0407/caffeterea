@@ -61,29 +61,15 @@ async function loadStudents() {
 
         console.log(`🔎 البحث عن طلاب: الصف ${gradeNum} شعبة ${sectionNum}`);
 
-        // Load all students - we'll filter manually to handle both string and number types
-        const snapshot = await db.collection('users')
-            .where('role', '==', 'student')
-            .get();
-
-        // Filter manually to handle both number and string types
-        students = snapshot.docs
-            .map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }))
-            .filter(student => {
-                const studentGrade = parseInt(student.grade);
-                const studentSection = parseInt(student.section);
-                return studentGrade === gradeNum && studentSection === sectionNum;
-            });
+        // Use the new function from firebase-config.js
+        students = await getStudentsByGradeAndSection(gradeNum, sectionNum);
 
         console.log(`✅ تم تحميل ${students.length} طالب`);
         if (students.length > 0) {
             console.log('👤 الطلاب:', students);
         } else {
             console.warn('⚠️ لا يوجد طلاب في الصف', gradeNum, 'شعبة', sectionNum);
-            console.log('💡 جرب: سجل طالب جديد في الصف 1 شعبة 1');
+            console.log('💡 جرب: سجل طالب جديد في الصف', gradeNum, 'شعبة', sectionNum);
         }
 
         renderStudents(students, 'studentsList');
