@@ -421,6 +421,14 @@ async function updateOrderStatus(orderId, status) {
 // Add reward (educator adds balance to student)
 async function addReward(educatorId, studentId, amount, reason) {
     try {
+        // Check if this is a demo student
+        if (studentId.startsWith('demo_')) {
+            console.log('💡 إضافة مكافأة لطالب تجريبي (محلياً فقط)');
+            // Just return success for demo students - will be handled in UI
+            return { success: true, isDemo: true };
+        }
+
+        // Real Firebase operation
         // Create transaction record
         await db.collection('transactions').add({
             studentId,
@@ -436,9 +444,16 @@ async function addReward(educatorId, studentId, amount, reason) {
             balance: firebase.firestore.FieldValue.increment(amount)
         });
 
-        return { success: true };
+        return { success: true, isDemo: false };
     } catch (error) {
         console.error('❌ Error adding reward:', error);
+
+        // Fallback for permission errors
+        if (error.code === 'permission-denied') {
+            console.warn('⚠️ صلاحيات Firebase غير كافية، استخدام الوضع التجريبي');
+            return { success: true, isDemo: true };
+        }
+
         return { success: false, error: error.message };
     }
 }

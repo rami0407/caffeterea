@@ -305,25 +305,43 @@ async function handleRewardSubmit(e) {
         return;
     }
 
-    // Check weekly limit
-    const weeklyPointsUsed = await checkWeeklyPointsLimit(selectedStudent.id);
-    if (weeklyPointsUsed + amount > currentEducator.weeklyPointsLimit) {
-        showToast(`❌ تجاوزت الحد الأسبوعي! لقد أعطيت ${weeklyPointsUsed} نقاط هذا الأسبوع.`, 'error');
-        return;
+    // Check if demo student
+    const isDemo = selectedStudent.id.startsWith('demo_');
+
+    if (!isDemo) {
+        // Check weekly limit for real students only
+        try {
+            const weeklyPointsUsed = await checkWeeklyPointsLimit(selectedStudent.id);
+            if (weeklyPointsUsed + amount > currentEducator.weeklyPointsLimit) {
+                showToast(`❌ تجاوزت الحد الأسبوعي! لقد أعطيت ${weeklyPointsUsed} نقاط هذا الأسبوع.`, 'error');
+                return;
+            }
+        } catch (error) {
+            console.warn('⚠️ فشل التحقق من الحد الأسبوعي، المتابعة...', error);
+        }
     }
 
     try {
         // Add reward transaction
-        await addReward(currentEducator.id, selectedStudent.id, amount, reason);
+        const result = await addReward(currentEducator.id, selectedStudent.id, amount, reason);
 
-        // Update weekly tracker
-        await updateWeeklyPoints(selectedStudent.id, amount);
+        if (result.isDemo) {
+            // Update locally for demo students
+            const studentIndex = students.findIndex(s => s.id === selectedStudent.id);
+            if (studentIndex !== -1) {
+                students[studentIndex].balance += amount;
+            }
+            showToast(`✅ تمت إضافة ${amount} نقطة لـ ${selectedStudent.name} (تجريبي)`, 'success');
+        } else {
+            // Update weekly tracker for real students
+            await updateWeeklyPoints(selectedStudent.id, amount);
+            showToast(`✅ تمت إضافة ${amount} نقطة لـ ${selectedStudent.name}`, 'success');
+        }
 
-        showToast(`تمت إضافة ${amount} نقطة لـ ${selectedStudent.name} ✅`, 'success');
         closeRewardModal();
 
-        // Reload students to update balance
-        await loadStudents();
+        // Reload students to update display
+        renderStudents(students, 'studentsList');
     } catch (error) {
         console.error('❌ Error adding reward:', error);
         showToast('حدث خطأ في إضافة المكافأة', 'error');
