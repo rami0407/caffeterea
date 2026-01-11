@@ -461,13 +461,25 @@ async function getEducatorStudents(educatorName) {
 async function getStudentsByGradeAndSection(grade, section) {
     try {
         console.log(`🔍 البحث عن طلاب: الصف ${grade} شعبة ${section}`);
+
+        // Fetch all students and filter client-side to avoid compound query permission issues
         const snapshot = await db.collection('users')
             .where('role', '==', 'student')
-            .where('grade', '==', grade)
-            .where('section', '==', section)
             .get();
 
-        const students = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Convert to numbers for comparison
+        const gradeNum = parseInt(grade);
+        const sectionNum = parseInt(section);
+
+        // Filter by grade and section
+        const students = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(student => {
+                const studentGrade = parseInt(student.grade);
+                const studentSection = parseInt(student.section);
+                return studentGrade === gradeNum && studentSection === sectionNum;
+            });
+
         console.log(`✅ تم تحميل ${students.length} طالب`);
         return students;
     } catch (error) {
