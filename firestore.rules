@@ -2,110 +2,91 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
+    // Helper function to get user data
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
     
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    
-    function hasRole(role) {
-      return isSignedIn() && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
-    }
-
-    // Users:
-    // - Users can read their own profile
-    // - Admin can read/write all
-    // - TEMPORARY: Allow authenticated users to create their own profile (for bootstrapping)
+    // Users collection
     match /users/{userId} {
-      allow read: if true; // TEMPORARY: Open for educators without Firebase Auth
-      // TEMP: Allow authenticated users to create their profile
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if hasRole('admin') || (isOwner(userId) && request.resource.data.role == resource.data.role);
-      allow delete: if true; // TEMPORARY: Allow educators to delete students
+      // قراءة بيانات المستخدم نفسه
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // المربي يقرأ جميع الطلاب
+      allow read: if request.auth != null && 
+                     getUserData().role == 'educator' &&
+                     resource.data.role == 'student';
+      
+      // المقصف يقرأ جميع المستخدمين
+      allow read: if request.auth != null && getUserData().role == 'cafeteria';
+      
+      // الأدمن يقرأ كل شيء
+      allow read: if request.auth != null && getUserData().role == 'admin';
+      
+      // إنشاء حساب جديد (للتسجيل)
+      allow create: if request.auth != null;
+      
+      // تعديل بيانات المستخدم نفسه
+      allow update: if request.auth != null && request.auth.uid == userId;
+      
+      // المربي يعدل رصيد الطالب فقط (للمكافآت)
+      allow update: if request.auth != null && 
+                       getUserData().role == 'educator' &&
+                       resource.data.role == 'student' &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance']);
     }
-
-    // Products:
-    // - Public read (or authenticated read)
-    // - Admin and Cafeteria write/update
+    
+    // Products
     match /products/{productId} {
-      allow read: if true;
-      allow write: if true; // Debug: Allow public write to rule out permission issues
+      allow read: if true; // الكل يقرأ المنتجات
+      allow write: if request.auth != null && getUserData().role == 'admin';
     }
-
-    // Orders:
-    // - Student can create and read their own orders
-    // - Cafeteria can read all orders and update status
-    // - Admin can read all
+    
+    // Orders
     match /orders/{orderId} {
-      // Relaxed rules for demo/MVP to allow unauthenticated cafeteria view
-      allow read, update: if true;
-      allow create: if true; // Allow guests to create without Auth check issues
-    }
-
-    // Transactions (Rewards/Purchases):
-    // - Users read their own
-    // - Educator creates 'reward' type
-    // - System (backend) or Admin manages others (in clientside app, we rely on trusted roles for now)
-    match /transactions/{txId} {
-      allow read: if isOwner(resource.data.studentId) || hasRole('admin') || hasRole('educator');
-      allow create: if hasRole('educator') || hasRole('admin') || (isSignedIn() && request.resource.data.studentId == request.auth.uid); // For purchases (simplified)
+      // الطالب ينشئ طلبه
+      allow create: if request.auth != null && 
+                       request.resource.data.studentId == request.auth.uid;
+      
+      // الطالب يقرأ طلباته
+      allow read: if request.auth != null && 
+                     resource.data.studentId == request.auth.uid;
+      
+      // المقصف والأدمن يقرؤون كل الطلبات
+      allow read: if request.auth != null && 
+                     (getUserData().role == 'cafeteria' || getUserData().role == 'admin');
+      
+      // المقصف يحدث حالة الطلب
+      allow update: if request.auth != null && getUserData().role == 'cafeteria';
     }
     
-    // Counters (Internal):
+    // Transactions (المكافآت)
+    match /transactions/{transactionId} {
+      // المربي ينشئ مكافأة
+      allow create: if request.auth != null && 
+                       getUserData().role == 'educator' &&
+                       request.resource.data.educatorId == request.auth.uid;
+      
+      // الطالب يقرأ مكافآته
+      allow read: if request.auth != null && 
+                     resource.data.studentId == request.auth.uid;
+      
+      // المربي يقرأ المكافآت التي أعطاها
+      allow read: if request.auth != null && 
+                     resource.data.educatorId == request.auth.uid;
+      
+      // الأدمن يقرأ كل شيء
+      allow read: if request.auth != null && getUserData().role == 'admin';
+    }
+    
+    // Weekly Points (للحد الأسبوعي)
+    match /weeklyPoints/{limitId} {
+      allow read, write: if request.auth != null && getUserData().role == 'educator';
+    }
+    
+    // Counters
     match /counters/{counterId} {
-      allow read, write: if true;
-    }
-
-    // Feedback Collection:
-    // - Anyone can submit feedback (students and guests)
-    // - Only admins can read feedback
-    match /feedback/{feedbackId} {
-      allow create: if true; // Allow anyone to submit feedback
-      allow read: if hasRole('admin');
-    }
-    // Competition Entries:
-    // - Anyone can read and create entries
-    // - Anyone can update (for likes) - ideally validated but keeping simple
-    match /competition_entries/{entryId} {
-      allow read, create: if true;
-      allow update: if true; // Enabling public likes
-
-      // Comments sub-collection
-      match /comments/{commentId} {
-        allow read, create: if true;
-      }
-    }
-    
-    // Challenges collection - for health page
-    match /challenges/{challengeId} {
-      // Anyone can read challenges (for honor board)
-      allow read: if true;
-      // Anyone can create a challenge
-      allow create: if true;
-      // Only creator or admin can update/delete
-      allow update, delete: if request.auth != null && 
-        (request.auth.uid == resource.data.userId || 
-         get(/databases/$(database)/documents/students/$(request.auth.uid)).data.role == 'admin');
-    }
-
-    // Educators collection - for educator login and management
-    match /educators/{educatorId} {
-      // Educators can read their own profile, admins can read all
-      allow read: if hasRole('admin') || isSignedIn();
-      // Only admins can write
-      allow write: if hasRole('admin');
-    }
-
-    // Weekly Points Tracking - for educator weekly limits
-    match /weeklyPoints/{weekKey} {
-      // Educators can read and write their own tracking
-      allow read: if isSignedIn();
-      allow create, update: if isSignedIn();
-      allow delete: if hasRole('admin');
+      allow read, write: if request.auth != null;
     }
   }
 }
