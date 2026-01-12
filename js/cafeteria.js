@@ -18,7 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initI18n();
 
     setupEventListeners();
-    loadOrders();
+    // Wait for Auth before loading data
+    if (window.auth) {
+        window.auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log('✅ Cafeteria: User authenticated');
+                loadOrders();
+            } else {
+                console.warn('⚠️ Cafeteria: User NOT authenticated');
+                showToast('يجب تسجيل الدخول أولاً', 'error');
+                setTimeout(() => {
+                    window.location.href = '../login.html?role=admin';
+                }, 2000);
+            }
+        });
+    } else {
+        console.error('Auth module not loaded');
+    }
 });
 
 // Setup event listeners
