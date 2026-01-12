@@ -332,7 +332,12 @@ function setupEventListeners() {
     document.getElementById('cartOverlay').addEventListener('click', closeCart);
 
     // Checkout button
-    document.getElementById('checkoutBtn').addEventListener('click', checkout);
+    // Checkout button (Now opens Math Challenge)
+    document.getElementById('checkoutBtn').addEventListener('click', openMathChallenge);
+
+    // Math Challenge Button
+    const verifyBtn = document.getElementById('verifyMathBtn');
+    if (verifyBtn) verifyBtn.addEventListener('click', verifyMathAnswer);
 
     // Success modal close
     document.getElementById('closeSuccessBtn').addEventListener('click', () => {
@@ -450,8 +455,8 @@ function updateCartDisplay() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.getElementById('cartCount').textContent = count;
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById('cartTotal').textContent = total;
+    // Math Challenge: Hide the total to force calculation
+    document.getElementById('cartTotal').textContent = '؟'; // Hidden total
 
     // Show/hide empty state and footer
     const isEmpty = cart.length === 0;
@@ -514,8 +519,48 @@ function closeCart() {
     document.getElementById('cartOverlay').classList.remove('show');
 }
 
-// Checkout
-async function checkout() {
+// Math Challenge Logic
+function openMathChallenge() {
+    if (cart.length === 0) return;
+
+    const modal = document.getElementById('mathChallengeModal');
+    const container = document.getElementById('challengeItemsList');
+    const lang = getCurrentLang();
+
+    // Populate list
+    container.innerHTML = cart.map(item => `
+        <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+            <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
+            <span style="direction: ltr;">${item.price} x ${item.quantity} = ?</span>
+        </div>
+    `).join('');
+
+    document.getElementById('studentMathAnswer').value = '';
+    modal.classList.remove('hidden');
+}
+
+function closeMathModal() {
+    document.getElementById('mathChallengeModal').classList.add('hidden');
+}
+
+function verifyMathAnswer() {
+    const input = document.getElementById('studentMathAnswer');
+    const answer = parseInt(input.value);
+    const realTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    if (answer === realTotal) {
+        showToast('إجابة صحيحة! أحسنت 🌟', 'success');
+        closeMathModal();
+        processOrder(); // Proceed to actual checkout
+    } else {
+        input.classList.add('error-shake');
+        showToast('مجموع غير صحيح... حاول مرة أخرى! 🤔', 'error');
+        setTimeout(() => input.classList.remove('error-shake'), 500);
+    }
+}
+
+// Rename original checkout to processOrder
+async function processOrder() {
     if (cart.length === 0) return;
 
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -528,9 +573,13 @@ async function checkout() {
 
     // Show loading
     const checkoutBtn = document.getElementById('checkoutBtn');
-    const originalText = checkoutBtn.innerHTML;
-    checkoutBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span>';
-    checkoutBtn.disabled = true;
+    // ... (rest of the logic remains handled by the execution flow, but the button ID is different in the modal)
+    // Actually, processOrder triggers the backend call.
+    // We should show a global loading state or reuse the checkout button loading if we want, 
+    // but the checkout button is "hidden" behind the modal. 
+    // Let's use a simple global loader or toast for now since the modal closes fast.
+
+    // Better: We reuse the checkout implementation but we need to unlock the UI.
 
     try {
         // Create order
@@ -571,14 +620,9 @@ async function checkout() {
         document.getElementById('orderNumberDisplay').textContent = orderNumber;
         document.getElementById('successModal').classList.remove('hidden');
 
-        // Note: Waiting message and feedback will show after success modal is closed
-
     } catch (error) {
         console.error('Checkout error:', error);
         showToast(t('error'), 'error');
-    } finally {
-        checkoutBtn.innerHTML = originalText;
-        checkoutBtn.disabled = false;
     }
 }
 
