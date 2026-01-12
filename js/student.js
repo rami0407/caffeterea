@@ -9,6 +9,7 @@ let products = [];
 let cart = [];
 let currentCategory = 'all';
 let currentChallengeMode = 'cashier'; // Default mode
+let expectedMathAnswer = 0; // Stored answer for validation
 
 // Sample products (will be replaced with Firebase data)
 const sampleProducts = [
@@ -567,37 +568,90 @@ function openMathChallenge() {
     let challengeTitle = '';
     let challengeQuestion = '';
 
+    // --- CASHIER MODE (Math: Subtraction) ---
     if (currentChallengeMode === 'cashier') {
         challengeTitle = '👨‍💼 تحدي الصراف الصغير';
-        challengeQuestion = `معك <strong>${balance}</strong> نقطة. والمجموع <strong>${total}</strong> نقطة.<br>كم سيتبقى معك؟`;
 
-        challengeHTML = `
-            <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;">
-                ${balance} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">؟</span>
-            </div>
-        `;
+        // Randomize Question Type: 0 = Real Balance, 1 = Hypothetical Payment
+        const qType = Math.random() > 0.5 ? 0 : 1;
+
+        if (qType === 0) {
+            // Variant A: Real Balance
+            expectedMathAnswer = balance - total;
+            challengeQuestion = `معك <strong>${balance}</strong> نقطة. والمجموع <strong>${total}</strong> نقطة.<br>كم سيتبقى معك؟`;
+            challengeHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;">
+                    ${balance} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">؟</span>
+                </div>`;
+        } else {
+            // Variant B: Hypothetical Payment (Change)
+            // Round up total to next 10 or 50
+            let payment = Math.ceil((total + 1) / 10) * 10;
+            if (payment === total) payment += 10; // Ensure some change
+
+            expectedMathAnswer = payment - total;
+            challengeQuestion = `إذا دفع الزبون <strong>${payment}</strong> نقطة، والمجموع <strong>${total}</strong>.<br>كم الباقي؟`;
+            challengeHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;">
+                    ${payment} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">؟</span>
+                </div>`;
+        }
     }
+
+    // --- NUTRITION MODE (Math: Addition) ---
     else if (currentChallengeMode === 'nutrition') {
         challengeTitle = '🍎 تحدي خبير التغذية';
-        challengeQuestion = 'احسب مجموع سعر السعرات الحرارية في سلتك!';
 
-        challengeHTML = cart.map(item => `
-            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
-                <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
-                <span dir="ltr">${item.calories || 0} x ${item.quantity}</span>
-            </div>
-        `).join('');
+        // Randomize: 0 = Calories, 1 = Sugar
+        const qType = Math.random() > 0.5 ? 0 : 1;
+
+        if (qType === 0) {
+            expectedMathAnswer = cart.reduce((sum, item) => sum + ((item.calories || 0) * item.quantity), 0);
+            challengeQuestion = 'احسب مجموع <strong>السعرات الحرارية 🔥</strong> في سلتك!';
+
+            challengeHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+                    <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
+                    <span dir="ltr">${item.calories || 0} x ${item.quantity}</span>
+                </div>
+            `).join('');
+        } else {
+            expectedMathAnswer = cart.reduce((sum, item) => sum + ((item.sugar || 0) * item.quantity), 0);
+            challengeQuestion = 'احسب مجموع <strong>ملاعق السكر 🍬</strong> في سلتك!';
+
+            challengeHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+                    <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
+                    <span dir="ltr">${item.sugar || 0} x ${item.quantity}</span>
+                </div>
+            `).join('');
+        }
     }
+
+    // --- DISCOUNT MODE (Math: Percentage/Multiplication) ---
     else if (currentChallengeMode === 'discount') {
         challengeTitle = '🏷️ تحدي صائد الخصومات';
-        challengeQuestion = 'لديك خصم مميز 10%! كم يصبح المجموع الجديد؟';
+
+        // Randomize Discount: 10%, 20%, 25%, 50%
+        const discounts = [10, 20, 25, 50];
+        const percent = discounts[Math.floor(Math.random() * discounts.length)];
+
+        // Calculate new price: total * (1 - percent/100)
+        // Correct Answer is the FINAL PRICE
+        const discountAmount = Math.floor(total * (percent / 100)); // Simple integer math
+        expectedMathAnswer = total - discountAmount;
+
+        challengeQuestion = `لديك خصم مميز <strong>${percent}%</strong>! كم يصبح السعر الجديد؟`;
 
         challengeHTML = `
             <div style="font-size: 1.2rem; margin-bottom: 10px;">
                 المجموع الأصلي: <strong>${total}</strong>
             </div>
             <div style="font-size: 1rem; color: #64748b;">
-                ${total} - 10% = ؟
+                ${total} - ${percent}% = ؟
+            </div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top:5px;">
+                (تلميح: قيمة الخصم ${discountAmount})
             </div>
         `;
     }
@@ -618,40 +672,26 @@ function closeMathModal() {
 function verifyMathAnswer() {
     const input = document.getElementById('studentMathAnswer');
     const answer = parseInt(input.value);
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const balance = currentUser.balance || 0;
 
-    let correctAnswer = 0;
+    // Check against the globally stored expected answer
+    // For Discount mode, we allow a small tolerance due to potential mental math rounding differences
     let isCorrect = false;
 
-    if (currentChallengeMode === 'cashier') {
-        correctAnswer = balance - total;
-        isCorrect = (answer === correctAnswer);
-    }
-    else if (currentChallengeMode === 'nutrition') {
-        correctAnswer = cart.reduce((sum, item) => sum + ((item.calories || 0) * item.quantity), 0);
-        // Allow small margin of error for calories? No, strict math.
-        isCorrect = (answer === correctAnswer);
-    }
-    else if (currentChallengeMode === 'discount') {
-        // 10% discount check. Integer math: floor(total * 0.9)
-        correctAnswer = Math.max(0, Math.floor(total * 0.9));
-        isCorrect = (Math.abs(answer - correctAnswer) <= 1); // Allow +/- 1 tolerance due to rounding confusion
+    if (currentChallengeMode === 'discount') {
+        isCorrect = (Math.abs(answer - expectedMathAnswer) <= 1);
+    } else {
+        isCorrect = (answer === expectedMathAnswer);
     }
 
     if (isCorrect) {
         showToast('إجابة صحيحة! أنت عبقري 🌟', 'success');
         closeMathModal();
 
-        // If discount mode was active, apply the discount to the actual order!
+        // If discount mode was active, show simulated savings toast
         if (currentChallengeMode === 'discount') {
-            // For simplicity, we just process the order with full price BUT we could implement discount logic in backend.
-            // Since backend is strict, we'll process order normally but maybe show a "Fake Discount Applied" toast or 
-            // actually update user balance with a "cashback" transaction if we could.
-            // For now, let's keep it visuals only (the math is the game).
-            showToast('تم تطبيق الخصم! (محاكاة)', 'success');
-            // To be real, we should reduce 'total' sent to processOrder, but processOrder recalculates from cart.
-            // Let's stick to standard checkout for now to avoid complexity errors.
+            const originalTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const savings = originalTotal - expectedMathAnswer;
+            showToast(`رائع! وفرت ${savings} نقطة (محاكاة)`, 'success');
         }
 
         processOrder();
