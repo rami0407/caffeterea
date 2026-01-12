@@ -611,6 +611,10 @@ function openMathChallenge() {
     modal.classList.remove('hidden');
 }
 
+function closeMathModal() {
+    document.getElementById('mathChallengeModal').classList.add('hidden');
+}
+
 function verifyMathAnswer() {
     const input = document.getElementById('studentMathAnswer');
     const answer = parseInt(input.value);
