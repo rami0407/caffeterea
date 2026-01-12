@@ -214,6 +214,11 @@ function checkAuthAndLoad() {
                 role: 'student',
                 isGuest: true
             };
+
+            // Guest Welcome Message
+            const nameDisplay = document.getElementById('userNameDisplay');
+            if (nameDisplay) nameDisplay.textContent = 'مرحباً، زائر';
+
             updateBalanceDisplay();
             // Enable real product loading for guests (public read allowed)
             loadProducts();
