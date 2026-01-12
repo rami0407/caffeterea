@@ -127,8 +127,9 @@ function renderOrders() {
 
     container.innerHTML = filteredOrders.map(order => {
         const timeAgo = getTimeAgo(order.createdAt);
-        const isGuest = order.userId === 'guest' || order.guestName;
-        const customerName = isGuest ? `ضيف: ${order.guestName}` : '';
+        // Correctly identify guests based on the new ID format (guest_timestamp)
+        const isGuest = (order.studentId && order.studentId.toString().startsWith('guest')) || order.userId === 'guest';
+        const customerName = isGuest ? `ضيف (Kiosk)` : (order.studentName || 'طالب');
 
         let actionButtons = '';
         if (order.status === 'pending') {
@@ -163,7 +164,10 @@ function renderOrders() {
                     </div>
                     <span class="order-time-badge">${timeAgo}</span>
                 </div>
-                ${isGuest ? `<div style="background: #ffe4e6; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; color: #be123c; font-weight: 600; text-align: center;">👤 ${customerName}</div>` : ''}
+                <!-- Show Customer Name (Guest or Student) -->
+                <div style="background: ${isGuest ? '#ffe4e6' : '#f1f5f9'}; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; color: ${isGuest ? '#be123c' : '#475569'}; font-weight: 600; text-align: center;">
+                    👤 ${customerName}
+                </div>
                 
                 <div class="cafe-order-items">
                     ${order.items.map(item => `
