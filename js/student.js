@@ -218,7 +218,8 @@ function checkAuthAndLoad() {
                 isGuest: true
             };
             updateBalanceDisplay();
-            loadSampleProducts();
+            // Enable real product loading for guests (public read allowed)
+            loadProducts();
 
             // Show toast for guest too
             if (!sessionStorage.getItem('guest_welcomed')) {
