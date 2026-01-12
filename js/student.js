@@ -210,7 +210,7 @@ function checkAuthAndLoad() {
         } else {
             // For demo, allow guest access with allowance simulation
             currentUser = {
-                balance: 30, // Experiment: Start with 30
+                balance: 999999, // Concept: Infinite Kiosk Balance
                 role: 'student',
                 isGuest: true
             };
@@ -785,9 +785,12 @@ async function processOrder() {
                 throw new Error(result.error);
             }
         } else {
-            // Demo mode
+            // Demo mode / Guest Kiosk Mode
             orderNumber = Math.floor(Math.random() * 100) + 1;
-            currentUser.balance -= total;
+            // Guests have infinite balance, so we don't deduct logically or we deduct from infinity (no impact)
+            if (!currentUser.isGuest) {
+                currentUser.balance -= total;
+            }
         }
 
         // Clear cart
@@ -799,9 +802,17 @@ async function processOrder() {
         // Update balance display
         updateBalanceDisplay();
 
-        // Show success modal
-        document.getElementById('orderNumberDisplay').textContent = orderNumber;
+        // Show Success
+        const orderNumDisplay = document.getElementById('orderNumberDisplay');
+        if (orderNumDisplay) orderNumDisplay.textContent = orderNumber;
         document.getElementById('successModal').classList.remove('hidden');
+
+        // Kiosk Auto-Reset Logic for Guests
+        if (currentUser.isGuest) {
+            setTimeout(() => {
+                window.location.reload(); // Hard Reset to welcome next guest
+            }, 4000); // 4 seconds to read the number
+        }
 
     } catch (error) {
         console.error('Checkout error:', error);
@@ -811,9 +822,14 @@ async function processOrder() {
 
 // Update balance display
 function updateBalanceDisplay() {
-    if (currentUser) {
-        document.getElementById('balanceDisplay').textContent = currentUser.balance || 0;
-    }
+    const bal = currentUser.balance || 0;
+    // Show Infinity symbol if balance is very high (Kiosk Mode)
+    const displayBal = bal > 888888 ? '∞' : bal;
+
+    document.getElementById('balanceDisplay').textContent = displayBal;
+    // Also update header amount if exists elsewhere
+    const headerBal = document.querySelector('.wallet-amount');
+    if (headerBal) headerBal.textContent = displayBal;
 }
 
 // Toast notification
