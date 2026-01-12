@@ -179,27 +179,24 @@ function checkAuthAndLoad() {
         if (user && userData) {
             currentUser = userData;
 
-            // --- EXPERIMENT: Monthly Allowance Logic ---
-            const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
-
-            // If new month or no record of allocation
-            if (userData.lastAllocation !== currentMonth) {
-                console.log('📅 New month detected! Allocating monthly allowance...');
+            // --- One-Time Welcome Allowance (30 Points) ---
+            if (!userData.initialAllowanceReceived) {
+                console.log('🎉 First time login? Allocating welcome allowance...');
 
                 try {
-                    // Reset balance to 30
+                    // Set balance to 30 (One time only)
                     await db.collection('users').doc(user.uid).update({
                         balance: 30,
-                        lastAllocation: currentMonth
+                        initialAllowanceReceived: true
                     });
 
                     // Update local state
                     currentUser.balance = 30;
-                    currentUser.lastAllocation = currentMonth;
+                    currentUser.initialAllowanceReceived = true;
 
-                    showToast('🎉 تم رصد رصيد الشهر الجديد: 30 نقطة', 'success');
+                    showToast('🎉 أهلاً بك! تم إضافة رصيد افتتاحي: 30 نقطة', 'success');
                 } catch (error) {
-                    console.error('Error allocating monthly allowance:', error);
+                    console.error('Error allocating welcome allowance:', error);
                 }
             }
             // -------------------------------------------
