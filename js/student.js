@@ -811,7 +811,7 @@ async function processOrder() {
         if (currentUser.isGuest) {
             setTimeout(() => {
                 window.location.reload(); // Hard Reset to welcome next guest
-            }, 4000); // 4 seconds to read the number
+            }, 2000); // 2 seconds to read the number
         }
 
     } catch (error) {
