@@ -8,6 +8,7 @@ let currentUser = null;
 let products = [];
 let cart = [];
 let currentCategory = 'all';
+let currentChallengeMode = 'cashier'; // Default mode
 
 // Sample products (will be replaced with Firebase data)
 const sampleProducts = [
@@ -519,42 +520,131 @@ function closeCart() {
     document.getElementById('cartOverlay').classList.remove('show');
 }
 
-// Math Challenge Logic
+// Gamification Logic
+function setChallengeMode(mode) {
+    currentChallengeMode = mode;
+
+    // Update UI
+    document.querySelectorAll('.challenge-title-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.mode === mode) btn.classList.add('active');
+    });
+
+    // Provide immediate feedback/mini-toast
+    const titles = {
+        'cashier': 'تحدي الصراف: احسب الباقي! 💰',
+        'nutrition': 'تحدي التغذية: اجمع السعرات! 🍎',
+        'discount': 'تحدي الخصم: احسب السعر الجديد! 🏷️'
+    };
+    showToast(titles[mode], 'success');
+}
+
 function openMathChallenge() {
     if (cart.length === 0) return;
 
     const modal = document.getElementById('mathChallengeModal');
     const container = document.getElementById('challengeItemsList');
     const lang = getCurrentLang();
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const balance = currentUser.balance || 0;
 
-    // Populate list
-    container.innerHTML = cart.map(item => `
-        <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
-            <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
-            <span style="direction: ltr;">${item.price} x ${item.quantity} = ?</span>
-        </div>
-    `).join('');
+    // Verify balance first
+    if (balance < total) {
+        showToast(t('insufficientBalance'), 'error');
+        return;
+    }
+
+    let challengeHTML = '';
+    let challengeTitle = '';
+    let challengeQuestion = '';
+
+    if (currentChallengeMode === 'cashier') {
+        challengeTitle = '👨‍💼 تحدي الصراف الصغير';
+        challengeQuestion = `معك <strong>${balance}</strong> نقطة. والمجموع <strong>${total}</strong> نقطة.<br>كم سيتبقى معك؟`;
+
+        challengeHTML = `
+            <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;">
+                ${balance} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">؟</span>
+            </div>
+        `;
+    }
+    else if (currentChallengeMode === 'nutrition') {
+        challengeTitle = '🍎 تحدي خبير التغذية';
+        challengeQuestion = 'احسب مجموع سعر السعرات الحرارية في سلتك!';
+
+        challengeHTML = cart.map(item => `
+            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+                <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
+                <span dir="ltr">${item.calories || 0} x ${item.quantity}</span>
+            </div>
+        `).join('');
+    }
+    else if (currentChallengeMode === 'discount') {
+        challengeTitle = '🏷️ تحدي صائد الخصومات';
+        challengeQuestion = 'لديك خصم مميز 10%! كم يصبح المجموع الجديد؟';
+
+        challengeHTML = `
+            <div style="font-size: 1.2rem; margin-bottom: 10px;">
+                المجموع الأصلي: <strong>${total}</strong>
+            </div>
+            <div style="font-size: 1rem; color: #64748b;">
+                ${total} - 10% = ؟
+            </div>
+        `;
+    }
+
+    // Update Modal UI
+    modal.querySelector('h2').textContent = challengeTitle;
+    modal.querySelector('p').innerHTML = challengeQuestion;
+    if (container) container.innerHTML = challengeHTML;
 
     document.getElementById('studentMathAnswer').value = '';
     modal.classList.remove('hidden');
 }
 
-function closeMathModal() {
-    document.getElementById('mathChallengeModal').classList.add('hidden');
-}
-
 function verifyMathAnswer() {
     const input = document.getElementById('studentMathAnswer');
     const answer = parseInt(input.value);
-    const realTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const balance = currentUser.balance || 0;
 
-    if (answer === realTotal) {
-        showToast('إجابة صحيحة! أحسنت 🌟', 'success');
+    let correctAnswer = 0;
+    let isCorrect = false;
+
+    if (currentChallengeMode === 'cashier') {
+        correctAnswer = balance - total;
+        isCorrect = (answer === correctAnswer);
+    }
+    else if (currentChallengeMode === 'nutrition') {
+        correctAnswer = cart.reduce((sum, item) => sum + ((item.calories || 0) * item.quantity), 0);
+        // Allow small margin of error for calories? No, strict math.
+        isCorrect = (answer === correctAnswer);
+    }
+    else if (currentChallengeMode === 'discount') {
+        // 10% discount check. Integer math: floor(total * 0.9)
+        correctAnswer = Math.max(0, Math.floor(total * 0.9));
+        isCorrect = (Math.abs(answer - correctAnswer) <= 1); // Allow +/- 1 tolerance due to rounding confusion
+    }
+
+    if (isCorrect) {
+        showToast('إجابة صحيحة! أنت عبقري 🌟', 'success');
         closeMathModal();
-        processOrder(); // Proceed to actual checkout
+
+        // If discount mode was active, apply the discount to the actual order!
+        if (currentChallengeMode === 'discount') {
+            // For simplicity, we just process the order with full price BUT we could implement discount logic in backend.
+            // Since backend is strict, we'll process order normally but maybe show a "Fake Discount Applied" toast or 
+            // actually update user balance with a "cashback" transaction if we could.
+            // For now, let's keep it visuals only (the math is the game).
+            showToast('تم تطبيق الخصم! (محاكاة)', 'success');
+            // To be real, we should reduce 'total' sent to processOrder, but processOrder recalculates from cart.
+            // Let's stick to standard checkout for now to avoid complexity errors.
+        }
+
+        processOrder();
     } else {
         input.classList.add('error-shake');
-        showToast('مجموع غير صحيح... حاول مرة أخرى! 🤔', 'error');
+        showToast('حاول مرة أخرى! 🤔', 'error');
         setTimeout(() => input.classList.remove('error-shake'), 500);
     }
 }

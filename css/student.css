@@ -618,13 +618,133 @@
 
 /* Shake Animation for Error */
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
 }
 
 .error-shake {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
     border-color: var(--nutrition-red) !important;
     background-color: #fef2f2 !important;
+}
+
+/* Gamification Banner Styles */
+.challenges-banner {
+    padding: 10px var(--space-lg);
+    background: linear-gradient(to bottom, #fff, #f9fafb);
+    border-bottom: 1px solid #eee;
+}
+
+.challenges-title {
+    font-size: 0.95rem;
+    color: var(--brown-medium);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.challenges-options {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+}
+
+.challenges-options::-webkit-scrollbar {
+    display: none;
+}
+
+.challenge-title-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 8px 12px;
+    min-width: 140px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: right;
+}
+
+.challenge-title-btn .icon {
+    font-size: 1.5rem;
+    background: #f3f4f6;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.challenge-title-btn .text {
+    display: flex;
+    flex-direction: column;
+}
+
+.challenge-title-btn .title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.challenge-title-btn .subtitle {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+/* Active States */
+.challenge-title-btn.active {
+    border-color: var(--primary-green);
+    background: #f0fdf4;
+}
+
+.challenge-title-btn.active .icon {
+    background: white;
+}
+
+.challenge-title-btn[data-mode="cashier"].active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.challenge-title-btn[data-mode="nutrition"].active {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.challenge-title-btn[data-mode="discount"].active {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .challenges-banner {
+        padding: 10px var(--space-md);
+    }
+
+    .challenge-title-btn {
+        min-width: 130px;
+    }
 }
