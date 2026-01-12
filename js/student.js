@@ -173,10 +173,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Check authentication and load data
+// Check authentication and load data
 function checkAuthAndLoad() {
     onAuthStateChange(async ({ user, userData }) => {
         if (user && userData) {
             currentUser = userData;
+
+            // --- EXPERIMENT: Monthly Allowance Logic ---
+            const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+
+            // If new month or no record of allocation
+            if (userData.lastAllocation !== currentMonth) {
+                console.log('📅 New month detected! Allocating monthly allowance...');
+
+                try {
+                    // Reset balance to 30
+                    await db.collection('users').doc(user.uid).update({
+                        balance: 30,
+                        lastAllocation: currentMonth
+                    });
+
+                    // Update local state
+                    currentUser.balance = 30;
+                    currentUser.lastAllocation = currentMonth;
+
+                    showToast('🎉 تم رصد رصيد الشهر الجديد: 30 نقطة', 'success');
+                } catch (error) {
+                    console.error('Error allocating monthly allowance:', error);
+                }
+            }
+            // -------------------------------------------
+
             // Persistence: Display Name
             const nameDisplay = document.getElementById('userNameDisplay');
             if (nameDisplay) nameDisplay.textContent = `مرحباً، ${userData.name || 'طالب'}`;
@@ -184,10 +211,20 @@ function checkAuthAndLoad() {
             updateBalanceDisplay();
             await loadProducts();
         } else {
-            // For demo, allow guest access
-            currentUser = { balance: 50, role: 'student' };
+            // For demo, allow guest access with allowance simulation
+            currentUser = {
+                balance: 30, // Experiment: Start with 30
+                role: 'student',
+                isGuest: true
+            };
             updateBalanceDisplay();
             loadSampleProducts();
+
+            // Show toast for guest too
+            if (!sessionStorage.getItem('guest_welcomed')) {
+                showToast('🎉 تم رصد رصيد الشهر: 30 نقطة (تجريبي)', 'success');
+                sessionStorage.setItem('guest_welcomed', 'true');
+            }
         }
     });
 }
