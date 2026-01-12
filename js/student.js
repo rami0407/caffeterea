@@ -334,7 +334,16 @@ function setupEventListeners() {
 
     // Checkout button
     // Checkout button (Now opens Math Challenge)
+    // Checkout button (Now opens Math Challenge)
     document.getElementById('checkoutBtn').addEventListener('click', openMathChallenge);
+
+    // Challenge Mode Buttons (Gamification)
+    document.querySelectorAll('.challenge-title-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            setChallengeMode(mode);
+        });
+    });
 
     // Math Challenge Button
     const verifyBtn = document.getElementById('verifyMathBtn');
