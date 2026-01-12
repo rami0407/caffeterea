@@ -773,23 +773,28 @@ async function processOrder() {
             quantity: item.quantity
         }));
 
-        let orderNumber;
+        // Check balance (Already done) / Infinite for guest
 
-        if (currentUser.uid) {
-            // Real Firebase order
-            const result = await createOrder(currentUser.uid, items, total);
-            if (result.success) {
-                orderNumber = result.orderNumber;
-                currentUser.balance -= total;
-            } else {
-                throw new Error(result.error);
-            }
-        } else {
-            // Demo mode / Guest Kiosk Mode
-            orderNumber = Math.floor(Math.random() * 100) + 1;
-            // Guests have infinite balance, so we don't deduct logically or we deduct from infinity (no impact)
+        let orderResult;
+        const userId = currentUser.uid || `guest_${Date.now()}`; // Unique ID for guest
+
+        // Create Order in Firebase (For BOTH Students and Guests)
+        orderResult = await createOrder(userId, items, total);
+
+        if (orderResult.success) {
+            orderNumber = orderResult.orderNumber;
+
+            // Deduct local balance for students only
             if (!currentUser.isGuest) {
                 currentUser.balance -= total;
+            }
+        } else {
+            console.error("Order creation failed:", orderResult.error);
+            // Fallback for guests if firebase fails (e.g. offline)
+            if (currentUser.isGuest) {
+                orderNumber = Math.floor(Math.random() * 100) + 1;
+            } else {
+                throw new Error(orderResult.error);
             }
         }
 

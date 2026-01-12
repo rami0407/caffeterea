@@ -42,7 +42,7 @@ service cloud.firestore {
     
     // 3️⃣ Orders
     match /orders/{orderId} {
-      allow create: if isAuthenticated();
+      allow create: if true; // Allow guests to create orders
       // Allow reading if authenticated
       allow read: if isAuthenticated();
       allow update: if isAuthenticated(); 
