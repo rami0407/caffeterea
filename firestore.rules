@@ -32,6 +32,8 @@ service cloud.firestore {
       allow create: if isOwner(userId);
       // Allow reading list if authenticated (Educators need this)
       allow list, get: if isAuthenticated();
+      // Allow update for bulk rewards and educator rewards
+      allow update: if isAuthenticated();
     }
     
     // 2️⃣ Products
