@@ -26,48 +26,58 @@ let app, auth, db;
 function initializeFirebase() {
     // Prevent double initialization
     if (app && auth && db) {
-        console.log('✅ Firebase already initialized');
+        console.log('✅ Firebase already initialized - skipping');
         return { app, auth, db };
     }
 
-    if (typeof firebase !== 'undefined') {
-        try {
+    if (typeof firebase === 'undefined') {
+        console.error('❌ Firebase SDK not loaded - check script tags');
+        return null;
+    }
+
+    try {
+        // Check if already initialized globally
+        if (firebase.apps.length > 0) {
+            console.log('✅ Firebase already initialized globally');
+            app = firebase.apps[0];
+        } else {
+            console.log('🚀 Initializing Firebase...');
             app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-
-            // Expose to window for other scripts
-            window.app = app;
-            window.auth = auth;
-            window.db = db;
-
-            // Initialize Storage only if SDK is present
-            if (firebase.storage) {
-                window.storage = firebase.storage();
-            }
-
-            // Set RTL language for auth UI
-            auth.languageCode = 'ar';
-
-            console.log('✅ Firebase initialized successfully');
-            return { app, auth, db };
-        } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-            return null;
         }
-    } else {
-        console.error('❌ Firebase SDK not loaded');
+
+        auth = firebase.auth();
+        db = firebase.firestore();
+
+        // Expose to window for other scripts
+        window.app = app;
+        window.auth = auth;
+        window.db = db;
+
+        // Initialize Storage only if SDK is present
+        if (firebase.storage) {
+            window.storage = firebase.storage();
+        }
+
+        // Set RTL language for auth UI
+        auth.languageCode = 'ar';
+
+        console.log('✅ Firebase initialized successfully');
+        return { app, auth, db };
+    } catch (error) {
+        console.error('❌ Firebase initialization error:', error);
         return null;
     }
 }
 
 // Auto-initialize Firebase when script loads
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFirebase);
-} else {
-    // Document already loaded
-    initializeFirebase();
-}
+(function () {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeFirebase);
+    } else {
+        // Document already loaded
+        initializeFirebase();
+    }
+})();
 
 // ========================================
 // Authentication Functions
