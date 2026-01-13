@@ -594,19 +594,23 @@ async function getStudentTransactions(studentId) {
 // Get sales report
 async function getSalesReport(startDate, endDate) {
     try {
+        // Simplified query - filter by date only, then filter status in JS
         const snapshot = await db.collection('orders')
-            .where('status', '==', 'completed')
             .where('createdAt', '>=', startDate)
             .where('createdAt', '<=', endDate)
             .get();
 
-        const orders = snapshot.docs.map(doc => doc.data());
-        const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
+        // Filter completed orders in JavaScript (avoids compound index)
+        const completedOrders = snapshot.docs
+            .map(doc => doc.data())
+            .filter(order => order.status === 'completed');
+
+        const totalSales = completedOrders.reduce((sum, order) => sum + order.total, 0);
 
         return {
-            totalOrders: orders.length,
+            totalOrders: completedOrders.length,
             totalSales,
-            orders
+            orders: completedOrders
         };
     } catch (error) {
         console.error('❌ Error getting sales report:', error);
