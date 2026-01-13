@@ -284,6 +284,74 @@
     color: white;
 }
 
+/* ========================================
+   Stock Availability Badges
+   ======================================== */
+.stock-badge {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stock-badge.in-stock {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.stock-badge.low-stock {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+    animation: pulse-warning 2s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.stock-badge.out-of-stock {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Out of Stock Product Card */
+.product-card.out-of-stock {
+    opacity: 0.6;
+    filter: grayscale(50%);
+}
+
+.product-card.out-of-stock .product-image {
+    background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
+}
+
+/* Disabled Add to Cart Button */
+.add-to-cart-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.add-to-cart-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
 /* Add to Cart Button */
 .add-to-cart-btn {
     width: 100%;

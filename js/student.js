@@ -302,17 +302,41 @@ function renderProducts() {
 
         const caloriesBadge = product.calories ? `<div style="font-size: 0.8rem; color: #64748b; margin-top: 3px;">🔥 ${product.calories} ${lang === 'he' ? 'קלוריות' : 'سعرة'}</div>` : '';
 
+        // ===== STOCK AVAILABILITY CHECK =====
+        const stock = product.stock !== undefined ? product.stock : 0;
+        const lowStockThreshold = product.lowStockThreshold || 5;
+        const isAvailable = stock > 0;
+        const isLowStock = stock <= lowStockThreshold && stock > 0;
+
+        // Stock badge
+        let stockBadge = '';
+        if (stock === 0) {
+            stockBadge = `<div class="stock-badge out-of-stock">❌ ${lang === 'he' ? 'אזל' : 'نفذ'}</div>`;
+        } else if (isLowStock) {
+            stockBadge = `<div class="stock-badge low-stock">⚠️ ${lang === 'he' ? `נשארו ${stock}` : `بقي ${stock}`}</div>`;
+        } else {
+            stockBadge = `<div class="stock-badge in-stock">✅ ${lang === 'he' ? 'זמין' : 'متوفر'}</div>`;
+        }
+
+        // Button state
+        const btnDisabled = !isAvailable ? 'disabled' : '';
+        const btnText = !isAvailable
+            ? (lang === 'he' ? 'לא זמין' : 'غير متوفر')
+            : (lang === 'he' ? '+ הוסף לסל' : '+ إضافة للسلة');
+        const cardClass = !isAvailable ? 'out-of-stock' : '';
+
         return `
-        <div class="product-card" data-id="${product.id}">
+        <div class="product-card ${cardClass}" data-id="${product.id}">
             <div class="nutrition-badge ${trafficColor}">
                 ${trafficColor === 'green' ? '●' : trafficColor === 'yellow' ? '●' : '●'}
             </div>
+            ${stockBadge}
             <div class="product-image">${product.icon || '🍽️'}</div>
             <h3 class="product-name">${productName}</h3>
             <div class="product-price">${product.price}</div>
             ${caloriesBadge}
-            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
-                ${t('addToCart')} +
+            <button class="add-to-cart-btn" onclick="addToCart('${product.id}')" ${btnDisabled}>
+                ${btnText}
             </button>
         </div>
     `;
@@ -458,7 +482,25 @@ function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
+    // ===== STOCK AVAILABILITY CHECK =====
+    const stock = product.stock !== undefined ? product.stock : 0;
+
+    // Check if product is out of stock
+    if (stock <= 0) {
+        showToast('❌ عذراً، هذا المنتج غير متوفر حالياً', 'error');
+        return;
+    }
+
+    // Check quantity in cart vs available stock
     const existingItem = cart.find(item => item.id === productId);
+    const currentInCart = existingItem ? existingItem.quantity : 0;
+
+    if (currentInCart >= stock) {
+        showToast(`⚠️ وصلت للحد الأقصى المتوفر (${stock})`, 'error');
+        return;
+    }
+    // =======================================
+
     if (existingItem) {
         existingItem.quantity++;
     } else {
@@ -783,6 +825,17 @@ async function processOrder() {
 
         if (orderResult.success) {
             orderNumber = orderResult.orderNumber;
+
+            // ===== REDUCE STOCK AFTER SUCCESSFUL ORDER =====
+            if (typeof reduceStock === 'function') {
+                const stockResult = await reduceStock(items);
+                if (stockResult.success) {
+                    console.log('✅ المخزون تم تحديثه');
+                } else {
+                    console.warn('⚠️ فشل تحديث المخزون:', stockResult.error);
+                }
+            }
+            // ================================================
 
             // Deduct local balance for students only
             if (!currentUser.isGuest) {

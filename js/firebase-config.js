@@ -637,3 +637,67 @@ async function getPopularProducts() {
         return [];
     }
 }
+
+// ========================================
+// Inventory Management Functions
+// ========================================
+
+/**
+ * Reduce stock for ordered items
+ * @param {Array} orderItems - Array of {id, quantity}
+ */
+async function reduceStock(orderItems) {
+    try {
+        const batch = db.batch();
+
+        for (const item of orderItems) {
+            const productRef = db.collection('products').doc(item.id);
+            batch.update(productRef, {
+                stock: firebase.firestore.FieldValue.increment(-item.quantity)
+            });
+        }
+
+        await batch.commit();
+        console.log('✅ Stock updated for', orderItems.length, 'products');
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error reducing stock:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Restock a product (Admin function)
+ * @param {string} productId
+ * @param {number} quantity - Amount to add
+ */
+async function restockProduct(productId, quantity) {
+    try {
+        await db.collection('products').doc(productId).update({
+            stock: firebase.firestore.FieldValue.increment(quantity)
+        });
+        console.log(`✅ Added ${quantity} units to product ${productId}`);
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error restocking product:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Set exact stock value (Admin function)
+ * @param {string} productId
+ * @param {number} stock - New stock value
+ */
+async function setProductStock(productId, stock) {
+    try {
+        await db.collection('products').doc(productId).update({
+            stock: stock
+        });
+        console.log(`✅ Set stock to ${stock} for product ${productId}`);
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error setting stock:', error);
+        return { success: false, error: error.message };
+    }
+}
