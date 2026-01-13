@@ -1,200 +1,17 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تصفح القائمة - مقصف المعرفة">
-    <title>القائمة | مقصف المعرفة</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Heebo:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/guest.css?v=1.3">
-    <link rel="stylesheet" href="css/feedback.css">
+    <meta http-equiv="refresh" content="0;url=student/menu.html">
+    <title>Redirecting...</title>
+    <script>
+        window.location.href = "student/menu.html";
+    </script>
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="guest-header">
-        <a href="index.html" class="logo-link">
-            <span class="logo-icon">🌱</span>
-            <span class="logo-text">مقصف المعرفة</span>
-        </a>
-        <div class="header-actions">
-            <a href="index.html" class="login-link home-btn"
-                style="background:#f1f5f9; color:#334155; margin-left:10px;">
-                <span>🏠 الرئيسية</span>
-            </a>
-            <a href="about.html" class="login-link" style="margin-left:5px;">
-                <span>ℹ️ نبذة عن المشروع</span>
-            </a>
-            <a href="competition.html" class="login-link" style="margin-left:5px;">
-                <span>🎨 المسابقة</span>
-            </a>
-            <a href="login.html?role=student" class="login-link">
-                <span>تسجيل الدخول</span>
-                <span>→</span>
-            </a>
-            <div class="lang-mini">
-                <button class="lang-mini-btn active" data-lang="ar">ع</button>
-                <button class="lang-mini-btn" data-lang="he">ע</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="guest-hero">
-        <h1>🍽️ قائمة المقصف</h1>
-        <p>تصفح منتجاتنا الصحية واللذيذة</p>
-    </section>
-
-    <!-- Categories -->
-    <nav class="guest-categories">
-        <button class="category-chip active" data-category="all">🍽️ الكل</button>
-        <button class="category-chip" data-category="sandwiches">🥪 سندويشات</button>
-        <button class="category-chip" data-category="drinks">🥤 مشروبات</button>
-        <button class="category-chip" data-category="snacks">🍪 وجبات خفيفة</button>
-        <button class="category-chip" data-category="healthy">🥗 صحي</button>
-    </nav>
-
-    <!-- Products Grid -->
-    <main class="guest-content">
-        <div class="guest-products" id="productsGrid">
-            <!-- Products will be loaded here -->
-        </div>
-    </main>
-
-    <!-- Nutrition Legend -->
-    <section class="nutrition-legend">
-        <h3>🚦 دليل الإشارة الضوئية للتغذية</h3>
-        <div class="legend-items">
-            <div class="legend-item green">
-                <span class="dot"></span>
-                <span>أخضر: خيار صحي ممتاز</span>
-            </div>
-            <div class="legend-item yellow">
-                <span class="dot"></span>
-                <span>أصفر: متوسط - باعتدال</span>
-            </div>
-            <div class="legend-item red">
-                <span class="dot"></span>
-                <span>أحمر: حلوى - أحياناً</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="guest-cta">
-        <h2>🎉 انضم إلينا!</h2>
-        <p>سجل الآن للطلب واستلام المكافآت</p>
-        <a href="login.html?role=student" class="btn btn-primary">إنشاء حساب</a>
-    </section>
-
-    <!-- Footer -->
-    <footer class="guest-footer">
-        <p>🌍 من الكود إلى الأخضر | مقصف المعرفة © 2024</p>
-    </footer>
-
-    <!-- Cart Fab -->
-    <div class="cart-fab" onclick="openCart()">
-        <span class="cart-icon">🛒</span>
-        <span class="cart-badge" id="cartCount" style="display: none;">0</span>
-    </div>
-
-    <!-- Cart Modal -->
-    <div id="cartModal" class="cart-modal">
-        <div class="cart-modal-content">
-            <div class="cart-header">
-                <h3>سلة الطلبات</h3>
-                <button class="close-btn" onclick="closeCart()">×</button>
-            </div>
-
-            <div id="cartItems" class="cart-items">
-                <!-- Items will be here -->
-            </div>
-
-            <div class="cart-footer">
-                <div class="total-row">
-                    <span>المجموع:</span>
-                    <span id="cartTotal">0</span>
-                    <span>نقطة</span>
-                </div>
-
-                <div class="guest-input-group">
-                    <label>الاسم (مطلوب لاستلام الطلب)</label>
-                    <input type="text" id="guestNameInput" placeholder="اكتب اسمك هنا..." class="guest-name-input">
-                </div>
-
-                <button id="btnCheckout" class="btn btn-primary btn-full" onclick="submitGuestOrder()">تأكيد
-                    الطلب</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Protection Modal -->
-    <div id="passwordModal">
-        <div class="auth-box">
-            <h2>🔒 صفحة محمية</h2>
-            <p>الرجاء إدخال كلمة المرور للدخول إلى المقصف</p>
-            <input type="password" id="pagePassword" placeholder="كلمة المرور">
-            <button onclick="checkPagePassword()">دخول</button>
-            <p id="passwordError" class="auth-error">كلمة المرور غير صحيحة</p>
-        </div>
-    </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="js/firebase-config.js?v=2.6"></script>
-    <script src="js/i18n.js?v=2.6"></script>
-    <script src="js/guest.js?v=1.6"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check Access
-            checkAccess();
-
-            // Initialize Firebase
-            initializeFirebase();
-
-            initI18n();
-            // enable language buttons
-            document.querySelectorAll('.lang-mini-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.lang-mini-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    setLanguage(btn.dataset.lang);
-                });
-            });
-        });
-
-        // Guest Page Security
-        function checkAccess() {
-            const isAuthorized = sessionStorage.getItem('guest_access');
-            if (isAuthorized !== 'true') {
-                document.body.classList.add('locked');
-                document.getElementById('passwordModal').style.display = 'flex';
-            }
-        }
-
-        function checkPagePassword() {
-            const input = document.getElementById('pagePassword');
-            const error = document.getElementById('passwordError');
-
-            if (input.value === '123456') {
-                sessionStorage.setItem('guest_access', 'true');
-                document.body.classList.remove('locked');
-                document.getElementById('passwordModal').style.display = 'none';
-            } else {
-                error.style.display = 'block';
-                input.value = '';
-                input.focus();
-            }
-        }
-    </script>
+    <p>جاري تحويلك للصفحة الجديدة... <a href="student/menu.html">اضغط هنا إذا لم يتم التحويل</a></p>
 </body>
 
 </html>

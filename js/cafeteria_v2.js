@@ -257,33 +257,28 @@ window.addEventListener('beforeunload', () => {
 // NEW: Security & Product Management Logic
 // ==========================================
 
-// Check passcode
+// Check passcode - DISABLED
 function checkCafePasscode() {
-    const input = document.getElementById('cafePasscode');
-    const error = document.getElementById('passError');
-    const modal = document.getElementById('securityModal');
-
-    if (input.value === 'cafe123') {
-        // Success
-        modal.style.display = 'none';
-        sessionStorage.setItem('cafeteria_unlocked', 'true');
-        playNotificationSound(); // Tiny feedback
-
-        // Refresh orders 
-        loadOrders();
-    } else {
-        // Fail
-        error.style.display = 'block';
-        input.value = '';
-        input.focus();
-    }
+    console.log('Passcode check disabled - Access granted automatically');
+    checkAlreadyUnlocked();
 }
 
-// Check if already unlocked (on load)
+// Check if already unlocked (on load) - MODIFIED: ALWAYS UNLOCK
 function checkAlreadyUnlocked() {
-    // Always unlock
+    // Set flag in session just in case
+    sessionStorage.setItem('cafeteria_unlocked', 'true');
+
+    // Remove the modal from DOM if it exists
     const modal = document.getElementById('securityModal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.remove(); // Completely remove it
+    }
+
+    // Also try to find by class if ID differs
+    const modalByClass = document.querySelector('.security-modal');
+    if (modalByClass) {
+        modalByClass.remove();
+    }
 }
 
 // Switch between Orders & Products View

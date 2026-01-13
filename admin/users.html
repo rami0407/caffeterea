@@ -176,6 +176,10 @@
             <!-- Search -->
             <div class="search-box">
                 <input type="text" id="userSearch" class="search-input" placeholder="ابحث عن اسم أو بريد/هاتف...">
+                <button onclick="openBulkReward()" class="btn-action btn-reward"
+                    style="background: #8b5cf6; color: white;">
+                    🌟 مكافأة جماعية للكل
+                </button>
             </div>
 
             <!-- Users List -->
@@ -202,7 +206,6 @@
         </section>
     </main>
 
-    <!-- Reward Modal -->
     <div id="rewardModal" class="modal">
         <div class="modal-content">
             <h3>🎁 إضافة رصيد</h3>
@@ -218,9 +221,32 @@
             <div style="display: flex; gap: 10px;">
                 <button onclick="confirmReward()" class="btn-reward"
                     style="flex:1; padding: 10px; font-weight: bold;">تأكيد ✅</button>
-                <button onclick="closeModal()"
+                <button onclick="closeModal('rewardModal')"
                     style="flex:1; padding: 10px; background:#f1f5f9; border:none; border-radius:6px; cursor:pointer;">إلغاء
                     ❌</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Reward Modal -->
+    <div id="bulkRewardModal" class="modal">
+        <div class="modal-content">
+            <h3>🌟 مكافأة جماعية لكل الطلاب</h3>
+            <p style="color: #64748b; margin-bottom: 20px;">سيتم إضافة النقاط لجميع الطلاب المسجلين حالياً.<br>عدد
+                الطلاب: <b id="studentCountBadge">0</b></p>
+
+            <div style="margin: 20px 0;">
+                <label>مبلغ المكافأة (نقاط)</label>
+                <input type="number" id="bulkRewardAmount" value="50" min="1" max="1000"
+                    style="width: 100%; padding: 10px; font-size: 1.2rem; text-align: center; border: 2px solid #8b5cf6; border-radius: 8px;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="confirmBulkReward()" class="btn-reward"
+                    style="flex:1; padding: 10px; font-weight: bold; background: #8b5cf6; color: white;">توزيع المكافأة
+                    🚀</button>
+                <button onclick="closeModal('bulkRewardModal')"
+                    style="flex:1; padding: 10px; background:#f1f5f9; border:none; border-radius:6px; cursor:pointer;">إلغاء</button>
             </div>
         </div>
     </div>
@@ -362,8 +388,8 @@
             document.getElementById('rewardModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('rewardModal').style.display = 'none';
+        function closeModal(modalId = 'rewardModal') {
+            document.getElementById(modalId).style.display = 'none';
         }
 
         async function confirmReward() {
@@ -399,6 +425,58 @@
             t.textContent = msg;
             t.className = `toast show ${type === 'error' ? 'error' : ''}`;
             setTimeout(() => t.className = 'toast', 3000);
+        }
+    </script>
+    <script>
+        // Bulk Reward Logic
+        function openBulkReward() {
+            const students = allUsers.filter(u => u.role === 'student');
+            document.getElementById('studentCountBadge').textContent = students.length;
+            document.getElementById('bulkRewardModal').style.display = 'flex';
+        }
+
+        async function confirmBulkReward() {
+            const amount = parseInt(document.getElementById('bulkRewardAmount').value);
+            const btn = document.querySelector('#bulkRewardModal button.btn-reward');
+
+            if (!amount || amount <= 0) return alert('الرجاء إدخال مبلغ صالح');
+            if (!confirm(`هل أنت متأكد من توزيع ${amount} نقطة لجميع الطلاب؟`)) return;
+
+            btn.disabled = true;
+            btn.textContent = 'جاري التوزيع... ⏳';
+
+            try {
+                const students = allUsers.filter(u => u.role === 'student');
+                const batch = db.batch();
+                let operationsCount = 0;
+
+                // Process in chunks of 450 to stay safely under 500 limit
+                // For now assuming < 450 students, but better logic for future:
+
+                students.forEach(student => {
+                    const userRef = db.collection('users').doc(student.id);
+                    batch.update(userRef, {
+                        balance: firebase.firestore.FieldValue.increment(amount)
+                    });
+                    operationsCount++;
+                });
+
+                if (operationsCount > 0) {
+                    await batch.commit();
+                    showToast(`تم توزيع المكافأة على ${operationsCount} طالب بنجاح! 🎉`, 'success');
+                    closeModal('bulkRewardModal');
+                    loadUsers(); // Refresh
+                } else {
+                    showToast('لا يوجد طلاب لتوزيع المكافأة عليهم', 'error');
+                }
+
+            } catch (error) {
+                console.error("Bulk Reward Error:", error);
+                showToast('حدث خطأ: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'توزيع المكافأة 🚀';
+            }
         }
     </script>
 </body>

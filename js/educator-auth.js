@@ -1,6 +1,6 @@
 // ========================================
 // بذور المعرفة - Smart Eco-Market
-// Educator Authentication Logic
+// Educator Authentication Logic (Patched for Security)
 // ========================================
 
 // Global state
@@ -43,7 +43,8 @@ async function handleEducatorLogin() {
     }
 
     try {
-        // Find educator in database
+        // 1. Find educator in local data (Client-side check)
+        // Note: findEducatorByPhone is assumed to be in educators-data.js
         const educator = findEducatorByPhone(phone);
 
         if (!educator) {
@@ -51,7 +52,13 @@ async function handleEducatorLogin() {
             return;
         }
 
-        // Store educator session in localStorage
+        // 2. Perform Real Firebase Login (Anonymous)
+        // This creates a valid 'request.auth' token for Firestore Rules
+        console.log('🔄 جاري الاتصال بخادم Firebase...');
+        await auth.signInAnonymously();
+        console.log('✅ تم الاتصال بـ Firebase بنجاح (Anonymous Auth)');
+
+        // 3. Store educator session in localStorage (for UI persistence)
         localStorage.setItem('educatorSession', JSON.stringify({
             id: educator.id,
             name: educator.name,
@@ -74,7 +81,7 @@ async function handleEducatorLogin() {
 
     } catch (error) {
         console.error('Login error:', error);
-        showError('حدث خطأ أثناء تسجيل الدخول');
+        showError('حدث خطأ في الاتصال بالخادم: ' + error.message);
     }
 }
 
@@ -120,7 +127,12 @@ function getCurrentEducator() {
 /**
  * Logout educator
  */
-function logoutEducator() {
+async function logoutEducator() {
+    try {
+        await auth.signOut(); // Sign out from Firebase
+    } catch (e) {
+        console.warn('Firebase signout error:', e);
+    }
     localStorage.removeItem('educatorSession');
     window.location.href = '../educator-login.html';
 }
@@ -164,17 +176,8 @@ function getWeekNumber(date) {
     sunday.setDate(d.getDate() - dayOfWeek);
 
     // Get first day of year
-    const firstDay = new Date(d.getFullYear(), 0, 1);
-    const daysSinceFirstDay = Math.floor((sunday - firstDay) / (24 * 60 * 60 * 1000));
-    const weekNum = Math.ceil((daysSinceFirstDay + firstDay.getDay() + 1) / 7);
-
-    return `${d.getFullYear()}-W${weekNum.toString().padStart(2, '0')}`;
-}
-
-// Export for use in other files
-if (typeof window !== 'undefined') {
-    window.getCurrentEducator = getCurrentEducator;
-    window.logoutEducator = logoutEducator;
-    window.getWeekBoundaries = getWeekBoundaries;
-    window.getWeekNumber = getWeekNumber;
+    const yearStart = new Date(sunday.getFullYear(), 0, 1);
+    const dayOfYear = Math.floor((sunday - yearStart + (24 * 60 * 60 * 1000)) / 86400000);
+    
+    return `${sunday.getFullYear()}-${Math.ceil(dayOfYear / 7)}`;
 }

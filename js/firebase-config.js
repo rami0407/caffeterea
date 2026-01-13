@@ -336,10 +336,12 @@ async function createOrder(studentId, items, total) {
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Deduct from student balance
-        await db.collection('users').doc(studentId).update({
-            balance: firebase.firestore.FieldValue.increment(-total)
-        });
+        // Deduct from student balance (Skip for guests)
+        if (!studentId.startsWith('guest')) {
+            await db.collection('users').doc(studentId).update({
+                balance: firebase.firestore.FieldValue.increment(-total)
+            });
+        }
 
         return { success: true, orderId: orderRef.id, orderNumber };
     } catch (error) {
@@ -397,6 +399,11 @@ function subscribeToPendingOrders(callback) {
             callback(orders);
         }, error => {
             console.error("Error subscribing to orders:", error);
+            if (typeof showToast === 'function') {
+                showToast(`خطأ في النظام: ${error.message}`, 'error');
+            } else {
+                alert(`خطأ: ${error.message}`);
+            }
         });
 }
 

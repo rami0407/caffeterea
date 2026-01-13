@@ -8,6 +8,8 @@ let currentUser = null;
 let products = [];
 let cart = [];
 let currentCategory = 'all';
+let currentChallengeMode = 'cashier'; // Default mode
+let expectedMathAnswer = 0; // Stored answer for validation
 
 // Sample products (will be replaced with Firebase data)
 const sampleProducts = [
@@ -171,10 +173,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Check authentication and load data
+// Check authentication and load data
 function checkAuthAndLoad() {
     onAuthStateChange(async ({ user, userData }) => {
         if (user && userData) {
             currentUser = userData;
+
+            // --- One-Time Welcome Allowance (30 Points) ---
+            if (!userData.initialAllowanceReceived) {
+                console.log('🎉 First time login? Allocating welcome allowance...');
+
+                try {
+                    // Set balance to 30 (One time only)
+                    await db.collection('users').doc(user.uid).update({
+                        balance: 30,
+                        initialAllowanceReceived: true
+                    });
+
+                    // Update local state
+                    currentUser.balance = 30;
+                    currentUser.initialAllowanceReceived = true;
+
+                    showToast('🎉 أهلاً بك! تم إضافة رصيد افتتاحي: 30 نقطة', 'success');
+                } catch (error) {
+                    console.error('Error allocating welcome allowance:', error);
+                }
+            }
+            // -------------------------------------------
+
             // Persistence: Display Name
             const nameDisplay = document.getElementById('userNameDisplay');
             if (nameDisplay) nameDisplay.textContent = `مرحباً، ${userData.name || 'طالب'}`;
@@ -182,10 +208,26 @@ function checkAuthAndLoad() {
             updateBalanceDisplay();
             await loadProducts();
         } else {
-            // For demo, allow guest access
-            currentUser = { balance: 50, role: 'student' };
+            // For demo, allow guest access with allowance simulation
+            currentUser = {
+                balance: 999999, // Concept: Infinite Kiosk Balance
+                role: 'student',
+                isGuest: true
+            };
+
+            // Guest Welcome Message
+            const nameDisplay = document.getElementById('userNameDisplay');
+            if (nameDisplay) nameDisplay.textContent = 'مرحباً، زائر';
+
             updateBalanceDisplay();
-            loadSampleProducts();
+            // Enable real product loading for guests (public read allowed)
+            loadProducts();
+
+            // Show toast for guest too
+            if (!sessionStorage.getItem('guest_welcomed')) {
+                showToast('🎉 تم رصد رصيد الشهر: 30 نقطة (تجريبي)', 'success');
+                sessionStorage.setItem('guest_welcomed', 'true');
+            }
         }
     });
 }
@@ -332,7 +374,21 @@ function setupEventListeners() {
     document.getElementById('cartOverlay').addEventListener('click', closeCart);
 
     // Checkout button
-    document.getElementById('checkoutBtn').addEventListener('click', checkout);
+    // Checkout button (Now opens Math Challenge)
+    // Checkout button (Now opens Math Challenge)
+    document.getElementById('checkoutBtn').addEventListener('click', openMathChallenge);
+
+    // Challenge Mode Buttons (Gamification)
+    document.querySelectorAll('.challenge-title-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            setChallengeMode(mode);
+        });
+    });
+
+    // Math Challenge Button
+    const verifyBtn = document.getElementById('verifyMathBtn');
+    if (verifyBtn) verifyBtn.addEventListener('click', verifyMathAnswer);
 
     // Success modal close
     document.getElementById('closeSuccessBtn').addEventListener('click', () => {
@@ -450,8 +506,8 @@ function updateCartDisplay() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.getElementById('cartCount').textContent = count;
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById('cartTotal').textContent = total;
+    // Math Challenge: Hide the total to force calculation
+    document.getElementById('cartTotal').textContent = '؟'; // Hidden total
 
     // Show/hide empty state and footer
     const isEmpty = cart.length === 0;
@@ -514,8 +570,180 @@ function closeCart() {
     document.getElementById('cartOverlay').classList.remove('show');
 }
 
-// Checkout
-async function checkout() {
+// Gamification Logic
+function setChallengeMode(mode) {
+    currentChallengeMode = mode;
+
+    // Update UI
+    document.querySelectorAll('.challenge-title-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.mode === mode) btn.classList.add('active');
+    });
+
+    // Provide immediate feedback/mini-toast
+    const titles = {
+        'cashier': 'تحدي الصراف: احسب الباقي! 💰',
+        'nutrition': 'تحدي التغذية: اجمع السعرات! 🍎',
+        'discount': 'تحدي الخصم: احسب السعر الجديد! 🏷️'
+    };
+    showToast(titles[mode], 'success');
+}
+
+function openMathChallenge() {
+    if (cart.length === 0) return;
+
+    const modal = document.getElementById('mathChallengeModal');
+    const container = document.getElementById('challengeItemsList');
+    const lang = getCurrentLang();
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const balance = currentUser.balance || 0;
+
+    // Verify balance first
+    if (balance < total) {
+        showToast(t('insufficientBalance'), 'error');
+        return;
+    }
+
+    let challengeHTML = '';
+    let challengeTitle = '';
+    let challengeQuestion = '';
+
+    // --- CASHIER MODE (Math: Subtraction) ---
+    if (currentChallengeMode === 'cashier') {
+        challengeTitle = '👨‍💼 تحدي الصراف الصغير';
+
+        // Randomize Question Type: 0 = Real Balance, 1 = Hypothetical Payment
+        const qType = Math.random() > 0.5 ? 0 : 1;
+
+        if (qType === 0) {
+            // Variant A: Real Balance
+            expectedMathAnswer = balance - total;
+            challengeQuestion = `معك <strong>${balance}</strong> نقطة. والمجموع <strong>${total}</strong> نقطة.<br>كم سيتبقى معك؟`;
+            challengeHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;" dir="ltr">
+                    ${balance} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">?</span>
+                </div>`;
+        } else {
+            // Variant B: Hypothetical Payment (Change)
+            // Round up total to next 10 or 50
+            let payment = Math.ceil((total + 1) / 10) * 10;
+            if (payment === total) payment += 10; // Ensure some change
+
+            expectedMathAnswer = payment - total;
+            challengeQuestion = `إذا دفع الزبون <strong>${payment}</strong> نقطة، والمجموع <strong>${total}</strong>.<br>كم الباقي؟`;
+            challengeHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;" dir="ltr">
+                    ${payment} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">?</span>
+                </div>`;
+        }
+    }
+
+    // --- NUTRITION MODE (Math: Addition) ---
+    else if (currentChallengeMode === 'nutrition') {
+        challengeTitle = '🍎 تحدي خبير التغذية';
+
+        // Randomize: 0 = Calories, 1 = Sugar
+        const qType = Math.random() > 0.5 ? 0 : 1;
+
+        if (qType === 0) {
+            expectedMathAnswer = cart.reduce((sum, item) => sum + ((item.calories || 0) * item.quantity), 0);
+            challengeQuestion = 'احسب مجموع <strong>السعرات الحرارية 🔥</strong> في سلتك!';
+
+            challengeHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+                    <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
+                    <span dir="ltr">${item.calories || 0} x ${item.quantity}</span>
+                </div>
+            `).join('');
+        } else {
+            expectedMathAnswer = cart.reduce((sum, item) => sum + ((item.sugar || 0) * item.quantity), 0);
+            challengeQuestion = 'احسب مجموع <strong>ملاعق السكر 🍬</strong> في سلتك!';
+
+            challengeHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee;">
+                    <span>${lang === 'he' ? item.name_he : item.name_ar} (x${item.quantity})</span>
+                    <span dir="ltr">${item.sugar || 0} x ${item.quantity}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    // --- DISCOUNT MODE (Math: Percentage/Multiplication) ---
+    else if (currentChallengeMode === 'discount') {
+        challengeTitle = '🏷️ تحدي صائد الخصومات';
+
+        // Randomize Discount: 10%, 20%, 25%, 50%
+        const discounts = [10, 20, 25, 50];
+        const percent = discounts[Math.floor(Math.random() * discounts.length)];
+
+        // Calculate new price: total * (1 - percent/100)
+        // Correct Answer is the FINAL PRICE
+        const discountAmount = Math.floor(total * (percent / 100)); // Simple integer math
+        expectedMathAnswer = total - discountAmount;
+
+        challengeQuestion = `لديك خصم مميز <strong>${percent}%</strong>! كم يصبح السعر الجديد؟`;
+
+        challengeHTML = `
+            <div style="font-size: 1.2rem; margin-bottom: 10px;" dir="ltr">
+                <span dir="rtl">المجموع الأصلي:</span> <strong>${total}</strong>
+            </div>
+            <div style="font-size: 1rem; color: #64748b;" dir="ltr">
+                ${total} - ${percent}% = ?
+            </div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top:5px;">
+                (تلميح: قيمة الخصم ${discountAmount})
+            </div>
+        `;
+    }
+
+    // Update Modal UI
+    modal.querySelector('h2').textContent = challengeTitle;
+    modal.querySelector('p').innerHTML = challengeQuestion;
+    if (container) container.innerHTML = challengeHTML;
+
+    document.getElementById('studentMathAnswer').value = '';
+    modal.classList.remove('hidden');
+}
+
+function closeMathModal() {
+    document.getElementById('mathChallengeModal').classList.add('hidden');
+}
+
+function verifyMathAnswer() {
+    const input = document.getElementById('studentMathAnswer');
+    const answer = parseInt(input.value);
+
+    // Check against the globally stored expected answer
+    // For Discount mode, we allow a small tolerance due to potential mental math rounding differences
+    let isCorrect = false;
+
+    if (currentChallengeMode === 'discount') {
+        isCorrect = (Math.abs(answer - expectedMathAnswer) <= 1);
+    } else {
+        isCorrect = (answer === expectedMathAnswer);
+    }
+
+    if (isCorrect) {
+        showToast('إجابة صحيحة! أنت عبقري 🌟', 'success');
+        closeMathModal();
+
+        // If discount mode was active, show simulated savings toast
+        if (currentChallengeMode === 'discount') {
+            const originalTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const savings = originalTotal - expectedMathAnswer;
+            showToast(`رائع! وفرت ${savings} نقطة (محاكاة)`, 'success');
+        }
+
+        processOrder();
+    } else {
+        input.classList.add('error-shake');
+        showToast('حاول مرة أخرى! 🤔', 'error');
+        setTimeout(() => input.classList.remove('error-shake'), 500);
+    }
+}
+
+// Rename original checkout to processOrder
+async function processOrder() {
     if (cart.length === 0) return;
 
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -528,9 +756,13 @@ async function checkout() {
 
     // Show loading
     const checkoutBtn = document.getElementById('checkoutBtn');
-    const originalText = checkoutBtn.innerHTML;
-    checkoutBtn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span>';
-    checkoutBtn.disabled = true;
+    // ... (rest of the logic remains handled by the execution flow, but the button ID is different in the modal)
+    // Actually, processOrder triggers the backend call.
+    // We should show a global loading state or reuse the checkout button loading if we want, 
+    // but the checkout button is "hidden" behind the modal. 
+    // Let's use a simple global loader or toast for now since the modal closes fast.
+
+    // Better: We reuse the checkout implementation but we need to unlock the UI.
 
     try {
         // Create order
@@ -541,21 +773,29 @@ async function checkout() {
             quantity: item.quantity
         }));
 
-        let orderNumber;
+        // Check balance (Already done) / Infinite for guest
 
-        if (currentUser.uid) {
-            // Real Firebase order
-            const result = await createOrder(currentUser.uid, items, total);
-            if (result.success) {
-                orderNumber = result.orderNumber;
+        let orderResult;
+        const userId = currentUser.uid || `guest_${Date.now()}`; // Unique ID for guest
+
+        // Create Order in Firebase (For BOTH Students and Guests)
+        orderResult = await createOrder(userId, items, total);
+
+        if (orderResult.success) {
+            orderNumber = orderResult.orderNumber;
+
+            // Deduct local balance for students only
+            if (!currentUser.isGuest) {
                 currentUser.balance -= total;
-            } else {
-                throw new Error(result.error);
             }
         } else {
-            // Demo mode
-            orderNumber = Math.floor(Math.random() * 100) + 1;
-            currentUser.balance -= total;
+            console.error("Order creation failed:", orderResult.error);
+            // Fallback for guests if firebase fails (e.g. offline)
+            if (currentUser.isGuest) {
+                orderNumber = Math.floor(Math.random() * 100) + 1;
+            } else {
+                throw new Error(orderResult.error);
+            }
         }
 
         // Clear cart
@@ -567,26 +807,34 @@ async function checkout() {
         // Update balance display
         updateBalanceDisplay();
 
-        // Show success modal
-        document.getElementById('orderNumberDisplay').textContent = orderNumber;
+        // Show Success
+        const orderNumDisplay = document.getElementById('orderNumberDisplay');
+        if (orderNumDisplay) orderNumDisplay.textContent = orderNumber;
         document.getElementById('successModal').classList.remove('hidden');
 
-        // Note: Waiting message and feedback will show after success modal is closed
+        // Kiosk Auto-Reset Logic for Guests
+        if (currentUser.isGuest) {
+            setTimeout(() => {
+                window.location.reload(); // Hard Reset to welcome next guest
+            }, 2000); // 2 seconds to read the number
+        }
 
     } catch (error) {
         console.error('Checkout error:', error);
         showToast(t('error'), 'error');
-    } finally {
-        checkoutBtn.innerHTML = originalText;
-        checkoutBtn.disabled = false;
     }
 }
 
 // Update balance display
 function updateBalanceDisplay() {
-    if (currentUser) {
-        document.getElementById('balanceDisplay').textContent = currentUser.balance || 0;
-    }
+    const bal = currentUser.balance || 0;
+    // Show Infinity symbol if balance is very high (Kiosk Mode)
+    const displayBal = bal > 888888 ? '∞' : bal;
+
+    document.getElementById('balanceDisplay').textContent = displayBal;
+    // Also update header amount if exists elsewhere
+    const headerBal = document.querySelector('.wallet-amount');
+    if (headerBal) headerBal.textContent = displayBal;
 }
 
 // Toast notification
