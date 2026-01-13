@@ -399,6 +399,11 @@ function subscribeToPendingOrders(callback) {
             callback(orders);
         }, error => {
             console.error("Error subscribing to orders:", error);
+            if (typeof showToast === 'function') {
+                showToast(`خطأ في النظام: ${error.message}`, 'error');
+            } else {
+                alert(`خطأ: ${error.message}`);
+            }
         });
 }
 

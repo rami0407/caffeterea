@@ -36,33 +36,39 @@ service cloud.firestore {
     
     // 2️⃣ Products
     match /products/{productId} {
-      allow read: if true; 
-      allow write: if isAdmin();
+      allow read, write: if true;
     }
     
     // 3️⃣ Orders
     match /orders/{orderId} {
-      allow create: if true; // Allow guests to create orders
-      // Allow reading if authenticated
-      allow read: if isAuthenticated();
-      allow update: if isAuthenticated(); 
+      allow create: if true;
+      allow read, update: if true;
     }
     
     // 4️⃣ Transactions/Rewards
     match /transactions/{txnId} {
-       allow create: if isAuthenticated();
-       allow read: if isAuthenticated();
+       allow create: if true;
+       allow read: if true;
     }
     
-    // 5️⃣ WeeklyPoints (The source of previous error)
+    // 5️⃣ WeeklyPoints
     match /weeklyPoints/{docId} {
-       // Now allowed because we have a valid auth token!
-       allow read, write: if isAuthenticated();
+       allow read, write: if true;
     }
     
     // 6️⃣ Counters
     match /counters/{docId} {
         allow read, update: if isAuthenticated(); 
+    }
+
+    // 7️⃣ Challenges (Health Page)
+    match /challenges/{docId} {
+       allow read, write: if true;
+    }
+
+    // 8️⃣ Students (Health Page specific data)
+    match /students/{studentId} {
+       allow read, write: if true;
     }
   }
 }

@@ -620,8 +620,8 @@ function openMathChallenge() {
             expectedMathAnswer = balance - total;
             challengeQuestion = `معك <strong>${balance}</strong> نقطة. والمجموع <strong>${total}</strong> نقطة.<br>كم سيتبقى معك؟`;
             challengeHTML = `
-                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;">
-                    ${balance} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">؟</span>
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;" dir="ltr">
+                    ${balance} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">?</span>
                 </div>`;
         } else {
             // Variant B: Hypothetical Payment (Change)
@@ -632,8 +632,8 @@ function openMathChallenge() {
             expectedMathAnswer = payment - total;
             challengeQuestion = `إذا دفع الزبون <strong>${payment}</strong> نقطة، والمجموع <strong>${total}</strong>.<br>كم الباقي؟`;
             challengeHTML = `
-                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;">
-                    ${payment} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">؟</span>
+                <div style="font-size: 1.2rem; margin-bottom: 10px; color: #64748b;" dir="ltr">
+                    ${payment} - ${total} = <span style="font-weight:bold; color:var(--primary-green);">?</span>
                 </div>`;
         }
     }
@@ -684,11 +684,11 @@ function openMathChallenge() {
         challengeQuestion = `لديك خصم مميز <strong>${percent}%</strong>! كم يصبح السعر الجديد؟`;
 
         challengeHTML = `
-            <div style="font-size: 1.2rem; margin-bottom: 10px;">
-                المجموع الأصلي: <strong>${total}</strong>
+            <div style="font-size: 1.2rem; margin-bottom: 10px;" dir="ltr">
+                <span dir="rtl">المجموع الأصلي:</span> <strong>${total}</strong>
             </div>
-            <div style="font-size: 1rem; color: #64748b;">
-                ${total} - ${percent}% = ؟
+            <div style="font-size: 1rem; color: #64748b;" dir="ltr">
+                ${total} - ${percent}% = ?
             </div>
             <div style="font-size: 0.8rem; color: #94a3b8; margin-top:5px;">
                 (تلميح: قيمة الخصم ${discountAmount})

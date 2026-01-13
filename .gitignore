@@ -3,7 +3,7 @@ node_modules/
 package-lock.json
 
 # Firebase
-.firebaserc
+
 firebase-debug.log
 firestore-debug.log
 

@@ -256,7 +256,10 @@ function calculateDistance() {
 
 // Toggle Duration Field
 function toggleDurationField() {
-    const activityType = document.getElementById('activityType').value;
+    const activityTypeElement = document.getElementById('activityType');
+    if (!activityTypeElement) return;
+
+    const activityType = activityTypeElement.value;
     const durationGroup = document.getElementById('durationGroup');
     const durationInput = document.getElementById('activityDuration');
 
