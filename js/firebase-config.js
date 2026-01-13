@@ -24,30 +24,49 @@ const firebaseConfig = {
 let app, auth, db;
 
 function initializeFirebase() {
-    if (typeof firebase !== 'undefined') {
-        app = firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.firestore();
-
-        // Expose to window for other scripts
-        window.app = app;
-        window.auth = auth;
-        window.db = db;
-
-        // Initialize Storage only if SDK is present
-        if (firebase.storage) {
-            window.storage = firebase.storage();
-        }
-
-        // Set RTL language for auth UI
-        auth.languageCode = 'ar';
-
-        console.log('✅ Firebase initialized successfully');
+    // Prevent double initialization
+    if (app && auth && db) {
+        console.log('✅ Firebase already initialized');
         return { app, auth, db };
+    }
+
+    if (typeof firebase !== 'undefined') {
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+
+            // Expose to window for other scripts
+            window.app = app;
+            window.auth = auth;
+            window.db = db;
+
+            // Initialize Storage only if SDK is present
+            if (firebase.storage) {
+                window.storage = firebase.storage();
+            }
+
+            // Set RTL language for auth UI
+            auth.languageCode = 'ar';
+
+            console.log('✅ Firebase initialized successfully');
+            return { app, auth, db };
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            return null;
+        }
     } else {
         console.error('❌ Firebase SDK not loaded');
         return null;
     }
+}
+
+// Auto-initialize Firebase when script loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFirebase);
+} else {
+    // Document already loaded
+    initializeFirebase();
 }
 
 // ========================================
