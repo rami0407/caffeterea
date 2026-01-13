@@ -235,6 +235,11 @@
                                 <option value="red">🔴 أحمر (قلل منه)</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>📦 المخزون (الكمية المتوفرة)</label>
+                            <input type="number" id="prodStock" min="0" placeholder="مثال: 50" value="10">
+                            <small style="color: #059669; font-size: 0.85rem;">✅ يظهر للطالب: متوفر/نفذ</small>
+                        </div>
                     </div>
                     <button type="submit" class="submit-btn">حفظ المنتج</button>
                 </form>
@@ -389,6 +394,7 @@
                         icon: document.getElementById('prodIcon').value,
                         calories: parseInt(document.getElementById('prodCalories').value) || 0,
                         trafficLight: document.getElementById('prodTraffic').value,
+                        stock: parseInt(document.getElementById('prodStock').value) || 0,
                         available: true
                     };
 
@@ -443,6 +449,7 @@
             document.getElementById('prodCategory').value = product.category;
             document.getElementById('prodIcon').value = product.icon;
             document.getElementById('prodTraffic').value = product.trafficLight || 'green';
+            document.getElementById('prodStock').value = product.stock || 0;
 
             // UI Changes
             document.getElementById('formTitle').textContent = '✏️ تعديل منتج: ' + (product.nameAr || product.name_ar);
@@ -480,14 +487,26 @@
                 grid.innerHTML = products.map(p => {
                     // Encode for safe passing to function
                     const pSafe = encodeURIComponent(JSON.stringify(p));
+
+                    // Stock status
+                    const stock = p.stock !== undefined ? p.stock : 0;
+                    let stockBadge = '';
+                    if (stock === 0) {
+                        stockBadge = '<span style="background:#fee2e2; color:#b91c1c; padding:2px 8px; border-radius:8px; font-size:0.75rem;">❌ نفذ</span>';
+                    } else if (stock <= 5) {
+                        stockBadge = `<span style="background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:8px; font-size:0.75rem;">⚠️ ${stock}</span>`;
+                    } else {
+                        stockBadge = `<span style="background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:8px; font-size:0.75rem;">✅ ${stock}</span>`;
+                    }
+
                     return `
                     <div class="product-card">
                         <div class="product-icon">${p.icon || '📦'}</div>
                         <div class="product-info">
                             <span class="product-name">${p.nameAr || p.name_ar || 'بدون اسم'}</span>
-                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#666; align-items:center; margin-top:5px;">
                                 <span>${p.price} نقاط</span>
-                                <span>${p.nameHe || p.name_he || ''}</span>
+                                ${stockBadge}
                             </div>
                         </div>
                         <div class="product-actions" style="flex-direction:column;">
